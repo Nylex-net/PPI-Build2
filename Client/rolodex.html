@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html" charset="utf-8"/>
+<html lang="en-gb" dir="ltr">
+<link rel="stylesheet" href="searchingStyle.css">
+<head>
+	<title>SHN Project Initiation Sheet</title>
+	<link rel="icon" href="favicon.ico"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://alcdn.msauth.net/browser/2.30.0/js/msal-browser.js"
+    integrity="sha384-o4ufwq3oKqc7IoCcR08YtZXmgOljhTggRwxP2CLbSqeXGtitAxwYaUln/05nJjit"
+    crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1 class="center">
+		SHN<br><span id="somethingidk">Rolodex</span>
+    </h1>
+    <h2 class="center" id="currUser">Please sign in to confirm you identity.</h2><button type="button" id="loginButton" onclick="signIn()">Sign In</button>
+    <a href="Project_Initiation_home.html">Back to home</a><br>
+	<div id="inserter">
+		<label for="search">Search</label>
+        <input type="text" id="search" maxlength="255"/><br>
+        <label for="by">Search By: </label>
+        <input type="radio" id="all" name="by" value="All" checked/>All <input type="radio" id="job" name="by" value="Job"/>Job Title 
+        <input type="radio" id="comp" name="by" value="Comp"/>Company Name 
+        <input type="radio" id="first" name="by" value="First"/>First Name <input type="radio" id="last" name="by" value="Last"/>Last Name<br>
+        <button type="button" onclick="find();">Search</button>
+        <p id="results"></p>
+	</div>
+    <p id="rights">© <a href="https://www.nylex.net/" target="_blank">Nylex.Net</a></p>
+</body>
+<script src="rolodex.js"></script>
+<script type="text/javascript" src="./authConfig.js"></script>
+<script type="text/javascript" src="./graphConfig.js"></script>
+<script type="text/javascript" src="./ui.js"></script>
+<script type="text/javascript" src="./authPopup.js"></script>
+<script type="text/javascript" src="./graph.js"></script>
+</html>

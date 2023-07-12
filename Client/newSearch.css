@@ -1,0 +1,210 @@
+h1.center {
+	text-align: center;
+	font-size: 100px;
+	font-family: Arial, Helvetica, sans-serif;
+	-webkit-text-stroke-color: white;
+	-webkit-text-stroke-width: 1px;
+}
+
+#somethingidk {
+	text-align: center;
+	font-size: 70px;
+	font-family: Arial, Helvetica, sans-serif;
+	-webkit-text-stroke-color: white;
+	-webkit-text-stroke-width: 1px;
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 20px;
+	background: #4c4c4c4c;
+}
+
+@keyframes greenButt {
+	from {background-color: #60A13F;}
+  	to {background-color: #85C466;}
+}
+
+@keyframes greenPoop {
+	to {background-color: #60A13F;}
+	from{background-color: #85C466;}
+}
+
+button[type="button"] {
+	background: #60A13F;
+	animation-name: greenPoop;
+	animation-duration: 0.5s;
+	border: none;
+	color: white;
+	font-size: 20px;
+	font-weight: bold;
+	cursor: pointer;
+	text-align: center;
+	-webkit-text-stroke-color: white;
+	-webkit-text-stroke-width: 0px;
+}
+
+#edit {
+	background: #333333
+}
+
+button[type="button"]:hover {
+	background: #85C466;
+	animation-name: greenButt;
+	animation-duration: 0.5s;
+	color: #fff;
+}
+
+button[type="button"]:active {
+	background: white;
+	color: black;
+}
+
+.buttons {
+	text-align: center;
+}
+
+textarea {
+  width: 40%;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #000;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  resize: none;
+}
+
+textarea:required {
+	border-bottom: 3px solid red;
+}
+
+input[type=number], input[type=date], input[type=text], input[type=tel], input[type=email] {
+	width: 20%;
+	padding: 12px 20px;
+	border: 2px solid #000;
+	margin: 8px 0;
+	box-sizing: border-box;
+	font-size: 16px;
+}
+
+input:required, select:required {
+	border-bottom: 3px solid red;
+}
+
+select {
+	width: 30%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	font-size: 25px;
+	cursor: pointer;
+	text-align: left;
+}
+select:required {
+	border-bottom: 3px solid red;
+}
+
+option {
+	text-align: left;
+}
+
+input[type=checkbox] {
+	cursor: pointer;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  background: black;
+  padding: 10px;
+}
+
+.grid-item {
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  background: linear-gradient(#60A13F, #85C466, #60A13F);
+  padding: 20px;
+  font-size: 20px;
+  text-align: left;
+}
+
+div.column {
+	display: grid;
+	grid-template-columns: auto auto auto auto;
+	padding: 10px;
+}
+
+#columnResults {
+	display: grid;
+	grid-template-columns: auto auto auto auto auto auto;
+}
+
+#borders {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+  }
+  
+  th, td {
+	text-align: left;
+	padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+	background-color: #60A13F;
+  }
+
+label {
+	font-weight: bold;
+}
+
+label[name=key] {
+	float: right;
+	padding: 10px;
+}
+
+span.astrick {
+	color: red;
+	-webkit-text-stroke-color: black;
+	-webkit-text-stroke-width: 1.5px;
+	font-size: 40px;
+}
+
+#output {
+	color:red;
+	font-size: 30px;
+}
+
+#submitStat {
+	text-align: center;
+	font-size: 30px;
+	color: black;
+	-webkit-text-stroke-color: white;
+	-webkit-text-stroke-width: 1px;
+}
+
+a {
+	color: black;
+	font-size: 20px;
+	font-weight: bold;
+	cursor: pointer;
+	text-align: center;
+	border-bottom: 3px solid transparent;
+}
+
+a:hover {
+	border-bottom: 3px solid black;
+}
+
+#rights {
+	color: black;
+	text-align: center;
+}
+
+#submitter {
+	text-align: center;
+}

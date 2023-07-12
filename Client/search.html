@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html" charset="utf-8"/>
+<html lang="en-gb" dir="ltr">
+    <link rel="stylesheet" href="newSearch.css">
+    <head>
+        <title>SHN Project Initiation Home</title>
+        <link rel="icon" href="favicon.ico"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js"></script>
+        <script src="newSearch.js"></script>
+    </head>
+    <body>
+        <h1 class="center">
+            Search the Database
+        </h1>
+        <p>Searches by the following:<br>Project ID, Promo ID, First Name, Last Name, Project Location, Keywords, Client Company, Profile Code, and Description of service.</p>
+        <input type="radio" id="all" name="searchBy" value="all" checked="checked"><label for="all">All</label>
+        <input type="radio" id="project" name="searchBy" value="Project"><label for="project">Project ID</label>
+        <input type="radio" id="promo" name="searchBy" value="Promo"><label for="promo">Promo ID</label>
+        <input type="radio" id="keywords" name="searchBy" value="Keywords"><label for="keywords">Keywords</label>
+        <input type="radio" id="title" name="searchBy" value="Title"><label for="title">Title</label>
+        <input type="radio" id="desc" name="searchBy" value="Description"><label for="desc">Description of Service</label>
+        <br>
+        <input type="text" id="search" maxlength="255"><br>
+        <a href="search_demo.html">Advanced Search</a>
+        <p id="results"><button type="button" onclick="search()">Search</button></p>
+        <div id="columnResults"></div>
+        <p id="rights">© <a href="https://www.nylex.net/" target="_blank">Nylex.Net</a></p>
+    </body>
+</html>

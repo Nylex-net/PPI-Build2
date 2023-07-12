@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<meta http-equiv="content-type" content="text/html" charset="utf-8"/>
+<html lang="en-gb" dir="ltr">
+<link rel="stylesheet" href="PromoStyle.css">
+<head>
+	<title>SHN Promo Initiation Sheet</title>
+	<link rel="icon" href="favicon.ico"/>
+	<script src="Validate.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<h1 class="center">
+		Promo Initiation Sheet<br/>Process Information
+	</h1>
+	<form name="myForm" onsubmit="atLeastOne();" action="" method="">
+		<div class="grid-container">
+			<div class="grid-container">
+				<label for="projID" class="IDlabel"><b>Project ID</b></label>
+			</div>
+			<div class="grid-container">
+				<input type="text" id="projID" name="projID" class="IDbox" readonly>
+			</div>
+			<div class="grid-container">
+				<label for="promoID" class="IDlabel"><b>Promo ID</b></label>
+			</div>
+			<div class="grid-container">
+				<input type="text" id="promoID" name="promoID" class="IDbox" readonly>
+			</div>
+			<div class="grid-container">
+				<label for="BillGrp" class="IDlabel"><b>Bill Grp</b></label>
+			</div>
+			<div class="grid-container">
+				<input type="text" id="BillGrp" name="BillGrp" class="IDbox" readonly>
+			</div>
+			<div class="grid-item">
+				<label for="promo">Promo Title<span class="astrick">*</span> (13 Characters max):</label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="promo" name="promo" maxlength="13" required>
+			</div>
+			<div class="grid-item">
+				<label for="promo-type">Type of Promo<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<select name="promo-type" id="promo-type" title="Promo">
+					<option value="0" selected>Choose...</option>
+					<option value="on-going">On-going OH/BD</option>
+					<option value="letter">Letter</option>
+					<option value="soq">SOQ</option>
+					<option value="ProPri">Proposal-Prime</option>
+					<option value="ProSub">Proposal-Sub</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="projMgr">Project Manager<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<select name="projMgr" id="projMgr" title="Project manager">
+					<option value="0" selected>Choose....</option>
+				
+					<option value="304">Allen, Drew</option>
+   					
+   					<option value="55">Barsanti, Pat</option>
+   					
+   					<option value="420">Blakley, Tina </option>
+   					
+   					<option value="454">Blankenship, Jamie</option>
+   					
+   					<option value="452">Blout, Jonathan</option>
+   					
+   					<option value="345">Brown, Bob</option>
+   					
+   					<option value="258">Buck, Jason</option>
+   					
+   					<option value="201">Call, Anson</option>
+   					
+   					<option value="451">Christensen, Casey</option>
+   					
+   					<option value="338">Christie, Angela </option>
+   					
+   					<option value="296">Coriell, Stein</option>
+   					
+   					<option value="417">Curran , Mindi </option>
+   					
+   					<option value="206">Dailey, John</option>
+   					
+   					<option value="182">Dunn, Peter</option>
+   					
+   					<option value="434">Emard, Tamara</option>
+   					
+   					<option value="292">Erickson, Gwen</option>
+   					
+   					<option value="53">Foget, Mike</option>
+   					
+   					<option value="15">Gonzales, Dave</option>
+   					
+   					<option value="313">Graber, Dan</option>
+   					
+   					<option value="384">Grove, Bruce</option>
+   					
+   					<option value="359">Gustavson, Pieter</option>
+   					
+   					<option value="354">Heath, Samuel</option>
+   					
+   					<option value="336">Helliwell, Erilynn</option>
+   					
+   					<option value="79">Herman, Matt</option>
+   					
+   					<option value="81">Herman, Tom</option>
+   					
+   					<option value="315">Hess, Bob</option>
+   					
+   					<option value="311">Island, Jason</option>
+   					
+   					<option value="60">Johnson, Roland</option>
+   					
+   					<option value="318">Kaufman, Max</option>
+   					
+   					<option value="364">Ludtke, Jordan</option>
+   					
+   					<option value="6">McGoldrick, Bill</option>
+   					
+   					<option value="30">Nelson, Jeff</option>
+   					
+   					<option value="24">Nielsen, Erik</option>
+   					
+   					<option value="209">O'Barr, Jared</option>
+   					
+   					<option value="394">O'Brien, Gretchen</option>
+   					
+   					<option value="347">Parker, Trever</option>
+   					
+   					<option value="431">Perkins, Scott</option>
+   					
+   					<option value="289">Rasmussen, Anders</option>
+   					
+   					<option value="348">Rees, Garry</option>
+   					
+   					<option value="391">Rowe, Sean </option>
+   					
+   					<option value="61">Rueber, Roland</option>
+   					
+   					<option value="350">Saler, Joseph</option>
+   					
+   					<option value="26">Simpson, Gary</option>
+   					
+   					<option value="460">Steffensmeier, Charles</option>
+   					
+   					<option value="360">Swanson, Chuck</option>
+   					
+   					<option value="418">Tipp, Christina </option>
+   					
+   					<option value="297">Vadurro, Giovanni</option>
+   					
+   					<option value="412">Vodopals, Kirk</option>
+   					
+   					<option value="445">Wanta, Leif</option>
+   					
+   					<option value="19">Ward, Diana </option>
+   					
+   					<option value="245">White, Walter</option>
+   					
+   					<option value="400">Widmer, Lory </option>
+   					
+   					<option value="282">Wilcox, Cindy </option>
+   					
+   					<option value="27">Williston, Greg</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="qaqc">QA QC Person<span class="astrick">*</span></label> <!-- Create a validation form for the checkboxes -->
+			</div>
+			<div class="grid-item">
+				<select name="qaqc" id="qaqc" title="QA QC Person">
+					<option value="0" selected>Choose....</option>
+   				
+   						<option value="304">Allen, Drew</option>
+   						
+   						<option value="55">Barsanti, Pat</option>
+   						
+   						<option value="420">Blakley, Tina </option>
+   						
+   						<option value="454">Blankenship, Jamie</option>
+   						
+   						<option value="452">Blout, Jonathan</option>
+   						
+   						<option value="345">Brown, Bob</option>
+   						
+   						<option value="258">Buck, Jason</option>
+   						
+   						<option value="201">Call, Anson</option>
+   						
+   						<option value="451">Christensen, Casey</option>
+   						
+   						<option value="338">Christie, Angela </option>
+   						
+   						<option value="296">Coriell, Stein</option>
+   						
+   						<option value="417">Curran , Mindi </option>
+   						
+   						<option value="206">Dailey, John</option>
+   						
+   						<option value="182">Dunn, Peter</option>
+   						
+   						<option value="434">Emard, Tamara</option>
+   						
+   						<option value="292">Erickson, Gwen</option>
+   						
+   						<option value="53">Foget, Mike</option>
+   						
+   						<option value="15">Gonzales, Dave</option>
+   						
+   						<option value="313">Graber, Dan</option>
+   						
+   						<option value="384">Grove, Bruce</option>
+   						
+   						<option value="359">Gustavson, Pieter</option>
+   						
+   						<option value="354">Heath, Samuel</option>
+   						
+   						<option value="336">Helliwell, Erilynn</option>
+   						
+   						<option value="79">Herman, Matt</option>
+   						
+   						<option value="81">Herman, Tom</option>
+   						
+   						<option value="315">Hess, Bob</option>
+   						
+   						<option value="311">Island, Jason</option>
+   						
+   						<option value="60">Johnson, Roland</option>
+   						
+   						<option value="318">Kaufman, Max</option>
+						
+   						<option value="364">Ludtke, Jordan</option>
+   						
+   						<option value="6">McGoldrick, Bill</option>
+   						
+   						<option value="30">Nelson, Jeff</option>
+   						
+   						<option value="24">Nielsen, Erik</option>
+   						
+   						<option value="209">O'Barr, Jared</option>
+   						
+   						<option value="394">O'Brien, Gretchen</option>
+   						
+   						<option value="347">Parker, Trever</option>
+   						
+   						<option value="431">Perkins, Scott</option>
+   						
+   						<option value="289">Rasmussen, Anders</option>
+   						
+   						<option value="348">Rees, Garry</option>
+   						
+   						<option value="391">Rowe, Sean </option>
+   						
+   						<option value="61">Rueber, Roland</option>
+   						
+   						<option value="350">Saler, Joseph</option>
+   						
+   						<option value="26">Simpson, Gary</option>
+   						
+   						<option value="460">Steffensmeier, Charles</option>
+   						
+   						<option value="360">Swanson, Chuck</option>
+   						
+   						<option value="418">Tipp, Christina </option>
+   						
+   						<option value="297">Vadurro, Giovanni</option>
+   						
+   						<option value="412">Vodopals, Kirk</option>
+   						
+   						<option value="445">Wanta, Leif</option>
+   						
+   						<option value="19">Ward, Diana </option>
+   						
+   						<option value="245">White, Walter</option>
+   						
+   						<option value="400">Widmer, Lory </option>
+   						
+   						<option value="282">Wilcox, Cindy </option>
+   						
+   						<option value="27">Williston, Greg</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="team">Team Members<span class="astrick">*</span><br/>(Hold down Ctrl to select multiple people)</label><br/> <!-- Create a validation form for the checkboxes -->
+			</div>
+			<div class="grid-item" required>
+				<select name="Team" id="Team" title="team members" width="300" size="8" multiple required>
+
+   					<option value="397">Abshier, Ben </option>
+   						
+   					<option value="304">Allen, Drew</option>
+   						
+   					<option value="471">Arnold, Zachary</option>
+   						
+   					<option value="34">Aufdermaur, Joe</option>
+   						
+   					<option value="469">Barr, Abraham</option>
+   						
+   					<option value="55">Barsanti, Pat</option>
+   						
+   					<option value="420">Blakley, Tina </option>
+   						
+   					<option value="454">Blankenship, Jamie</option>
+   						
+   					<option value="452">Blout, Jonathan</option>
+   						
+   					<option value="449">Brown, Renee</option>
+   						
+   					<option value="395">Brown, Whitney</option>
+   						
+   					<option value="345">Brown, Bob</option>
+   						
+   					<option value="363">Browne, Victoria </option>
+   						
+   					<option value="258">Buck, Jason</option>
+   						
+   					<option value="201">Call, Anson</option>
+   						
+   					<option value="468">Carter, Zackery</option>
+   						
+   					<option value="451">Christensen, Casey</option>
+   						
+   					<option value="459">Christensen, Dana</option>
+   						
+   					<option value="338">Christie, Angela </option>
+   						
+   					<option value="296">Coriell, Stein</option>
+   						
+   					<option value="444">Culp, Richard</option>
+   						
+   					<option value="417">Curran , Mindi </option>
+   						
+   					<option value="206">Dailey, John</option>
+   						
+   					<option value="228">Davis, Becky</option>
+   						
+   					<option value="474">Dillon, Brian</option>
+   						
+   					<option value="182">Dunn, Peter</option>
+   						
+   					<option value="403">Edrington, Allison</option>
+   						
+   					<option value="342">Edwards, Dennis</option>
+   						
+   					<option value="434">Emard, Tamara</option>
+   					
+   					<option value="292">Erickson, Gwen</option>
+   						
+   					<option value="53">Foget, Mike</option>
+   						
+   					<option value="453">Foster, John</option>
+   						
+   					<option value="321">Gary, Anne</option>
+   						
+   					<option value="442">Goebel, Jared</option>
+   						
+   					<option value="440">Gonzales, Amanda</option>
+   						
+   					<option value="15">Gonzales, Dave</option>
+   						
+   					<option value="313">Graber, Dan</option>
+   						
+   					<option value="384">Grove, Bruce</option>
+   						
+   					<option value="359">Gustavson, Pieter</option>
+   						
+   					<option value="354">Heath, Samuel</option>
+   						
+   					<option value="336">Helliwell, Erilynn</option>
+   						
+   					<option value="455">Helpdesk, IT</option>
+   						
+   					<option value="79">Herman, Matt</option>
+   						
+   					<option value="81">Herman, Tom</option>
+   						
+   					<option value="83">Herman, Angie</option>
+   						
+   					<option value="315">Hess, Bob</option>
+   						
+   					<option value="475">Holler, Shannon</option>
+   						
+   					<option value="441">Huzzen, Brynn</option>
+   						
+   					<option value="311">Island, Jason</option>
+   						
+   					<option value="60">Johnson, Roland</option>
+   						
+   					<option value="318">Kaufman, Max</option>
+   						
+   					<option value="375">Klakken, Roger </option>
+   						
+   					<option value="446">Knight, Ryan</option>
+   						
+   					<option value="370">Lawton, Ethan</option>
+   						
+   					<option value="176">Lee, Denise</option>
+   					
+   					<option value="464">Lozier, Lisa</option>
+   						
+   					<option value="364">Ludtke, Jordan</option>
+   						
+   					<option value="428">Lyell, Mike</option>
+   						
+   					<option value="46">MacMillan, Laurie</option>
+   						
+   					<option value="472">Maine, Patrick</option>
+   						
+   					<option value="415">Malone, Mike </option>
+   						
+   					<option value="450">Manuel, Kent</option>
+   						
+   					<option value="425">Mayberry, Rick</option>
+   						
+   					<option value="6">McGoldrick, Bill</option>
+   						
+					<option value="447">Mclaughlin, Natalie</option>
+   						
+   					<option value="462">Mendez, Jonathan</option>
+   						
+   					<option value="463">Miller, Corwin</option>
+   						
+   					<option value="295">Mitchell, Warren</option>
+   						
+   					<option value="382">Myers, Launa</option>
+   					
+   					<option value="476">Neese, Robert</option>
+   						
+   					<option value="473">Nelson, Steve</option>
+   						
+   					<option value="30">Nelson, Jeff</option>
+   						
+   					<option value="10">Newell, Chris</option>
+   						
+   					<option value="24">Nielsen, Erik</option>
+   						
+   					<option value="209">O'Barr, Jared</option>
+   						
+   					<option value="394">O'Brien, Gretchen</option>
+   						
+   					<option value="470">Paltin, Gabriel</option>
+   						
+   					<option value="347">Parker, Trever</option>
+   						
+   					<option value="424">Pedersen, Melinda</option>
+   						
+   					<option value="431">Perkins, Scott</option>
+   						
+   					<option value="43">Pryor, Keri</option>
+   						
+   					<option value="289">Rasmussen, Anders</option>
+   						
+   					<option value="348">Rees, Garry</option>
+   						
+   					<option value="427">Reese , Kyle </option>
+   						
+   					<option value="466">Rivera, Jacob</option>
+   						
+   					<option value="438">Rose, Maya</option>
+   						
+   					<option value="413">Ross, Sophia</option>
+   						
+   					<option value="391">Rowe, Sean </option>
+   						
+   					<option value="61">Rueber, Roland</option>
+   						
+   					<option value="350">Saler, Joseph</option>
+   						
+   					<option value="7">Sigler, Brenda</option>
+   						
+   					<option value="333">Simmons, Laurie</option>
+   						
+   					<option value="26">Simpson, Gary</option>
+   						
+   					<option value="349">Sousa, Justin</option>
+   						
+   					<option value="460">Steffensmeier, Charles</option>
+   						
+   					<option value="47">Stevens, Liane</option>
+   						
+   					<option value="467">Stiles, Paul</option>
+   						
+   					<option value="62">Stillmaker, Ron</option>
+   						
+   					<option value="360">Swanson, Chuck</option>
+   						
+   					<option value="418">Tipp, Christina </option>
+   						
+   					<option value="437">Troia, Alyssa</option>
+   						
+   					<option value="351">Turner, Cheryl</option>
+   						
+   					<option value="297">Vadurro, Giovanni</option>
+   						
+   					<option value="412">Vodopals, Kirk</option>
+   						
+   					<option value="445">Wanta, Leif</option>
+   						
+   					<option value="19">Ward, Diana </option>
+   						
+   					<option value="411">Wheeler, April</option>
+   						
+   					<option value="430">White, Corbin</option>
+						
+   					<option value="245">White, Walter</option>
+   						
+   					<option value="400">Widmer, Lory </option>
+   						
+   					<option value="461">Wieman, Kendall</option>
+   						
+   					<option value="282">Wilcox, Cindy </option>
+   						
+   					<option value="27">Williston, Greg</option>
+   						
+   					<option value="335">Winkler-Prins, Lianna </option>
+   						
+   					<option value="316">Woo, Sheri</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="start">Start Date<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="date" id="start" value="start" required>
+			</div>
+			<div class="grid-item">
+				<label for="LocDesc">Project Location descriptor<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="LocDesc" name="LocDesc" required>
+			</div>
+			<div class="grid-item">
+				<label for="lat">Project Latitude<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="number" id="lat" name="lat" step="any" min="-90" max="90" required>
+			</div>
+			<div class="grid-item">
+				<label for="long">Project Longitude<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="number" id="long" name="long" min="-180" max="180" step="any" required>
+			</div>
+			<div class="grid-item">
+			<label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword)</label> <!-- Create a validation form for the checkboxes -->
+			</div>
+			<div class="grid-item">
+				<div class = "column">
+					<div>
+						<input type="checkbox" id="A.L.T.A." name="key" title="A.L.T.A." placeholder="A.L.T.A.">
+						<label for="A.L.T.A.">A.L.T.A.</label>
+					</div>
+					<div>
+						<input type="checkbox" id="ADA Compliance" name="key" title="ADA Compliance" placeholder="ADA Compliance">
+						<label type="ADA Compliance">ADA Compliance</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Aerial survey" name="key" title="Aerial survey" placeholder="Aerial survey">
+						<label for="Aerial survey">Aerial survey</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Airports" name="key" title="Airports" placeholder="Airports">
+						<label type="Airports">Airports</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Alternatives Analysis" name="key" title="Alternatives Analysis" placeholder="Alternatives Analysis">
+						<label for="Alternatives Analysis">Alternatives Analysis</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Asbestos" name="key" title="Asbestos" placeholder="Asbestose">
+						<label type="Asbestos">Asbestos</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Asphalt" name="key" title="Asphalt" placeholder="Asphalt">
+						<label for="Asphalt">Asphalt</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Bathymetric" name="key" title="Bathymetric" placeholder="Bathymetric">
+						<label type="Bathymetric">Bathymetric</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Boat Ramps" name="key" title="Boat Ramps" placeholder="Boat Ramps">
+						<label for="Boat Ramps">Boat Ramps</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Botanical" name="key" title="Botanical" placeholder="Botanical">
+						<label type="Botanical">Botanical</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Boundary" name="key" title="Boundary" placeholder="Boundary">
+						<label for="Boundary">Boundary</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Bridges" name="key" title="Bridges" placeholder="Bridges">
+						<label type="Bridges">Bridges</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Buildings" name="key" title="Buildings" placeholder="Buildings">
+						<label for="Buildings">Buildings</label>
+					</div>
+					<div>
+						<input type="checkbox" id="CalTrans" name="key" title="CalTrans" placeholder="CalTrans">
+						<label type="CalTrans">CalTrans</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Capital Improvement Plans" name="key" title="Capital Improvement Plans" placeholder="Capital Improvement Plans">
+						<label for="Capital Improvement Plans">Capital Improvement Plans</label>
+					</div>
+					<div>
+						<input type="checkbox" id="CEQA" name="key" title="CEQA" placeholder="CEQA">
+						<label type="CEQA">CEQA</label>
+					</div>
+					<div>
+						<input type="checkbox" id="CGS" name="key" title="CGS" placeholder="CGS">
+						<label for="CGS">CGS</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Cleanup" name="key" title="Cleanup" placeholder="Cleanup">
+						<label type="Cleanup">Cleanup</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Coastal" name="key" title="Coastal" placeholder="Coastal">
+						<label for="Coastal">Coastal</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Code Reviews" name="key" title="Code Reviews" placeholder="Code Reviews">
+						<label type="Code Reviews">Code Reviews</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Commercial" name="key" title="Commercial" placeholder="Commercial">
+						<label for="Commercial">Commercial</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Compaction Testing" name="key" title="Compaction Testing" placeholder="Compaction Testing">
+						<label type="Compaction Testing">Compaction Testing</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Compliance Monitoring" name="key" title="Compliance Monitoring" placeholder="Compliance Monitoring">
+						<label for="Compliance Monitoring">Compliance Monitoring</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Concrete" name="key" title="Concrete" placeholder="Concrete">
+						<label type="Concrete">Concrete</label>
+					</div>
+					<div>	
+						<input type="checkbox" id="Construction" name="key" title="Construction" placeholder="Construction">
+						<label for="Construction">Construction</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Critical Structure" name="key" title="Critical Structure" placeholder="Critical Structure">
+						<label type="Critical Structure">Critical Structure</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Culvert" name="key" title="Culvert" placeholder="Culvert">
+						<label for="Culvert">Culvert</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Dams and Levees" name="key" title="Dams and Levees" placeholder="Dams and Levees">
+						<label type="Dams and Levees">Dams and Levees</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Deed/Easement" name="key" title="Deed/Easement" placeholder="Deed/Easement">
+						<label for="Deed/Easement">Deed/Easement</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Drainage" name="key" title="Drainage" placeholder="Drainage">
+						<label type="Drainage">Drainage</label>
+					</div>
+					<div>
+						<input type="checkbox" id="DSA" name="key" title="DSA" placeholder="DSA">
+						<label for="DSA">DSA</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Earthquake" name="key" title="Earthquake" placeholder="Earthquake">
+						<label type="Earthquake">Earthquake</label><br/>
+					</div>
+					<div>
+						<input type="checkbox" id="Economic Development" name="key" title="Economic Development" placeholder="Economic Development">
+						<label for="Economic Development">Economic Development</label>
+					</div>
+					<div>
+						<input type="checkbox" id="EIR" name="key" title="EIR" placeholder="EIR">
+						<label type="EIR">EIR</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Electrical" name="key" title="Electrical" placeholder="Electrical">
+						<label for="Electrical">Electrical</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Elevation/Cross-Sections" name="key" title="Elevation/Cross-Sections" placeholder="Elevation/Cross-Sections">
+						<label type="Elevation/Cross-Sections">Elevation/Cross-Sections</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Erosion" name="key" title="Erosion" placeholder="Erosion">
+						<label for="Erosion">Erosion</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Expansive soil" name="key" title="Expansive soil" placeholder="Expansive soil">
+						<label type="Expansive soil">Expansive soil</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Facility Planning" name="key" title="Facility Planning" placeholder="Facility Planning">
+						<label for="Facility Planning">Facility Planning</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Fate & Transport Modeling" name="key" title="Fate & Transport Modeling" placeholder="Fate & Transport Modeling">
+						<label type="Fate & Transport Modeling">Fate & Transport Modeling</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Fault" name="key" title="Fault" placeholder="Fault">
+						<label for="Fault">Fault</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Feasibility Study" name="key" title="Feasibility Study" placeholder="Feasibility Study">
+						<label type="Feasibility Study">Feasibility Study</label>
+					</div>
+					<div>
+						<input type="checkbox" id="FHWA" name="key" title="FHWA" placeholder="FHWA">
+						<label for="FHWA">FHWA</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Fire Station" name="key" title="Fire Station" placeholder="Fire Station">
+						<label type="Fire Station">Fire Station</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Fireproofing" name="key" title="Fireproofing" placeholder="Fireproofing">
+						<label for="Fireproofing">Fireproofing</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Fish Culverts" name="key" title="Fish Culverts" placeholder="Fish Culverts">
+						<label type="Fish Culverts">Fish Culverts</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Fish Passage" name="key" title="Fish Passage" placeholder="Fish Passage">
+						<label for="Fish Passage">Fish Passage</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Flood Certification" name="key" title="Flood Certification" placeholder="Flood Certification">
+						<label type="Flood Certification">Flood Certification</label>
+					</div>
+					<div>
+						<input type="checkbox" id="FONSI" name="key" title="FONSI" placeholder="FONSI">
+						<label for="FONSI">FONSI</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Forensic" name="key" title="Forensic" placeholder="Forensic">
+						<label type="Forensic">Forensic</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Foundation" name="key" title="Foundation" placeholder="Foundation">
+						<label for="Foundation">Foundation</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Plce4" name="key" title="Funding" placeholder="Funding">
+						<label type="Funding">Funding</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Gabions" name="key" title="Gabions" placeholder="Gabions">
+						<label for="Gabions">Gabions</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Geologic hazard" name="key" title="Geologic hazard" placeholder="Geologic hazard">
+						<label type="Geologic hazard">Geologic hazard</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Geology" name="key" title="Geology" placeholder="Geology">
+						<label for="Geology">Geology</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Geomorphology" name="key" title="Geomorphology" placeholder="Geomorphology">
+						<label type="Geomorphology">Geomorphology</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Geotechnical" name="key" title="Geotechnical" placeholder="Geotechnical">
+						<label for="Geotechnical">Geotechnical</label>
+					</div>
+					<div>
+						<input type="checkbox" id="GPS Surveys" name="key" title="GPS Surveys" placeholder="GPS Surveys">
+						<label type="GPS Surveys">GPS Surveys</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Grading" name="key" title="Grading" placeholder="Grading">
+						<label for="Grading">Grading</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Grant" name="key" title="Grant" placeholder="Grant">
+						<label type="Grant">Grant</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Grant Writing" name="key" title="Grant Writing" placeholder="Grant Writing">
+						<label for="Grant Writing">Grant Writing</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Gravel Extraction" name="key" title="Gravel Extraction" placeholder="Gravel Extraction">
+						<label type="Gravel Extraction">Gravel Extraction</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Groundwater" name="key" title="Groundwater" placeholder="Groundwater">
+						<label for="Groundwater">Groundwater</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Highway" name="key" title="Highway" placeholder="Highway">
+						<label type="Highway">Highway</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Horizontal directional drill" name="key" title="Horizontal directional drill" placeholder="Horizontal directional drill">
+						<label for="Horizontal directional drill">Horizontal directional drill</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Hospital" name="key" title="Hospital" placeholder="Hospital">
+						<label type="Hospital">Hospital</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Hydraulic" name="key" title="Hydraulic" placeholder="Hydraulic">
+						<label for="Hydraulic">Hydraulic</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Hydroelectric" name="key" title="Hydroelectric" placeholder="Hydroelectric">
+						<label type="Hydroelectric">Hydroelectric</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Hydrology" name="key" title="Hydrology" placeholder="Hydrology">
+						<label for="Hydrology">Hydrology</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Indoor Air" name="key" title="Indoor Air" placeholder="Indoor Air">
+						<label type="Indoor Air">Indoor Air</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Industrial Hygiene" name="key" title="Industrial Hygiene" placeholder="Industrial Hygiene">
+						<label for="Industrial Hygiene">Industrial Hygiene</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Initial Study" name="key" title="Initial Study" placeholder="Initial Study">
+						<label type="Initial Study">Initial Study</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Insurance" name="key" title="Insurance" placeholder="Insurance">
+						<label for="Insurance">Insurance</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Landfills" name="key" title="Landfills" placeholder="Landfills">
+						<label type="Landfills">Landfills</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Landslide" name="key" title="Landslide" placeholder="Landslide">
+						<label for="PLce1">Aerial  survey</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Legal Descriptions" name="key" title="Legal Descriptions" placeholder="Legal Descriptions">
+						<label type="Legal Descriptions">Legal Descriptions</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Levee" name="key" title="Levee" placeholder="Levee">
+						<label for="Levee">Levee</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Liquefaction" name="key" title="Liquefaction" placeholder="Liquefaction">
+						<label type="Liquefaction">Liquefaction</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Litigation Support" name="key" title="Litigation Support" placeholder="Litigation Support">
+						<label for="Litigation Support">Litigation Support</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Lot Divisions" name="key" title="Lot Divisions" placeholder="Lot Divisions">
+						<label type="Lot Divisions">Lot Divisions</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Mapping" name="key" title="Mapping" placeholder="Mapping">
+						<label for="Mapping">Mapping</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Mapping Control" name="key" title="Mapping Control" placeholder="Mapping Control">
+						<label type="Mapping Control">Mapping Control</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Marinas" name="key" title="Marinas" placeholder="Marinas">
+						<label for="Marinas">Marinas</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Marine" name="key" title="Marine" placeholder="Marine">
+						<label type="Marine">Marine</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Masonry" name="key" title="Masonry" placeholder="Masonry">
+						<label for="Masonry">Masonry</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Materials Testing" name="key" title="Materials Testing" placeholder="Materials Testing">
+						<label type="Materials Testing">Materials Testing</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Metal Buildings" name="key" title="Metal Buildings" placeholder="Metal Buildings">
+						<label for="Metal Buildings">Metal Buildings</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Mine" name="key" title="Mine" placeholder="Mine">
+						<label type="Mine">Mine</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Mine Remediation/Closure" name="key" title="Mine Remediation/Closure" placeholder="Mine Remediation/Closure">
+						<label for="Mine Remediation/Closure">Mine Remediation/Closure</label>
+					</div>
+					<div>
+						<input type="checkbox" id="MSE Walls" name="key" title="MSE Walls" placeholder="MSE Walls">
+						<label type="MSE Walls">MSE Walls</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Natural Resources" name="key" title="Natural Resources" placeholder="Natural Resources">
+						<label for="Natural Resources">Natural Resources</label>
+					</div>
+					<div>
+						<input type="checkbox" id="NDT" name="key" title="NDT" placeholder="NDT">
+						<label type="NDT">NDT</label><br/>
+					</div>
+					<div>
+						<input type="checkbox" id="Neg Decl" name="key" title="Neg Decl" placeholder="Neg Decl">
+						<label for="Neg Decl">Neg Decl</label>
+					</div>
+					<div>
+						<input type="checkbox" id="NEPA" name="key" title="NEPA" placeholder="NEPA">
+						<label type="NEPA">NEPA</label>
+					</div>
+					<div>
+						<input type="checkbox" id="NPDES" name="key" title="NPDES" placeholder="NPDES">
+						<label for="NPDES">NPDES</label>
+					</div>
+					<div>
+						<input type="checkbox" id="O&M Services" name="key" title="O&M Services" placeholder="O&M Services">
+						<label type="O&M Services">O&M Services</label>
+					</div>
+					<div>
+						<input type="checkbox" id="On-site septic" name="key" title="On-site septic" placeholder="On-site septic">
+						<label for="On-site septic">On-site septic</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Open Channel" name="key" title="Open Channel" placeholder="Open Channel">
+						<label type="Open Channel">Open Channel</label>
+					</div>
+					<div>
+						<input type="checkbox" id="OSHPD" name="key" title="OSHPD" placeholder="OSHPD">
+						<label for="OSHPD">OSHPD</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Parcel Map" name="key" title="Parcel Map" placeholder="Parcel Map">
+						<label type="Parcel Map">Parcel Map</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Parking" name="key" title="Parking" placeholder="Parking">
+						<label for="Parking">Parking</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Parks" name="key" title="Parks" placeholder="Parks">
+						<label type="Parks">Parks</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Pavement" name="key" title="Pavement" placeholder="Pavement">
+						<label for="Pavement">Pavement</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Permitting" name="key" title="Permitting" placeholder="Permitting">
+						<label type="Permitting">Permitting</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Phase 1 Assessment" name="key" title="Phase 1 Assessment" placeholder="Phase 1 Assessment">
+						<label for="Phase 1 Assessment">Phase 1 Assessment</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Phase 2 Assessment" name="key" title="Phase 2 Assessment" placeholder="Phase 2 Assessment">
+						<label type="Phase 2 Assessment">Phase 2 Assessment</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Piers, Docks, Wharfs" name="key" title="Piers, Docks, Wharfs" placeholder="Piers, Docks, Wharfs">
+						<label for="Piers, Docks, Wharfs">Piers, Docks, Wharfs</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Pile Driving" name="key" title="Pile Driving" placeholder="Pile Driving">
+						<label type="Pile Driving">Pile Driving</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Pipeline" name="key" title="Pipeline" placeholder="Pipeline">
+						<label for="Pipeline">Pipeline</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Planning" name="key" title="Planning" placeholder="Planning">
+						<label type="Planning">Planning</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Property Line" name="key" title="Property Line" placeholder="Property Line">
+						<label for="Property Line">Property Line</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Public Lands" name="key" title="Public Lands" placeholder="Public Lands">
+						<label type="Public Lands">Public Lands</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Pump Stations" name="key" title="Pump Stations" placeholder="Pump Stations">
+						<label for="Pump Stations">Pump Stations</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Quarry" name="key" title="Quarry" placeholder="Quarry">
+						<label type="Quarry">Quarry</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Railroad" name="key" title="Railroad" placeholder="Railroad">
+						<label for="Railroad">Railroad</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Rebar" name="key" title="Rebar" placeholder="Rebar">
+						<label type="Rebar">Rebar</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Record of Survey" name="key" title="Record of Survey" placeholder="Record of Survey">
+						<label for="Record of Survey">Record of Survey</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Regulatory Compliance" name="key" title="Regulatory Compliance" placeholder="Regulatory Compliance">
+						<label type="Regulatory Compliance">Regulatory Compliance</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Remedial Design and Actions" name="key" title="Remedial Design and Actions" placeholder="Remedial Design and Actions">
+						<label for="Remedial Design and Actions">Remedial Design and Actions</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Remediation" name="key" title="Remediation" placeholder="Remediation">
+						<label type="Remediation">Remediation</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Residential" name="key" title="Residential" placeholder="Residential">
+						<label for="Residential">Residential</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Retaining Walls" name="key" title="Retaining Walls" placeholder="Retaining Walls">
+						<label type="Retaining Walls">Retaining Walls</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Risk Management" name="key" title="Risk Management" placeholder="Risk Management">
+						<label for="Risk Management">Risk Management</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Road" name="key" title="Road" placeholder="Road">
+						<label type="Road">Road</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Rock mechanics" name="key" title="Rock mechanics" placeholder="Rock mechanics">
+						<label for="Rock mechanics">Rock mechanics</label>
+					</div>
+					<div>
+						<input type="checkbox" id="School" name="key" title="School" placeholder="School">
+						<label type="School">School</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Seismic" name="key" title="Seismic" placeholder="Seismic">
+						<label for="Seismic">Seismic</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Signalization" name="key" title="Signalization" placeholder="Signalization">
+						<label type="Signalization">Signalization</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Site Investigations" name="key" title="Site Investigations" placeholder="Site Investigations">
+						<label for="Site Investigations">Site Investigations</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Site Plans" name="key" title="Site Plans" placeholder="Site Plans">
+						<label type="Site Plans">Site Plans</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Slope stability" name="key" title="Slope stability" placeholder="Slope stability">
+						<label for="Slope stability">Slope stability</label>
+					</div>
+					<div>
+						<input type="checkbox" id="SPCC Plans" name="key" title="SPCC Plans" placeholder="SPCC Plans">
+						<label type="SPCC Plans">SPCC Plans</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Special Inspection" name="key" title="Special Inspection" placeholder="Special Inspection">
+						<label for="Special Inspection">Special Inspection</label>
+					</div>
+					<div>
+						<input type="checkbox" id="SRF" name="key" title="SRF" placeholder="SRF">
+						<label type="SRF">SRF</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Steel Structures" name="key" title="Steel Structures" placeholder="Steel Structures">
+						<label for="Steel Structures">Steel Structures</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Storm Drainage" name="key" title="Storm Drainage" placeholder="Storm Drainage">
+						<label type="Storm Drainage">Storm Drainage</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Storm Water" name="key" title="Storm Water" placeholder="Storm Water">
+						<label for="Storm Water">Storm Water</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Storm Water Compliance" name="key" title="Storm Water Compliance" placeholder="Storm Water Compliance">
+						<label type="Storm Water Compliance">Storm Water Compliance</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Stream Restoration" name="key" title="Stream Restoration" placeholder="Stream Restoration">
+						<label for="Stream Restoration">Stream Restoration</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Streambed" name="key" title="Streambed" placeholder="Streambed">
+						<label type="Streambed">Streambed</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Streamside Management" name="key" title="Streamside Management" placeholder="Streamside Management">
+						<label for="Streamside Management">Streamside Management</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Street" name="key" title="Street" placeholder="Street">
+						<label type="Street">Street</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Streetscapes" name="key" title="Streetscapes" placeholder="Streetscapes">
+						<label for="Streetscapes">Streetscapes</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Striping/Marking/Signs" name="key" title="Striping/Marking/Signs" placeholder="Striping/Marking/Signs">
+						<label type="Striping/Marking/Signs">Striping/Marking/Signs</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Structural" name="key" title="Structural" placeholder="Structural">
+						<label for="Structural">Structural</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Subdivisions" name="key" title="Subdivisions" placeholder="Subdivisions">
+						<label type="Subdivisions">Subdivisions</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Subsurface investigation" name="key" title="Subsurface investigation" placeholder="Subsurface investigation">
+						<label for="Subsurface investigation">Subsurface investigation</label>
+					</div>
+					<div>
+						<input type="checkbox" id="SWPPP" name="key" title="SWPPP" placeholder="SWPPP">
+						<label type="SWPPP">SWPPP</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Tentative/Final Maps" name="key" title="Tentative/Final Maps" placeholder="Tentative/Final Maps">
+						<label for="Tentative/Final Maps">Tentative/Final Maps</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Timber harvest" name="key" title="Timber harvest" placeholder="Timber harvest">
+						<label type="Timber harvest">Timber harvest</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Topo Mapping" name="key" title="Topo Mapping" placeholder="Topo Mapping">
+						<label for="Topo Mapping">Topo Mapping</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Traffic Forensics" name="key" title="Traffic Forensics" placeholder="Traffic Forensics">
+						<label type="Traffic Forensics">Traffic Forensics</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Traffic Studies" name="key" title="Traffic Studies" placeholder="Traffic Studies">
+						<label for="Traffic Studies">Traffic Studies</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Trenchless" name="key" title="Trenchless" placeholder="Trenchless">
+						<label type="Trenchless">Trenchless</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Tsunami" name="key" title="Tsunami" placeholder="Tsunami">
+						<label for="Tsunami">Tsunami</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Tunnels" name="key" title="Tunnels" placeholder="Tunnels">
+						<label type="Tunnels">Tunnels</label>
+					</div>
+					<div>
+						<input type="checkbox" id="USDA" name="key" title="USDA" placeholder="USDA">
+						<label for="USDA">USDA</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Utility Design" name="key" title="Utility Design" placeholder="Utility Design">
+						<label type="Utility Design">Utility Design</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Utility Rate Studies" name="key" title="Utility Rate Studies" placeholder="Utility Rate Studies">
+						<label for="Utility Rate Studies">Utility Rate Studies</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Value Engineering" name="key" title="Value Engineering" placeholder="Value Engineering">
+						<label type="Value Engineering">Value Engineering</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Volcanic" name="key" title="Volcanic" placeholder="Volcanic">
+						<label for="Volcanic">Volcanic</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Waste Discharge Requirements" name="key" title="Waste Discharge Requirements" placeholder="Waste Discharge Requirements">
+						<label type="Waste Discharge Requirements">Waste Discharge Requirements</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Wasterwater Outfalls" name="key" title="Wasterwater Outfalls" placeholder="Wasterwater Outfalls">
+						<label for="Wasterwater Outfalls">Wasterwater Outfalls</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Wastewater Audits" name="key" title="Wastewater Audits" placeholder="Wastewater Audits">
+						<label type="Wastewater Audits">Wastewater Audits</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Wastewater Collection" name="key" title="Wastewater Collection" placeholder="Wastewater Collection">
+						<label for="Wastewater Collection">Wastewater Collection</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Wastewater Disposal" name="key" title="Wastewater Disposal" placeholder="Wastewater Disposal">
+						<label type="Wastewater Disposal">Wastewater Disposal</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Wastewater Operations" name="key" title="Wastewater Operations" placeholder="Wastewater Operations">
+						<label for="Wastewater Operations">Wastewater Operations</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Wastewater Treatment" name="key" title="Wastewater Treatment" placeholder="Wastewater Treatment">
+						<label type="Wastewater Treatment">Wastewater Treatment</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Water Balance" name="key" title="Water Balance" placeholder="Water Balance">
+						<label for="Water Balance">Water Balance</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Water Distribution" name="key" title="Water Distribution" placeholder="Water Distribution">
+						<label type="Water Distribution">Water Distribution</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Water Operations" name="key" title="Water Operations" placeholder="Water Operations">
+						<label for="Water Operations">Water Operations</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Water Pump Stations" name="key" title="Water Pump Stations" placeholder="Water Pump Stations">
+						<label type="Water Pump Stations">Water Pump Stations</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Water Resources" name="key" title="Water Resources" placeholder="Water Resources">
+						<label for="Water Resources">Water Resources</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Water Storage" name="key" title="Water Storage" placeholder="Water Storage">
+						<label type="Water Storage">Water Storage</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Water Supply" name="key" title="Water Supply" placeholder="Water Supply">
+						<label for="Water Supply">Water Supply</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Water tank" name="key" title="Water tank" placeholder="Water tank">
+						<label type="Water tank">Water tank</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Water Treatment" name="key" title="Water Treatment" placeholder="Water Treatment">
+						<label for="Water Treatment">Water Treatment</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Watershed analysis" name="key" title="Watershed analysis" placeholder="Watershed analysis">
+						<label type="Watershed analysis">Watershed analysis</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Welding" name="key" title="Welding" placeholder="Welding">
+						<label for="Welding">Welding</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Well" name="key" title="Well" placeholder="Well">
+						<label type="Well">Well</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Wetlands" name="key" title="Wetlands" placeholder="Wetlands">
+						<label for="Wetlands">Wetlands</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Wildlife" name="key" title="Wildlife" placeholder="Wildlife">
+						<label type="Wildlife">Wildlife</label>
+					</div>
+					<div>
+						<input type="checkbox" id="Wood/Timber" name="key" title="Wood/Timber" placeholder="Wood/Timber">
+						<label for="Wood/Timber">Welding</label>
+					</div>
+				</div>
+				<br/><br/>
+				<label for="Otherkey">Other:</label>
+				<input type="text" id="Otherkey1" name="Otherkey" title="Otherkey"><br/>
+				<label for="Otherkey">Other:</label>
+				<input type="text" id="Otherkey2" name="Otherkey" title="Otherkey"><br/>
+				<label for="Otherkey">Other:</label>
+				<input type="text" id="Otherkey3" name="Otherkey" title="Otherkey">
+			</div>
+			<div class="grid-item">
+				<label for="office">SHN Office<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<select name="office" id="office" title="Office Location">
+					<option value="0" selected>Choose...</option>
+					<option value="Eureka/Arcata (Corporate)">Eureka/Arcata (Corporate)</option>
+					<option value="KF">KF</option>
+					<option value="Willits/FB">Willits/FB</option>
+					<option value="Redding">Redding</option>
+					<option value="Coos Bay">Coos Bay</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="service">Service Area<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<select name="service" id="service" title="Service Area">
+					<option value="0" selected>Choose...</option>
+					<option value="Civil">Civil</option>
+					<option value="Environmental">Environmental</option>
+					<option value="Geology">Geology</option>
+					<option value="Planning/Permitting">Planning/Permitting</option>
+					<option value="Survey">Survey</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="code">Profile Code<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<select name="code" id="code" title="Profile Code">
+					<option value="0" selected>Choose...</option>
+					<option value="203a">203a - Public Works Consulting</option>
+					<option value="H09">H09 - Hospitals & Medical Facilities</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="clientComp">Client Company<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="clientComp" name="clientComp" required>
+			</div>
+			<div class="grid-item">
+				<label for="clientAbbrev">Client Abbreviation</label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="clientAbbrev" name="clientAbbrev">
+			</div>
+			<div class="grid-item">
+				<label for="cFirst">Client First Name<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="cFirst" name="cFirst" required>
+			</div>
+			<div class="grid-item">
+				<label for="cLast">Client Last Name<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="cLast" name="cLast" required>
+			</div>
+			<div class="grid-item">
+			<label for="relation">Client Relationship</label>
+			</div>
+			<div class="grid-item">
+				<select name="relation" id="relation" title="Client Relationship">
+					<option value="current">on-going OH/BD</option>
+					<option value="past">past/former</option>
+					<option value="none" selected>none or distant</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="title">Title</label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="title" name="title">
+			</div>
+			<div class="grid-item">
+				<label for="ad1">Address 1<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="ad1" name="ad1" required>
+			</div>
+			<div class="grid-item">
+				<label for="ad2">Address 2</label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="ad2" name="ad2">
+			</div>
+			<div class="grid-item">
+				<label for="city">City<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="text" id="city" name="city" required>
+			</div>
+			<div class="grid-item">
+				<label for="state">State<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<select name="state" id="state" size="1">
+					<option value="AL">Alabama</option>
+					<option value="AK">Alaska</option>
+					<option value="AZ">Arizona</option>
+					<option value="AR">Arkansas</option>
+					<option value="CA" selected="selected">California</option>
+					<option value="CO">Colorado</option>
+					<option value="CT">Connecticut</option>
+					<option value="DE">Delaware</option>
+					<option value="DC">Dist of Columbia</option>
+					<option value="FL">Florida</option>
+					<option value="GA">Georgia</option>
+					<option value="HI">Hawaii</option>
+					<option value="ID">Idaho</option>
+					<option value="IL">Illinois</option>
+					<option value="IN">Indiana</option>
+					<option value="IA">Iowa</option>
+					<option value="KS">Kansas</option>
+					<option value="KY">Kentucky</option>
+					<option value="LA">Louisiana</option>
+					<option value="ME">Maine</option>
+					<option value="MD">Maryland</option>
+					<option value="MA">Massachusetts</option>
+					<option value="MI">Michigan</option>
+					<option value="MN">Minnesota</option>
+					<option value="MS">Mississippi</option>
+					<option value="MO">Missouri</option>
+					<option value="MT">Montana</option>
+					<option value="NE">Nebraska</option>
+					<option value="NV">Nevada</option>
+					<option value="NH">New Hampshire</option>
+					<option value="NJ">New Jersey</option>
+					<option value="NM">New Mexico</option>
+					<option value="NY">New York</option>
+					<option value="NC">North Carolina</option>
+					<option value="ND">North Dakota</option>
+					<option value="OH">Ohio</option>
+					<option value="OK">Oklahoma</option>
+					<option value="OR">Oregon</option>
+					<option value="PA">Pennsylvania</option>
+					<option value="RI">Rhode Island</option>
+					<option value="SC">South Carolina</option>
+					<option value="SD">South Dakota</option>
+					<option value="TN">Tennessee</option>
+					<option value="TX">Texas</option>
+					<option value="UT">Utah</option>
+					<option value="VT">Vermont</option>
+					<option value="VA">Virginia</option>
+					<option value="WA">Washington</option>
+					<option value="WV">West Virginia</option>
+					<option value="WI">Wisconsin</option>
+					<option value="WY">Wyoming</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="zip">Zip<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="number" id="zip" min="1" required>
+			</div>
+			<div class="grid-item">
+				<label for="WP">Work Phone<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="tel" id="WP" name="WP" required>
+			</div>
+			<div class="grid-item">
+				<label for="HP">Home Phone</label>
+			</div>
+			<div class="grid-item">
+				<input type="tel" id="HP" name="HP">
+			</div>
+			<div class="grid-item">
+				<label for="fax">Fax<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="tel" id="fax" name="fax" required>
+			</div>
+			<div class="grid-item">
+				<label for="email">Email<span class="astrick">*</span></label>
+			</div>
+			<div class="grid-item">
+				<input type="email" id="email" name="email" required>
+			</div>
+			<div class="grid-item">
+				<label for="binder">Binder Size</label>
+			</div>
+			<div class="grid-item">
+				<select name="binder" id="binder" title="Binder Size">
+					<option value="na">NA</option>
+					<option value="5/8">5/8 Inches</option>
+					<option value="1">1 Inch</option>
+					<option value="1.5">1.5 inches</option>
+					<option value="2">2 inches</option>
+					<option value="3">3 inches</option>
+				</select>
+			</div>
+			<div class="grid-item">
+				<label for="describe">Description of Services<span class="astrick">*</span></label>
+			</div class="grid-item">
+			<div class="grid-item">
+				<textarea id="describe" name="describe" rows="5" cols="50" required></textarea>
+			</div>
+		</div>
+		<button id="Val&Sub" type="submit" value="Submit form">Submit From</button><br/>
+	</form>
+</body>
