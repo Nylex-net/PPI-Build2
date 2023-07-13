@@ -1,6 +1,6 @@
-const sql = require('mssql');
+// const sql = require('mssql');
 const msnodesqlv8 = require('msnodesqlv8');
-const config = require('./config.json');
+// const config = require('./config.json');
 
 // const conn = {
 //     driver:config.mssql.driver,
