@@ -1,7 +1,7 @@
 // Get MS Access driver at https://www.microsoft.com/en-us/download/details.aspx?id=54920
 // Also make sure file extenstion is '.mdb'.
 'use strict';
-const ADODB = require('node-adodb');
+// const ADODB = require('node-adodb');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -25,7 +25,7 @@ const options = {
 const CODE = jsonData.ZohoAPI.code; // Create code from self client in Zoho API console.
 const CLIENT_ID = jsonData.ZohoAPI.client_id;
 const CLIENT_SECRET = jsonData.ZohoAPI.client_secret;
-const REFRESH_TOKEN = jsonData.ZohoAPI.refresh_token; // Replace with refresh token if available. Otherwise, set to null.
+const REFRESH_TOKEN = jsonData.ZohoAPI.refresh_token; // Replace with refresh token if available. Otherwise, set to null in config.json file.
 const SCOPE = jsonData.ZohoAPI.scope;
 const ORG_ID = jsonData.ZohoAPI.org_id;
 let ZOHO = {};
