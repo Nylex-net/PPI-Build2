@@ -193,9 +193,7 @@ function getUsers(num) {
             checkEmpl.innerHTML = '';
 
             // A forEach loop to create the rest of the dropdown elements from our data retrieval.
-
-            Object.entries(data).forEach((entry) => {
-
+            data.forEach((entry) => {
                 // Create an option in every iteration.
 
                 option = document.createElement("option");
@@ -203,12 +201,13 @@ function getUsers(num) {
 
                 // Each option is assigned it's value using the employee ID, and its text is their last and first name.
                 // If user is a project manager, they join the project manager list.
-
-                if(entry[1].PM == -1) {
-                    option.value = entry[1].ID;
-                    option.text = entry[1].Last + ", " + entry[1].First;
-                    quackOpt.value = entry[1].ID;
-                    quackOpt.text = entry[1].Last + ", " + entry[1].First;
+                
+                if(entry.PM == 1) {
+                
+                    option.value = entry.ID;
+                    option.text = entry.last + ", " + entry.first;
+                    quackOpt.value = entry.ID;
+                    quackOpt.text = entry.last + ", " + entry.first;
 
                     // Append employee to the dropdowns.
 
@@ -230,7 +229,7 @@ function getUsers(num) {
                 jumpTo = row;
                 iter = 0;
                 while(iter < 4 && jumpTo < data.length) {
-                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].First + " " + data[jumpTo].Last, data[jumpTo].Last + ", " + data[jumpTo].First);
+                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].first + " " + data[jumpTo].last, data[jumpTo].last + ", " + data[jumpTo].first);
                     jumpTo += floor;
                     iter++;
                 }
@@ -243,7 +242,7 @@ function getUsers(num) {
                 jumpTo = floor * 4;
                 while(jumpTo < data.length) {
                     checkEmpl.innerHTML += '<div></div><div></div><div></div>';
-                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].First + " " + data[jumpTo].Last, data[jumpTo].Last + ", " + data[jumpTo].First);
+                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].first + " " + data[jumpTo].last, data[jumpTo].last + ", " + data[jumpTo].first);
                     jumpTo++;
                 }
             }
@@ -380,11 +379,10 @@ function getUsers(num) {
             codeEl.appendChild(codeOpt);
 
             // forEach loop to createing and appending the remaining elements in the dropdown.
-
-            Object.entries(data).forEach((entry) => {
+            data.forEach((entry) => {
                 codeOpt = document.createElement("option");
-                codeOpt.value = entry[1].Code;
-                codeOpt.text = entry[1].Code + " - " + entry[1].CodeDescription;
+                codeOpt.value = entry.ID;
+                codeOpt.text = entry.Code + " - " + entry.Description;
                 codeEl.appendChild(codeOpt);
             });
 

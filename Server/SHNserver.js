@@ -2,6 +2,7 @@
 // Also make sure file extenstion is '.mdb'.
 'use strict';
 // const ADODB = require('node-adodb');
+const msnodesqlv8 = require('msnodesqlv8');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -59,55 +60,91 @@ const PATH = "U:/Eureka/Nylex/test/Mock_Drive";
 // create application/json parser
 var jsonParser = bodyParser.json();
 
+// String to connect to MSSQL.
+const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=Yes;Driver={ODBC Driver 17 for SQL Server}`;
+
 // Change source directory accordingly.
 app.use(cors());
 
 // Gets all Employees.
 app.get('/', (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT ID, Last, First, PM FROM Contacts WHERE Active = \'Yes\' ORDER BY Last')
-    .then(data => {
-        // Display formatted JSON data
-        res.send(JSON.stringify(data));
-        // callback(res);
-    })
-    .catch(error => {
-        console.error('Error occured while accessing database.');
-        createTicket(error, "Cannot GET employees.");
-        res.send(JSON.stringify(error));
-        // return callback(new Error("An error has occurred"));
-    })
+    const query = 'SELECT * FROM Staff WHERE Active = 1 ORDER BY last'
+    msnodesqlv8.query(connectionString, query, (err, rows) => {
+        if(err) {
+            console.log("Error for entry ID: " + element.ID);
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            res.send(JSON.stringify(rows));
+        }
+    });
+    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
+    // connection.query('SELECT ID, Last, First, PM FROM Contacts WHERE Active = \'Yes\' ORDER BY Last')
+    // .then(data => {
+    //     // Display formatted JSON data
+    //     res.send(JSON.stringify(data));
+    //     // callback(res);
+    // })
+    // .catch(error => {
+    //     console.error('Error occured while accessing database.');
+    //     createTicket(error, "Cannot GET employees.");
+    //     res.send(JSON.stringify(error));
+    //     // return callback(new Error("An error has occurred"));
+    // })
 });
 
 // Gets all keywords.
 app.get('/1', (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT ID, Keyword FROM Keywords ORDER BY Keyword')
-    .then(data => {
-        // Display formatted JSON data
-        res.send(JSON.stringify(data,null,1));
-    })
-    .catch(error => {
-        console.error('Error occured while accessing database.');
-        createTicket(error, "Cannot GET keywords.");
-        res.send(JSON.stringify(error));
-        // return callback(new Error("An error has occurred"));
-    })
+    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
+    // connection.query('SELECT ID, Keyword FROM Keywords ORDER BY Keyword')
+    // .then(data => {
+    //     // Display formatted JSON data
+    //     res.send(JSON.stringify(data,null,1));
+    // })
+    // .catch(error => {
+    //     console.error('Error occured while accessing database.');
+    //     createTicket(error, "Cannot GET keywords.");
+    //     res.send(JSON.stringify(error));
+    //     // return callback(new Error("An error has occurred"));
+    // })
+    const query = 'SELECT * FROM Keywords ORDER BY Keyword'
+    msnodesqlv8.query(connectionString, query, (err, rows) => {
+        if(err) {
+            console.log("Error for entry ID: " + element.ID);
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            res.send(JSON.stringify(rows));
+        }
+    });
 });
 
 // Get all Profile codes.
 app.get('/2', (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT Code, CodeDescription FROM ProfileCodes ORDER BY Code')
-    .then(data => {
-        // Display formatted JSON data
-        res.send(JSON.stringify(data,null,1));
-    })
-    .catch(error => {
-        console.error('Error occured while accessing database.');
-        createTicket(error, "Cannot GET profile codes.");
-        res.send(JSON.stringify(error));
-    })
+    const query = 'SELECT * FROM ProfileCodes ORDER BY Code'
+    msnodesqlv8.query(connectionString, query, (err, rows) => {
+        if(err) {
+            console.log("Error for entry ID: " + element.ID);
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            res.send(JSON.stringify(rows));
+        }
+    });
+    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
+    // connection.query('SELECT Code, CodeDescription FROM ProfileCodes ORDER BY Code')
+    // .then(data => {
+    //     // Display formatted JSON data
+    //     res.send(JSON.stringify(data,null,1));
+    // })
+    // .catch(error => {
+    //     console.error('Error occured while accessing database.');
+    //     createTicket(error, "Cannot GET profile codes.");
+    //     res.send(JSON.stringify(error));
+    // })
 });
 
 /**
