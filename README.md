@@ -1,5 +1,5 @@
 # PPI-Build2
-Build 2 of the Project and Promo Initiation Project. This is a continuation of the SHN-Project-Initiation, which is currently a private repository under the organization. For context, here's a copy of it's README.md description:
+Build 2 of the Project and Promo Initiation Project. This is a continuation of the SHN-Project-Initiation, which is currently a private repository under the organization. For context, here's a copy of its README.md description:
 
 Creating a new Project/Promo Initiation system (PPI) for the company SHN Engineers & Geologists, Inc.. The creator of their old system was no longer around, so it became my task to create a new version that conformed to their requirements as close as possible.
 
