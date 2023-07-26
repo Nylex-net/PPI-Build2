@@ -62,11 +62,94 @@ connection.query('SELECT id, Code, CodeDescription, Active FROM ProfileCodes').t
 });
 
 // Populates Projects.
-connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> '' AND BillGrp IS NULL").then(data => {
+connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
     const now = new Date();
     const currDate = (now.getMonth() + 1).toString() + "/" + now.getDate().toString() +"/"+ now.getFullYear().toString();
     data.forEach((element) => {
-        var query = "SELECT TOP(1)"
+        if(element.BillGrp == null || element.BillGrp == 'NULL' || (typeof element.BillGrp == 'string' && element.BillGrp.trim() == '')) {
+            var stamper = (element.DTStamp != null && element.DTStamp != '' && !isNaN(Date.parse(element.DTStamp)))?new Date(element.DTStamp):new Date((element.StartDate != null && element.StartDate != ''&& !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
+            var dtstamp = (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
+            var starty = new Date((element.StartDate != null && element.StartDate != '' && !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
+            var start = (starty.getMonth() + 1).toString() + "/" + starty.getDate().toString() +"/"+ starty.getFullYear().toString();
+            var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)))?element.CloseDate:Date.now());
+            var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
+
+            var query = "IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"') BEGIN INSERT INTO master.dbo.Projects "+
+            "(project_id, project_title, project_manager_ID, qaqc_person_ID, closed, created, start_date, close_date, project_location, latitude, longitude, SHNOffice_ID, service_area, "+
+            "total_contract, exempt_agreement, why, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, prevailing_wage, "+
+            "agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, first_name, last_name, relationship, "+
+            "job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, fax, email, binder_size, binder_location, description_service) "+
+            "VALUES ('"+// element.Id +", '"+
+            element.Projectid+"', '" +
+            ((element.ProjectTitle == null && element.ProjectTitle == "NULL")?"None":element.ProjectTitle.replace(/'/gi, "''"))+"', "+
+            ((isNaN(element.ProjectMgr) || element.ProjectMgr == null || element.ProjectMgr == "NULL" || element.ProjectMgr == "")?53:element.ProjectMgr) +", "+
+            ((isNaN(element.QA_QCPerson) || element.QA_QCPerson == null || element.QA_QCPerson == "NULL" || element.QA_QCPerson == "")?53:element.QA_QCPerson)+", "+
+            (element.Closed_by_PM===-1?1:0)+", '"+
+            ((dtstamp == NaN)?currDate:dtstamp)+"', '"+
+            ((start == NaN)?currDate:start)+"', '"+
+            ((close == NaN)?currDate:close)+"', '"+
+            ((element.ProjectLoation == null || element.ProjectLoation == "NULL" || element.ProjectLoation == "")?"SHN":element.ProjectLoation.replace(/'/gi, "''"))+"', "+
+            (isNaN(element.Lattitude) || element.Lattitude == null || element.Lattitude == "NULL" ||(element.Lattitude > 90 || element.Lattitude < -90)?40.868928:element.Lattitude)+", "+
+            (isNaN(element.Longitude)|| element.Longitude == null || element.Longitude == "NULL" ||(element.Longitude > 180 || element.Longitude < -180)?-123.988061:element.Longitude)+", "+
+            ((element.SHNOffice == "Eureka" || element.SHNOffice == "Arcata")?0:(element.SHNOffice == "Klamath Falls" || element.SHNOffice == "KFalls")?2:(element.SHNOffice == "Willits")?4:(element.SHNOffice == "Redding")?5:6)+", '"+
+            ((element.ServiceArea == null || element.ServiceArea == "NULL" || element.ServiceArea == "")?"Civil":element.ServiceArea)+"', "+
+            ((isNaN(element.ToatlContract) && element.ToatlContract != null && element.ToatlContract != "NULL")?(isNaN(element.ToatlContract.substring(1))?0:element.ToatlContract.substring(1)):element.ToatlContract) +", 0, NULL, '"+
+            ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid != "")?element.RetainerPaid.replace(/'/gi, "''"):"NA")+"', "+
+            ((element.RetainerPaid == null || element.RetainerPaid == "NULL" || element.RetainerPaid == "")?0:(isNaN(element.RetainerPaid.substring(1))?"NULL":Number(element.RetainerPaid.substring(1))))+", "+
+            ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid.includes("Waived by"))?"'"+element.RetainerPaid.substring(10).replace(/'/gi, "''")+"'":"NULL")+", "+
+            (codeMap.get(element.ProfileCode)==undefined?167:codeMap.get(element.ProfileCode))+", "+
+            ((isNaN(element.ContractType) || element.ContractType == null || element.ContractType == "NULL")?1:(element.ContractType.includes("10")?10:(isNaN(element.ContractType[0])?1:element.ContractType[0]))) +", "+
+            (/n\\a|na|null|none/gi.test(element.InvoiceFormat)?"NULL":element.InvoiceFormat[0])+", 'N\\A', "+
+            ((isNaN(element.OutsideMarkup) || element.OutsideMarkup == null || element.OutsideMarkup == "NULL" || element.OutsideMarkup == "")?15:element.OutsideMarkup) +", "+
+            ((element.PREVAILING_WAGE == 1 || element.PREVAILING_WAGE == "Yes")?1:0)+", NULL, "+
+            ((element.SpecialBillingInstructins == null || element.SpecialBillingInstructins == "NULL" || element.SpecialBillingInstructins == "")?"NULL":"'"+element.SpecialBillingInstructins.replace(/'/gi, "''")+"'")+", "+
+            (element.SEEALSO==null||element.SEEALSO == "NULL"||element.SEEALSO == ""?"NULL":"'"+element.SEEALSO.replace(/'/gi, "''")+"'")+", "+
+            (element.AutoCAD_Project == -1?1:0)+", "+
+            (element.GIS_Project == -1?1:0)+", "+
+            (element.Project_Specifications==-1?1:0)+", '"+
+            ((element.ClientCompany1 == null || element.ClientCompany1 == "NULL" || element.ClientCompany1 == "")?"SHN":element.ClientCompany1.replace(/'/gi, "''"))+"', '"+element.ClientAbbrev1+"', "+
+            (/n\\a|na|null|none/gi.test(element.OfficeMailingLists1)?"NULL":"'"+element.OfficeMailingLists1.replace(/'/gi, "''")+"'")+", '"+
+            ((element.ClientContactFirstName1 == null || element.ClientContactFirstName1 == "NULL")?"?":element.ClientContactFirstName1.replace(/'/gi, "''"))+"', '"+
+            ((element.ClientContactLastName1 == null || element.ClientContactLastName1 == "NULL" || element.ClientContactLastName1 == "")?"?":element.ClientContactLastName1.replace(/'/gi, "''"))+"', NULL, "+
+            ((element.Title1 == null || element.Title1 == "NULL" || element.Title1 == "")?"NULL":"'"+element.Title1.replace(/'/gi, "''")+"'")+", '"+
+            (element.Address1_1==null || element.Address1_1=="NULL" || element.Address1_1=="" ?"812 W. Wabash Ave.":element.Address1_1.replace(/'/gi, "''"))+"', "+
+            (element.Address2_1==null || element.Address2_1=="NULL" || element.Address2_1==""?"NULL":"'"+element.Address2_1.replace(/'/gi, "''")+"'")+", '"+
+            ((element.City1==null || element.City1=="NULL" || element.City1=="")?"Eureka":element.City1.replace(/'/gi, "''"))+"', '"+
+            ((element.State1==null||element.State1=="NULL"||element.State1=="")?"CA":element.State1.replace(/'/gi, "''"))+"', '"+
+            ((element.Zip1==null||element.Zip1=="NULL"||element.Zip1=="")?"95501":element.Zip1.replace(/'/gi, "''"))+"', '"+
+            ((element.PhoneW1==null || element.PhoneW1=="NULL" || element.PhoneW1=="")?"(000)000-0000":element.PhoneW1.replace(/'/gi, "''"))+"', "+
+            (element.PhoneH1==null || element.PhoneH1=="NULL"|| element.PhoneH1==""?"NULL":"'"+element.PhoneH1.replace(/'/gi, "''")+"'")+", "+
+            (element.Cell1==null || element.Cell1=="NULL" || element.Cell1==""?"NULL":"'"+element.Cell1.replace(/'/gi, "''")+"'")+", "+
+            (element.Fax1==null || element.Fax1=="NULL"|| element.Fax1==""?"NULL":"'"+element.Fax1.replace(/'/gi, "''")+"'")+", '"+
+            (element.Email1==null || element.Email1=="NULL" || element.Email1==""?"example@shn-engr.com":element.Email1.replace(/'/gi, "''"))+"', "+
+            (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", "+
+            (element.BinderLocation==null || element.BinderLocation=="NULL"||element.BinderLocation=="undefined"||element.BinderLocation==""?"NULL":"'"+element.BinderLocation.replace(/'/gi, "''")+"'")+", '"+
+            (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+"'); END";
+            msnodesqlv8.query(connectionString, query, (err, rows) => {
+                if(err) {
+                    console.log("Error for ID: " + element.Id)
+                    console.log(query);
+                    console.error(err);
+                }
+                // else {
+                //     console.log("Success with ID: " + element.Id);
+                // }
+            });
+        }
+        // else if(element.BillGrp.length.trim() == 3 || (element.BillGrp.length.trim() == 4 && element.BillGrp[0] == '.' && !isNaN(element.BillGrp.substring(1)))) {
+        //     var groupNumber = (element.BillGrp.length.trim() == 4)?element.BillGrp.substring(1):element.BillGrp;
+        //     var query = "IF NOT EXISTS (SELECT )"
+        // }
+    });
+}).catch(err => {
+    console.error(err);
+});
+
+// // Populates Promos.
+connection.query("SELECT * FROM Projects WHERE ProjectTitle IS NOT NULL AND ProjectTitle <> '' AND PromoId IS NOT NULL AND PromoId <> ''").then(data => {
+    const now = new Date();
+    const currDate = (now.getMonth() + 1).toString() + "/" + now.getDate().toString() +"/"+ now.getFullYear().toString();
+    data.forEach((element) => {
         var stamper = (element.DTStamp != null && element.DTStamp != '' && !isNaN(Date.parse(element.DTStamp)))?new Date(element.DTStamp):new Date((element.StartDate != null && element.StartDate != ''&& !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
         var dtstamp = (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
         var starty = new Date((element.StartDate != null && element.StartDate != '' && !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
@@ -74,14 +157,13 @@ connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Project
         var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)))?element.CloseDate:Date.now());
         var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
 
-        var query = "IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"') BEGIN INSERT INTO master.dbo.Projects "+
-        "(project_id, project_title, project_manager_ID, qaqc_person_ID, closed, created, start_date, close_date, project_location, latitude, longitude, SHNOffice_ID, service_area, "+
-        "total_contract, exempt_agreement, why, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, prevailing_wage, "+
-        "agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, first_name, last_name, relationship, "+
-        "job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, fax, email, binder_size, binder_location, description_service) "+
-        "VALUES ('"+// element.Id +", '"+
-        element.Projectid+"', '" +
-        ((element.ProjectTitle == null && element.ProjectTitle == "NULL")?"None":element.ProjectTitle.replace(/'/gi, "''"))+"', "+
+        var query = "IF NOT EXISTS (SELECT 1 FROM Promos WHERE promo_id = '"+element.PromoId+"') BEGIN INSERT INTO master.dbo.Promos "+
+        "(is_project, promo_id, promo_type, promo_title, manager_id, qaqc_person_ID, closed, created, start_date, close_date, promo_location, latitude, longitude, SHNOffice_ID, service_area, "+
+        "profile_code_id, "+
+        "client_company, client_abbreviation, first_name, last_name, relationship, "+
+        "job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, fax, email, binder_size, description_service) "+
+        "VALUES (0, '"+ element.PromoId+"', '" + ((element.AlternateTitle == "on-going" || element.AlternateTitle == "letter" || element.AlternateTitle == "soq" || element.AlternateTitle == "ProPri" || element.AlternateTitle == "ProSub")?element.AlternateTitle:"on-going") + "', '" +
+        ((element.ProjectTitle == null || element.ProjectTitle == "NULL" || element.ProjectTitle == "")?"None":element.ProjectTitle.replace(/'/gi, "''"))+"', "+
         ((isNaN(element.ProjectMgr) || element.ProjectMgr == null || element.ProjectMgr == "NULL" || element.ProjectMgr == "")?53:element.ProjectMgr) +", "+
         ((isNaN(element.QA_QCPerson) || element.QA_QCPerson == null || element.QA_QCPerson == "NULL" || element.QA_QCPerson == "")?53:element.QA_QCPerson)+", "+
         (element.Closed_by_PM===-1?1:0)+", '"+
@@ -89,27 +171,14 @@ connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Project
         ((start == NaN)?currDate:start)+"', '"+
         ((close == NaN)?currDate:close)+"', '"+
         ((element.ProjectLoation == null || element.ProjectLoation == "NULL" || element.ProjectLoation == "")?"SHN":element.ProjectLoation.replace(/'/gi, "''"))+"', "+
-        (isNaN(element.Lattitude) || element.Lattitude == null || element.Lattitude == "NULL" ||(element.Lattitude > 90 || element.Lattitude < -90)?40.868928:element.Lattitude)+", "+
-        (isNaN(element.Longitude)|| element.Longitude == null || element.Longitude == "NULL" ||(element.Longitude > 180 || element.Longitude < -180)?-123.988061:element.Longitude)+", "+
+        (isNaN(element.Lattitude) || element.Lattitude == null || element.Lattitude == "NULL" || element.Lattitude == "" ||(element.Lattitude > 90 || element.Lattitude < -90)?40.868928:element.Lattitude)+", "+
+        (isNaN(element.Longitude)|| element.Longitude == null || element.Longitude == "NULL" || element.Longitude == "" ||(element.Longitude > 180 || element.Longitude < -180)?-123.988061:element.Longitude)+", "+
         ((element.SHNOffice == "Eureka" || element.SHNOffice == "Arcata")?0:(element.SHNOffice == "Klamath Falls" || element.SHNOffice == "KFalls")?2:(element.SHNOffice == "Willits")?4:(element.SHNOffice == "Redding")?5:6)+", '"+
         ((element.ServiceArea == null || element.ServiceArea == "NULL" || element.ServiceArea == "")?"Civil":element.ServiceArea)+"', "+
-        ((isNaN(element.ToatlContract) && element.ToatlContract != null && element.ToatlContract != "NULL")?(isNaN(element.ToatlContract.substring(1))?0:element.ToatlContract.substring(1)):element.ToatlContract) +", 0, NULL, '"+
-        ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid != "")?element.RetainerPaid.replace(/'/gi, "''"):"NA")+"', "+
-        ((element.RetainerPaid == null || element.RetainerPaid == "NULL" || element.RetainerPaid == "")?0:(isNaN(element.RetainerPaid.substring(1))?"NULL":Number(element.RetainerPaid.substring(1))))+", "+
-        ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid.includes("Waived by"))?"'"+element.RetainerPaid.substring(10).replace(/'/gi, "''")+"'":"NULL")+", "+
-        (codeMap.get(element.ProfileCode)==undefined?167:codeMap.get(element.ProfileCode))+", "+
-        ((isNaN(element.ContractType) || element.ContractType == null || element.ContractType == "NULL")?1:(element.ContractType.includes("10")?10:(isNaN(element.ContractType[0])?1:element.ContractType[0]))) +", "+
-        (/n\\a|na|null|none/gi.test(element.InvoiceFormat)?"NULL":element.InvoiceFormat[0])+", 'N\\A', "+
-        ((isNaN(element.OutsideMarkup) || element.OutsideMarkup == null || element.OutsideMarkup == "NULL" || element.OutsideMarkup == "")?15:element.OutsideMarkup) +", "+
-        ((element.PREVAILING_WAGE == 1 || element.PREVAILING_WAGE == "Yes")?1:0)+", NULL, "+
-        ((element.SpecialBillingInstructins == null || element.SpecialBillingInstructins == "NULL" || element.SpecialBillingInstructins == "")?"NULL":"'"+element.SpecialBillingInstructins.replace(/'/gi, "''")+"'")+", "+
-        (element.SEEALSO==null||element.SEEALSO == "NULL"||element.SEEALSO == ""?"NULL":"'"+element.SEEALSO.replace(/'/gi, "''")+"'")+", "+
-        (element.AutoCAD_Project == -1?1:0)+", "+
-        (element.GIS_Project == -1?1:0)+", "+
-        (element.Project_Specifications==-1?1:0)+", '"+
-        ((element.ClientCompany1 == null || element.ClientCompany1 == "NULL" || element.ClientCompany1 == "")?"SHN":element.ClientCompany1.replace(/'/gi, "''"))+"', '"+element.ClientAbbrev1+"', "+
-        (/n\\a|na|null|none/gi.test(element.OfficeMailingLists1)?"NULL":"'"+element.OfficeMailingLists1.replace(/'/gi, "''")+"'")+", '"+
-        ((element.ClientContactFirstName1 == null || element.ClientContactFirstName1 == "NULL")?"?":element.ClientContactFirstName1.replace(/'/gi, "''"))+"', '"+
+        (codeMap.get(element.ProfileCode)==undefined?167:codeMap.get(element.ProfileCode))+", '"+
+        ((element.ClientCompany1 == null || element.ClientCompany1 == "NULL" || element.ClientCompany1 == "")?"SHN":element.ClientCompany1.replace(/'/gi, "''"))+"', "+
+        ((element.ClientAbbrev1 == null || element.ClientAbbrev1 == "NULL" || element.ClientAbbrev1 == "")?"NULL":"'"+element.ClientAbbrev1.replace(/'/gi, "''")+"'")+", '"+
+        ((element.ClientContactFirstName1 == null || element.ClientContactFirstName1 == "NULL" || element.ClientContactFirstName1 == "")?"?":element.ClientContactFirstName1.replace(/'/gi, "''"))+"', '"+
         ((element.ClientContactLastName1 == null || element.ClientContactLastName1 == "NULL" || element.ClientContactLastName1 == "")?"?":element.ClientContactLastName1.replace(/'/gi, "''"))+"', NULL, "+
         ((element.Title1 == null || element.Title1 == "NULL" || element.Title1 == "")?"NULL":"'"+element.Title1.replace(/'/gi, "''")+"'")+", '"+
         (element.Address1_1==null || element.Address1_1=="NULL" || element.Address1_1=="" ?"812 W. Wabash Ave.":element.Address1_1.replace(/'/gi, "''"))+"', "+
@@ -122,8 +191,7 @@ connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Project
         (element.Cell1==null || element.Cell1=="NULL" || element.Cell1==""?"NULL":"'"+element.Cell1.replace(/'/gi, "''")+"'")+", "+
         (element.Fax1==null || element.Fax1=="NULL"|| element.Fax1==""?"NULL":"'"+element.Fax1.replace(/'/gi, "''")+"'")+", '"+
         (element.Email1==null || element.Email1=="NULL" || element.Email1==""?"example@shn-engr.com":element.Email1.replace(/'/gi, "''"))+"', "+
-        (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", "+
-        (element.BinderLocation==null || element.BinderLocation=="NULL"||element.BinderLocation=="undefined"||element.BinderLocation==""?"NULL":"'"+element.BinderLocation.replace(/'/gi, "''")+"'")+", '"+
+        (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
         (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+"'); END";
         msnodesqlv8.query(connectionString, query, (err, rows) => {
             if(err) {
@@ -131,11 +199,36 @@ connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Project
                 console.log(query);
                 console.error(err);
             }
-            // else {
-            //     console.log("Success with ID: " + element.Id);
-            // }
+            else {
+                query = "SELECT ID FROM Projects WHERE project_id = '"+ element.Projectid +"'";
+                msnodesqlv8.query(connectionString, query, (error, row) => {
+                    if(error) {
+                        console.log("Select error for " + element.PromoId);
+                        console.error(error);
+                    }
+                    else if(row.length > 0) {
+                        query = "IF NOT EXIST (SELECT 1 FROM Promos WHERE proj_ID = "+ row[0].ID +") BEGIN UPDATE Promos SET is_project = 1, proj_ID = "+ row[0].ID +" WHERE promo_id = '"+ element.PromoId +"'; END";
+                        msnodesqlv8.query(connectionString, query, (erro, row) => {
+                            if(error) {
+                                console.log("Failed to link project ID: " + row[0].ID);
+                                console.error(erro);
+                            }
+                        });
+                    }
+                });
+            }
         });
     });
 }).catch(err => {
     console.error(err);
 });
+
+// var query = "SELECT ID FROM Projects WHERE project_id = '023001'";
+//                 msnodesqlv8.query(connectionString, query, (error, row) => {
+//                     if(error) {
+//                         console.error(error);
+//                     }
+//                     else {
+//                         console.log(row[0].ID);
+//                     }
+//                 });
