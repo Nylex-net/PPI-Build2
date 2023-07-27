@@ -42,9 +42,9 @@ connection.query('SELECT ID, Keyword, Group1 FROM Keywords').then(data => {
 }).catch(err => {
     console.error(err);
 });
-
-// Populates Profile Codes.
 */
+// Populates Profile Codes.
+
 const codeMap = new Map();
 connection.query('SELECT id, Code, CodeDescription, Active FROM ProfileCodes').then(data => {
     data.forEach((element) => {
@@ -134,54 +134,57 @@ connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Project
                     console.error(err);
                 }
                 else {
-                    msnodesqlv8.query(connectionString, "SELECT ID FROM Projects WHERE project_id = " + element.Projectid, (err, rows) => {
-                        if(element.TeamMembers != null && element.TeamMembers != "NULL" && element.TeamMembers != "") {
-                            var memberArray = element.TeamMembers.split(',').filter((id) => {
-                                return !isNaN(id);
-                            });
-                            if(memberArray.length > 0) {
-                                
-                                if(err) {
-                                    console.log("Cannot get project: " + element.Projectid);
-                                    console.error(err);
-                                }
-                                else if(rows.length > 0) {
-                                        
-                                    memberArray.forEach((member) => {
-                                        var query = "INSERT INTO ProjectTeam VALUES ("+ rows[0].ID + ", " + member + ");";
-                                        msnodesqlv8.query(connectionString, query, (error) => {
-                                            if(error) {
-                                                console.log("Error for Project member: " + member)
-                                                console.log(query);
-                                                console.error(error);
-                                            }
+                    msnodesqlv8.query(connectionString, "SELECT ID FROM Projects WHERE project_id = '" + element.Projectid + "'", (err, rows) => {
+                        if(err) {
+                            console.log("Cannot get project: " + element.Projectid);
+                            console.error(err);
+                        }
+                        else {
+                            if(element.TeamMembers != null && element.TeamMembers != "NULL" && element.TeamMembers != "") {
+                                var memberArray = element.TeamMembers.split(',').filter((id) => {
+                                    return !isNaN(id);
+                                });
+                                if(memberArray.length > 0) {
+                                    if(rows.length > 0) {
+                                        memberArray.forEach((member) => {
+                                            var query = "INSERT INTO ProjectTeam VALUES ("+ rows[0].ID + ", " + member + ");";
+                                            msnodesqlv8.query(connectionString, query, (error) => {
+                                                if(error) {
+                                                    console.log("Error for Project member: " + member)
+                                                    console.log(query);
+                                                    console.error(error);
+                                                }
+                                            });
                                         });
-                                    });
+                                    }
                                 }
                             }
-                        }
-                        if(element.ProjectKeywords != null && element.ProjectKeywords != "NULL" && element.ProjectKeywords != "") {
-                            var keyArray = element.ProjectKeywords.split(/,| \|\| /g);
-                            var query = "SELECT ID FROM Keywords WHERE ";
-                            keyArray.forEach((key) => {
-                                query += "Keyword = '" + key + "' OR ";
-                            });
-                            query = query.substring(0,query.length - 4);
-                            msnodesqlv8.query(connectionString, query, (err, IDs) => {
-                                if(err) {
-                                    console.log("Cannot get keywords.");
-                                    console.error(err);
-                                }
-                                else if (IDs.length > 0){
-                                    IDs.forEach((id) => {
-                                        query = "INSERT INTO ProjectKeywords VALUES (" + rows[0].ID + ", " +id+ ")";
-                                        msnodesqlv8.query(connectionString, query, (err) => {
-                                            console.log("Cannot add keyword ID " + id + " to ID " + rows[0].ID);
-                                            console.error(err);
+                            if(element.ProjectKeywords != null && element.ProjectKeywords != "NULL" && element.ProjectKeywords != "") {
+                                var keyArray = element.ProjectKeywords.split(/,| \|\| /g);
+                                var query = "SELECT ID FROM Keywords WHERE ";
+                                keyArray.forEach((key) => {
+                                    query += "Keyword = '" + key.replace(/'/gi, "''") + "' OR ";
+                                });
+                                query = query.substring(0,query.length - 4);
+                                msnodesqlv8.query(connectionString, query, (err, IDs) => {
+                                    if(err) {
+                                        console.log("Cannot get keywords.");
+                                        console.log(query);
+                                        console.error(err);
+                                    }
+                                    else if (IDs.length > 0){
+                                        IDs.forEach((id) => {
+                                            query = "INSERT INTO ProjectKeywords VALUES (" + rows[0].ID + ", " +id.ID+ ")";
+                                            msnodesqlv8.query(connectionString, query, (err) => {
+                                                if(err) {
+                                                    console.log("Cannot add keyword ID " + id.ID + " to ID " + rows[0].ID);
+                                                    console.error(err);
+                                                }
+                                            });
                                         });
-                                    });
-                                }
-                            });
+                                    }
+                                });
+                            }
                         }
                     });
                 }
