@@ -6,6 +6,7 @@ const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_C
 // const query = "SELECT * FROM master.dbo.Staff";
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 
+/*
 // Populates Staff.
 connection.query('SELECT ID, Active, First, Last, Email, PM FROM Contacts').then(data => {
     data.forEach((element) => {
@@ -43,19 +44,21 @@ connection.query('SELECT ID, Keyword, Group1 FROM Keywords').then(data => {
 });
 
 // Populates Profile Codes.
+*/
 const codeMap = new Map();
 connection.query('SELECT id, Code, CodeDescription, Active FROM ProfileCodes').then(data => {
     data.forEach((element) => {
-        var query = "INSERT INTO master.dbo.ProfileCodes VALUES ("+element.id+", '"+element.Code+"', '" +element.CodeDescription.replace(/'/gi, "''")+"', "+((element.Active == -1)?1:0)+")";
-        msnodesqlv8.query(connectionString, query, (err, rows) => {
-            if(err) {
-                console.log("Error for ID: " + element.id)
-                console.error(err);
-            }
-            else {
-                codeMap.set(element.Code, element.id);
-            }
-        });
+        // var query = "INSERT INTO master.dbo.ProfileCodes VALUES ("+element.id+", '"+element.Code+"', '" +element.CodeDescription.replace(/'/gi, "''")+"', "+((element.Active == -1)?1:0)+")";
+        // msnodesqlv8.query(connectionString, query, (err, rows) => {
+        //     if(err) {
+        //         console.log("Error for ID: " + element.id)
+        //         console.error(err);
+        //     }
+        //     else {
+        //         codeMap.set(element.Code, element.id);
+        //     }
+        // });
+        codeMap.set(element.Code, element.id); // If you uncomment the above msnodesqlv8 INSERT query, comment this line out.
     });
 }).catch(err => {
     console.error(err);
@@ -66,14 +69,13 @@ connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Project
     const now = new Date();
     const currDate = (now.getMonth() + 1).toString() + "/" + now.getDate().toString() +"/"+ now.getFullYear().toString();
     data.forEach((element) => {
-        if(element.BillGrp == null || element.BillGrp == 'NULL' || (typeof element.BillGrp == 'string' && element.BillGrp.trim() == '')) {
             var stamper = (element.DTStamp != null && element.DTStamp != '' && !isNaN(Date.parse(element.DTStamp)))?new Date(element.DTStamp):new Date((element.StartDate != null && element.StartDate != ''&& !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
             var dtstamp = (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
             var starty = new Date((element.StartDate != null && element.StartDate != '' && !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
             var start = (starty.getMonth() + 1).toString() + "/" + starty.getDate().toString() +"/"+ starty.getFullYear().toString();
             var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)))?element.CloseDate:Date.now());
             var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
-
+        if(element.BillGrp == null || element.BillGrp == 'NULL' || (typeof element.BillGrp == 'string' && element.BillGrp.trim() == '')) {
             var query = "IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"') BEGIN INSERT INTO master.dbo.Projects "+
             "(project_id, project_title, project_manager_ID, qaqc_person_ID, closed, created, start_date, close_date, project_location, latitude, longitude, SHNOffice_ID, service_area, "+
             "total_contract, exempt_agreement, why, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, prevailing_wage, "+
@@ -93,13 +95,13 @@ connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Project
             (isNaN(element.Longitude)|| element.Longitude == null || element.Longitude == "NULL" ||(element.Longitude > 180 || element.Longitude < -180)?-123.988061:element.Longitude)+", "+
             ((element.SHNOffice == "Eureka" || element.SHNOffice == "Arcata")?0:(element.SHNOffice == "Klamath Falls" || element.SHNOffice == "KFalls")?2:(element.SHNOffice == "Willits")?4:(element.SHNOffice == "Redding")?5:6)+", '"+
             ((element.ServiceArea == null || element.ServiceArea == "NULL" || element.ServiceArea == "")?"Civil":element.ServiceArea)+"', "+
-            ((isNaN(element.ToatlContract) && element.ToatlContract != null && element.ToatlContract != "NULL")?(isNaN(element.ToatlContract.substring(1))?0:element.ToatlContract.substring(1)):element.ToatlContract) +", 0, NULL, '"+
+            ((element.ToatlContract == null || element.ToatlContract == "NULL" || element.ToatlContract == "")?0:((isNaN(element.ToatlContract[0]) && element.ToatlContract.length > 1))?(isNaN(element.ToatlContract.substring(1))?0:Number(element.ToatlContract.substring(1))):0) +", 0, NULL, '"+
             ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid != "")?element.RetainerPaid.replace(/'/gi, "''"):"NA")+"', "+
             ((element.RetainerPaid == null || element.RetainerPaid == "NULL" || element.RetainerPaid == "")?0:(isNaN(element.RetainerPaid.substring(1))?"NULL":Number(element.RetainerPaid.substring(1))))+", "+
             ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid.includes("Waived by"))?"'"+element.RetainerPaid.substring(10).replace(/'/gi, "''")+"'":"NULL")+", "+
             (codeMap.get(element.ProfileCode)==undefined?167:codeMap.get(element.ProfileCode))+", "+
             ((isNaN(element.ContractType) || element.ContractType == null || element.ContractType == "NULL")?1:(element.ContractType.includes("10")?10:(isNaN(element.ContractType[0])?1:element.ContractType[0]))) +", "+
-            (/n\\a|na|null|none/gi.test(element.InvoiceFormat)?"NULL":element.InvoiceFormat[0])+", 'N\\A', "+
+            (/n\\a|na|null|none/gi.test(element.InvoiceFormat)?"NULL":(element.InvoiceFormat.length <= 0?"NULL":"'"+element.InvoiceFormat[0]+"'"))+", 'NA', "+
             ((isNaN(element.OutsideMarkup) || element.OutsideMarkup == null || element.OutsideMarkup == "NULL" || element.OutsideMarkup == "")?15:element.OutsideMarkup) +", "+
             ((element.PREVAILING_WAGE == 1 || element.PREVAILING_WAGE == "Yes")?1:0)+", NULL, "+
             ((element.SpecialBillingInstructins == null || element.SpecialBillingInstructins == "NULL" || element.SpecialBillingInstructins == "")?"NULL":"'"+element.SpecialBillingInstructins.replace(/'/gi, "''")+"'")+", "+
@@ -131,15 +133,116 @@ connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Project
                     console.log(query);
                     console.error(err);
                 }
-                // else {
-                //     console.log("Success with ID: " + element.Id);
-                // }
+                else {
+                    msnodesqlv8.query(connectionString, "SELECT ID FROM Projects WHERE project_id = " + element.Projectid, (err, rows) => {
+                        if(element.TeamMembers != null && element.TeamMembers != "NULL" && element.TeamMembers != "") {
+                            var memberArray = element.TeamMembers.split(',').filter((id) => {
+                                return !isNaN(id);
+                            });
+                            if(memberArray.length > 0) {
+                                
+                                if(err) {
+                                    console.log("Cannot get project: " + element.Projectid);
+                                    console.error(err);
+                                }
+                                else if(rows.length > 0) {
+                                        
+                                    memberArray.forEach((member) => {
+                                        var query = "INSERT INTO ProjectTeam VALUES ("+ rows[0].ID + ", " + member + ");";
+                                        msnodesqlv8.query(connectionString, query, (error) => {
+                                            if(error) {
+                                                console.log("Error for Project member: " + member)
+                                                console.log(query);
+                                                console.error(error);
+                                            }
+                                        });
+                                    });
+                                }
+                            }
+                        }
+                        if(element.ProjectKeywords != null && element.ProjectKeywords != "NULL" && element.ProjectKeywords != "") {
+                            var keyArray = element.ProjectKeywords.split(/,| \|\| /g);
+                            var query = "SELECT ID FROM Keywords WHERE ";
+                            keyArray.forEach((key) => {
+                                query += "Keyword = '" + key + "' OR ";
+                            });
+                            query = query.substring(0,query.length - 4);
+                            msnodesqlv8.query(connectionString, query, (err, IDs) => {
+                                if(err) {
+                                    console.log("Cannot get keywords.");
+                                    console.error(err);
+                                }
+                                else if (IDs.length > 0){
+                                    IDs.forEach((id) => {
+                                        query = "INSERT INTO ProjectKeywords VALUES (" + rows[0].ID + ", " +id+ ")";
+                                        msnodesqlv8.query(connectionString, query, (err) => {
+                                            console.log("Cannot add keyword ID " + id + " to ID " + rows[0].ID);
+                                            console.error(err);
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
             });
         }
-        // else if(element.BillGrp.length.trim() == 3 || (element.BillGrp.length.trim() == 4 && element.BillGrp[0] == '.' && !isNaN(element.BillGrp.substring(1)))) {
-        //     var groupNumber = (element.BillGrp.length.trim() == 4)?element.BillGrp.substring(1):element.BillGrp;
-        //     var query = "IF NOT EXISTS (SELECT )"
-        // }
+        else if(typeof element.BillGrp == 'string') {
+            if(element.BillGrp.length == 3 || (element.BillGrp.length == 4 && element.BillGrp[0] == '.' && !isNaN(element.BillGrp.substring(1)))) {
+                var query = "SELECT ID FROM Projects WHERE project_id = '"+ element.Projectid +"'";
+                msnodesqlv8.query(connectionString, query, (error, row) => {
+                    if(error) {
+                        console.error(error);
+                    }
+                    else if(row.length > 0) {
+                        // console.log(row[0].ID);
+                        var groupNumber = (element.BillGrp.trim().length == 4)?element.BillGrp.substring(1):element.BillGrp;
+                        var query = "IF NOT EXISTS (SELECT 1 FROM BillingGroups WHERE project_ID = "+row[0].ID+" AND group_number = '"+groupNumber+"') "+
+                        "BEGIN INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, "+
+                        "group_location, latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_id, invoice_format, " +
+                        "client_contract_PO, outside_markup, prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service"+") VALUES ("+
+                        row[0].ID+", '"+groupNumber+"', '"+
+                        (element.BillingTitle == null || element.BillingTitle == "NULL" || element.BillingTitle == ""?"[NO TITLE]":element.BillingTitle.replace(/'/gi, "''"))+"', "+
+                        (element.AutoCAD_Project == -1?1:0)+", "+
+                        (element.GIS_Project == -1?1:0)+", "+
+                        ((isNaN(element.ProjectMgr) || element.ProjectMgr == null || element.ProjectMgr == "NULL" || element.ProjectMgr == "")?53:element.ProjectMgr) +", "+
+                        ((isNaN(element.QA_QCPerson) || element.QA_QCPerson == null || element.QA_QCPerson == "NULL" || element.QA_QCPerson == "")?53:element.QA_QCPerson)+", '"+
+                        ((dtstamp == NaN)?currDate:dtstamp)+"', '"+
+                        ((start == NaN)?currDate:start)+"', '"+
+                        ((close == NaN)?currDate:close)+"', '"+
+                        ((element.ProjectLoation == null || element.ProjectLoation == "NULL" || element.ProjectLoation == "")?"SHN":element.ProjectLoation.replace(/'/gi, "''"))+"', "+
+                        (isNaN(element.Lattitude) || element.Lattitude == null || element.Lattitude == "NULL" ||(element.Lattitude > 90 || element.Lattitude < -90)?40.868928:element.Lattitude)+", "+
+                        (isNaN(element.Longitude)|| element.Longitude == null || element.Longitude == "NULL" ||(element.Longitude > 180 || element.Longitude < -180)?-123.988061:element.Longitude)+", '"+
+                        // ((element.SHNOffice == "Eureka" || element.SHNOffice == "Arcata")?0:(element.SHNOffice == "Klamath Falls" || element.SHNOffice == "KFalls")?2:(element.SHNOffice == "Willits")?4:(element.SHNOffice == "Redding")?5:6)+", '"+
+                        ((element.ServiceArea == null || element.ServiceArea == "NULL" || element.ServiceArea == "")?"Civil":element.ServiceArea)+"', "+
+                        ((element.ToatlContract == null || element.ToatlContract == "NULL" || element.ToatlContract == "")?0:((isNaN(element.ToatlContract[0]) && element.ToatlContract.length > 1))?(isNaN(element.ToatlContract.substring(1))?0:Number(element.ToatlContract.substring(1))):0) +", '"+
+                        ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid != "")?element.RetainerPaid.replace(/'/gi, "''"):"NA")+"', "+
+                        ((element.RetainerPaid == null || element.RetainerPaid == "NULL" || element.RetainerPaid == "")?0:(isNaN(element.RetainerPaid.substring(1))?"NULL":Number(element.RetainerPaid.substring(1))))+", "+
+                        ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid.includes("Waived by"))?"'"+element.RetainerPaid.substring(10).replace(/'/gi, "''")+"'":"NULL")+", "+
+                        (codeMap.get(element.ProfileCode)==undefined?167:codeMap.get(element.ProfileCode))+", "+
+                        ((isNaN(element.ContractType) || element.ContractType == null || element.ContractType == "NULL")?1:(element.ContractType.includes("10")?10:(isNaN(element.ContractType[0])?1:element.ContractType[0]))) +", "+
+                        (/n\\a|na|null|none/gi.test(element.InvoiceFormat)?"NULL":(element.InvoiceFormat.length <= 0?"NULL":"'"+element.InvoiceFormat[0]+"'"))+", 'NA', "+
+                        ((isNaN(element.OutsideMarkup) || element.OutsideMarkup == null || element.OutsideMarkup == "NULL" || element.OutsideMarkup == "")?15:element.OutsideMarkup) +", "+
+                        ((element.PREVAILING_WAGE == 1 || element.PREVAILING_WAGE == "Yes")?1:0)+", NULL, "+
+                        ((element.SpecialBillingInstructins == null || element.SpecialBillingInstructins == "NULL" || element.SpecialBillingInstructins == "")?"NULL":"'"+element.SpecialBillingInstructins.replace(/'/gi, "''")+"'")+", "+
+                        (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
+                        (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+
+                        "'); END";
+
+                        msnodesqlv8.query(connectionString, query, (erro, rowy) => {
+                            if(erro) {
+                                console.log("Error for ID: " + element.Id + " with billing group " + groupNumber);
+                                console.log(query);
+                                console.error(erro);
+                            }
+                            // else {
+                            //     console.log("Success with ID: " + element.Id);
+                            // }
+                        });
+                    }
+                });
+            }
+        }
     });
 }).catch(err => {
     console.error(err);
