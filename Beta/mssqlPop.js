@@ -1,6 +1,6 @@
 const msnodesqlv8 = require('msnodesqlv8');
 const ADODB = require('node-adodb')
-const Pool = require('generic-pool');
+// const Pool = require('generic-pool');
 // const config = require('./config.json');
 const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\PPI\\Database\\SHN_Project_Backup.mdb;";
 const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=Yes;Driver={ODBC Driver 17 for SQL Server}`;
@@ -8,18 +8,27 @@ const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_C
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 
 // Create a connection pool
-const pool = Pool.createPool({
-    create: () => new Promise((resolve, reject) => {
-        msnodesqlv8.open(connectionString, (err, conn) => {
-        if (err) reject(err);
-        else resolve(conn);
-      });
-    }),
-    destroy: (connection) => new Promise((resolve) => {
-      connection.close(() => {
-        resolve();
-      });
-    }),
+// const pool = Pool.createPool({
+//     create: () => new Promise((resolve, reject) => {
+//         msnodesqlv8.open(connectionString, (err, conn) => {
+//         if (err) reject(err);
+//         else resolve(conn);
+//       });
+//     }),
+//     destroy: (connection) => new Promise((resolve) => {
+//       connection.close(() => {
+//         resolve();
+//       });
+//     }),
+//   });
+const pool = new msnodesqlv8.Pool({
+    connectionString: connectionString
+});
+pool.on('open', (options) => {
+    console.log(`ready options = ${JSON.stringify(options, null, 4)}`)
+  });
+  pool.on('error', e => {
+    console.log(e)
   });
 /*
 // Populates Staff.
@@ -79,15 +88,17 @@ connection.query('SELECT id, Code, CodeDescription, Active FROM ProfileCodes').t
     console.error(err);
 });
 // Populates Projects.
-(async () => {
-    const conn = await pool.acquire();
+//(async () => {
+    //const conn = await pool.acquire();
         // Perform database operations using the acquired connection
         // ...
-    projects(conn);
-    pool.release(conn); // Release the connection back to the pool
-})();
+    pool.open();
+    projects();
+    // pool.close();
+    //pool.release(conn); // Release the connection back to the pool
+//})();
 
-function projects(conn) {
+function projects() {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
         const now = new Date();
         const currDate = (now.getMonth() + 1).toString() + "/" + now.getDate().toString() +"/"+ now.getFullYear().toString();
@@ -99,7 +110,7 @@ function projects(conn) {
                 var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)))?element.CloseDate:Date.now());
                 var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
             if(element.BillGrp == null || element.BillGrp == 'NULL' || (typeof element.BillGrp == 'string' && element.BillGrp.trim() == '')) {
-                var query = "IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"') BEGIN INSERT INTO master.dbo.Projects "+
+                var query = "IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"') BEGIN INSERT INTO Projects "+
                 "(project_id, project_title, project_manager_ID, qaqc_person_ID, closed, created, start_date, close_date, project_location, latitude, longitude, SHNOffice_ID, service_area, "+
                 "total_contract, exempt_agreement, why, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, prevailing_wage, "+
                 "agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, first_name, last_name, relationship, "+
@@ -151,15 +162,16 @@ function projects(conn) {
                 (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", "+
                 (element.BinderLocation==null || element.BinderLocation=="NULL"||element.BinderLocation=="undefined"||element.BinderLocation==""?"NULL":"'"+element.BinderLocation.replace(/'/gi, "''")+"'")+", '"+
                 (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+"'); END";
-                console.log(query);
-                conn.query(connectionString, query, (err, rows) => {
+                // console.log(query);
+                try{
+                pool.query(query, (err, rows) => {
                     if(err) {
                         console.log("Error for ID: " + element.Id)
                         console.log(query);
                         console.error(err);
                     }
                     else {
-                        conn.query(connectionString, "SELECT ID FROM Projects WHERE project_id = '" + element.Projectid + "'", (err, rows) => {
+                        pool.query("SELECT ID FROM Projects WHERE project_id = '" + element.Projectid + "'", (err, rows) => {
                             if(err) {
                                 console.log("Cannot get project: " + element.Projectid);
                                 console.error(err);
@@ -172,8 +184,8 @@ function projects(conn) {
                                     if(memberArray.length > 0) {
                                         if(rows.length > 0) {
                                             memberArray.forEach((member) => {
-                                                var query = "INSERT INTO ProjectTeam VALUES ("+ rows[0].ID + ", " + member + ");";
-                                                conn.query(connectionString, query, (error) => {
+                                                var query = "INSERT INTO ProjectTeam VALUES ("+ rows[0].ID + ", " + member + ")";
+                                                pool.query(query, (error) => {
                                                     if(error) {
                                                         console.log("Error for Project member: " + member)
                                                         console.log(query);
@@ -191,7 +203,7 @@ function projects(conn) {
                                         query += "Keyword = '" + key.replace(/'/gi, "''") + "' OR ";
                                     });
                                     query = query.substring(0,query.length - 4);
-                                    conn.query(connectionString, query, (err, IDs) => {
+                                    pool.query(query, (err, IDs) => {
                                         if(err) {
                                             console.log("Cannot get keywords.");
                                             console.log(query);
@@ -200,7 +212,7 @@ function projects(conn) {
                                         else if (IDs.length > 0){
                                             IDs.forEach((id) => {
                                                 query = "INSERT INTO ProjectKeywords VALUES (" + rows[0].ID + ", " +id.ID+ ")";
-                                                conn.query(connectionString, query, (err) => {
+                                                pool.query(query, (err) => {
                                                     if(err) {
                                                         console.log("Cannot add keyword ID " + id.ID + " to ID " + rows[0].ID);
                                                         console.error(err);
@@ -213,12 +225,23 @@ function projects(conn) {
                             }
                         });
                     }
-                });
+                });}
+                catch(bruh) {
+                    console.log(query);
+                    console.log(bruh);
+                }
+                // finally {
+                //     if(conn) {
+                //         pool.close((err)=>{console.log(err);});
+                //     }
+                    
+                // }
             }
             else if(typeof element.BillGrp == 'string') {
                 if(element.BillGrp.length == 3 || (element.BillGrp.length == 4 && element.BillGrp[0] == '.' && !isNaN(element.BillGrp.substring(1)))) {
                     var query = "SELECT ID FROM Projects WHERE project_id = '"+ element.Projectid +"'";
-                    conn.query(connectionString, query, (error, row) => {
+                    try {
+                        pool.query(query, (error, row) => {
                         if(error) {
                             console.error(error);
                         }
@@ -257,14 +280,14 @@ function projects(conn) {
                             (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+
                             "'); END";
     
-                            conn.query(connectionString, query, (erro, sussybaka) => {
+                            pool.query(query, (erro, sussybaka) => {
                                 if(erro) {
                                     console.log("Error for ID: " + element.Id + " with billing group " + groupNumber);
                                     console.log(query);
                                     console.error(erro);
                                 }
                                 else {
-                                    conn.query(connectionString, "SELECT 1 FROM BillingGroups WHERE project_ID = '" + row[0].ID + "' AND group_number = '" + groupNumber + "'", (err, poopID) => {
+                                    pool.query("SELECT * FROM BillingGroups WHERE project_ID = '" + row[0].ID + "' AND group_number = '" + groupNumber + "'", (err, poopID) => {
                                         if(err) {
                                             console.log("Cannot get billing group " + groupNumber + " from project" + element.Projectid);
                                             console.error(err);
@@ -276,8 +299,8 @@ function projects(conn) {
                                                 });
                                                 if(memberArray.length > 0 && poopID.length > 0) {
                                                     memberArray.forEach((member) => {
-                                                        var query = "INSERT INTO BillingGroupTeam VALUES ("+ poopID[0].ID + ", " + member + ");";
-                                                        conn.query(connectionString, query, (error) => {
+                                                        var query = "INSERT INTO BillingGroupTeam VALUES ("+ poopID[0].ID + ", " + member + ")";
+                                                        pool.query(query, (error) => {
                                                             if(error) {
                                                                 console.log("Error for Project member: " + member)
                                                                 console.log(query);
@@ -294,7 +317,7 @@ function projects(conn) {
                                                     query += "Keyword = '" + key.replace(/'/gi, "''") + "' OR ";
                                                 });
                                                 query = query.substring(0,query.length - 4);
-                                                conn.query(connectionString, query, (err, IDs) => {
+                                                pool.query(query, (err, IDs) => {
                                                     if(err) {
                                                         console.log("Cannot get keywords.");
                                                         console.log(query);
@@ -303,7 +326,7 @@ function projects(conn) {
                                                     else if (IDs.length > 0){
                                                         IDs.forEach((id) => {
                                                             query = "INSERT INTO BillingGroupKeywords VALUES (" + poopID[0].ID + ", " +id.ID+ ")";
-                                                            conn.query(connectionString, query, (err) => {
+                                                            pool.query(query, (err) => {
                                                                 if(err) {
                                                                     console.log("Cannot add keyword ID " + id.ID + " to ID " + poopID[0].ID);
                                                                     console.error(err);
@@ -319,6 +342,16 @@ function projects(conn) {
                             });
                         }
                     });
+                }
+                catch(deez) {
+                    console.log(query);
+                    console.log(deez);
+                }
+                // finally {
+                //     if(conn) {
+                //         pool.close();
+                //     }
+                // }
                 }
             }
         });
