@@ -63,13 +63,23 @@ var jsonParser = bodyParser.json();
 // String to connect to MSSQL.
 const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=Yes;Driver={ODBC Driver 17 for SQL Server}`;
 
+const pool = new msnodesqlv8.Pool({
+    connectionString: connectionString
+});
+pool.on('open', (options) => {
+    console.log(`ready options = ${JSON.stringify(options, null, 4)}`)
+  });
+  pool.on('error', e => {
+    console.log(e)
+  });
+
 // Change source directory accordingly.
 app.use(cors());
 
 // Gets all Employees.
 app.get('/', (req, res) => {
     const query = 'SELECT * FROM Staff WHERE Active = 1 ORDER BY last'
-    msnodesqlv8.query(connectionString, query, (err, rows) => {
+    pool.query(query, (err, rows) => {
         if(err) {
             console.log("Error for entry ID: " + element.ID);
             console.error(err);
@@ -109,7 +119,7 @@ app.get('/1', (req, res) => {
     //     // return callback(new Error("An error has occurred"));
     // })
     const query = 'SELECT * FROM Keywords ORDER BY Keyword'
-    msnodesqlv8.query(connectionString, query, (err, rows) => {
+    pool.query(query, (err, rows) => {
         if(err) {
             console.log("Error for entry ID: " + element.ID);
             console.error(err);
@@ -124,7 +134,7 @@ app.get('/1', (req, res) => {
 // Get all Profile codes.
 app.get('/2', (req, res) => {
     const query = 'SELECT * FROM ProfileCodes ORDER BY Code'
-    msnodesqlv8.query(connectionString, query, (err, rows) => {
+    pool.query(query, (err, rows) => {
         if(err) {
             console.log("Error for entry ID: " + element.ID);
             console.error(err);
@@ -233,21 +243,15 @@ app.post('/result', jsonParser, (req, res) => {
     // Format retainer.
     let retainMe = (req.body.RetainerPaid == 'None') ? req.body.Retainer:'$'+req.body.RetainerPaid;
     // Begin building SQL query.
-    let query;
+
     // let latLongNaN = false;
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    // Get maximum database ID.
-    connection.query('SELECT TOP 1 MAX(Id) AS Id FROM Projects')
-    .then(bigNum => {
-        // Check if we can insert latitude and longitude.  If not, don't bother.
-        if(isNaN(req.body.Latitude) || isNaN(req.body.Longitude)) {
-            query = 'INSERT INTO Projects (Id, Projectid, ProjectTitle, ProjectMgr, QA_QCPerson, TeamMembers, StartDate, CloseDate, ProjectLoation, ' +
+    const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, TeamMembers, closed, start_date, close_date, project_location, latitude, longitude, ' +
             'ProjectKeywords, SHNOffice, ServiceArea, ToatlContract, RetainerPaid, ProfileCode, ContractType, InvoiceFormat, '+
             'PREVAILING_WAGE, SpecialBillingInstructins, SEEALSO, AutoCAD_Project, GIS_Project, Project_Specifications, ClientCompany1, OfficeMailingLists1, '+
             'ClientAbbrev1, ClientContactFirstName1, ClientContactLastName1, Title1, Address1_1, Address2_1, City1, State1, Zip1, PhoneW1, PhoneH1, Cell1, Fax1, Email1, '+
             'BinderSize, BinderLocation, DescriptionService, DTStamp'+
-            ') VALUES (' + Number(bigNum[0].Id + 1) + ', \''+ projnum + '\', \''+ req.body.ProjectTitle + '\', \'' + req.body.ProjectMgr + '\', \'' + req.body.QA_QCPerson + '\', \''+ req.body.TeamMembers +'\', \''+
-            req.body.StartDate + '\', \''+ req.body.CloseDate +'\' , \''+ req.body.ProjectLocation +'\', \''+ req.body.ProjectKeywords +'\', '+
+            ') VALUES (' + '\''+ projnum + '\', \''+ req.body.ProjectTitle + '\', \'' + req.body.ProjectMgr + '\', \'' + req.body.QA_QCPerson + '\', \''+ req.body.TeamMembers +'\', 0, \''+
+            req.body.StartDate + '\', \''+ req.body.CloseDate +'\' , \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
             '\'' + req.body.SHNOffice + '\', \''+ req.body.ServiceArea + '\', \''+ req.body.TotalContract +'\', \''+ retainMe + '\', \'' + req.body.ProfileCode +'\', \''+
             req.body.ContractType +'\', \''+ req.body.InvoiceFormat + '\', \'' + req.body.PREVAILING_WAGE + '\', \''+ req.body.SpecialBillingInstructins + '\', \'' + 
             req.body.SEEALSO +'\', '+ req.body.AutoCAD_Project + ', '+ req.body.GIS_Project + ', \'' + req.body.Project_Specifications + '\', \'' +
@@ -256,34 +260,13 @@ app.post('/result', jsonParser, (req, res) => {
             req.body.PhoneW1 + '\', \'' + req.body.PhoneH1 + '\', \'' + req.body.Cell1 + '\', \'' + req.body.Fax1 + '\', \'' + req.body.Email1 + '\', \'' + req.body.BinderSize + '\', \'' + req.body.BinderLocation + '\', \'' +
             req.body.DescriptionService + '\', \''+ req.body.CreatedOn +'\'' +
             ')';
-            // latLongNaN = true;
+
+    pool.query(query, (err, data) => {
+        if(err) {
+            console.log("Error for entry ID: " + element.ID);
+            throw err;
         }
         else {
-            query = 'INSERT INTO Projects (Id, Projectid, ProjectTitle, ProjectMgr, QA_QCPerson, TeamMembers, StartDate, CloseDate, ProjectLoation, ' +
-            'Lattitude, Longitude, ProjectKeywords, SHNOffice, ServiceArea, ToatlContract, RetainerPaid, ProfileCode, ContractType, InvoiceFormat, '+
-            'PREVAILING_WAGE, SpecialBillingInstructins, SEEALSO, AutoCAD_Project, GIS_Project, Project_Specifications, ClientCompany1, OfficeMailingLists1, '+
-            'ClientAbbrev1, ClientContactFirstName1, ClientContactLastName1, Title1, Address1_1, Address2_1, City1, State1, Zip1, PhoneW1, PhoneH1, Cell1, Fax1, Email1, '+
-            'BinderSize, BinderLocation, DescriptionService, DTStamp'+
-            ') VALUES (' + Number(bigNum[0].Id + 1) + ', \''+ projnum + '\', \''+ req.body.ProjectTitle + '\', \'' + req.body.ProjectMgr + '\', \'' + req.body.QA_QCPerson + '\', \''+ req.body.TeamMembers +'\', \''+
-            req.body.StartDate + '\', \''+ req.body.CloseDate +'\' , \''+ req.body.ProjectLocation +'\', '+ req.body.Latitude +', '+ req.body.Longitude +', \''+ req.body.ProjectKeywords +'\', '+
-            '\'' + req.body.SHNOffice + '\', \''+ req.body.ServiceArea + '\', \''+ req.body.TotalContract +'\', \''+ retainMe + '\', \'' + req.body.ProfileCode +'\', \''+
-            req.body.ContractType +'\', \''+ req.body.InvoiceFormat + '\', \'' + req.body.PREVAILING_WAGE + '\', \''+ req.body.SpecialBillingInstructins + '\', \'' + 
-            req.body.SEEALSO +'\', '+ req.body.AutoCAD_Project + ', '+ req.body.GIS_Project + ', \'' + req.body.Project_Specifications + '\', \'' +
-            req.body.ClientCompany1 + '\', \'' + req.body.OfficeMailingLists1 + '\', \'' + req.body.ClientAbbrev1 + '\', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', \'' +
-            req.body.Title1 + '\', \'' + req.body.Address1_1 + '\', \'' + req.body.Address2_1 + '\', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
-            req.body.PhoneW1 + '\', \'' + req.body.PhoneH1 + '\', \'' + req.body.Cell1 + '\', \'' + req.body.Fax1 + '\', \'' + req.body.Email1 + '\', \'' + req.body.BinderSize + '\', \'' + req.body.BinderLocation + '\', \'' +
-            req.body.DescriptionService + '\', \''+ req.body.CreatedOn +'\'' +
-            ')';
-        }
-        // Execute query.
-        connection.execute(query)
-        .then(data => { // On success, create and build the new project directory.
-            
-    
-            // if(latLongNaN) {
-            //     connection.execute('INSERT INTO Project_Coordinates (ID, PID, Lat, [Long]) VALUES (\''+ Number(projnum) +'\',\'' + projnum + '\', \''+ req.body.Latitude +'\', \''+ req.body.Longitude +'\')');
-            // }
-    
             if(!fs.existsSync(dir)) {
                 fs.mkdir((dir), err => {
                     if(err){
@@ -302,42 +285,42 @@ app.post('/result', jsonParser, (req, res) => {
             (async function(){
                 // table 
                 const table = {
-                  title: (req.body.Projectid != null && req.body.Projectid != undefined)?req.body.Projectid:req.body.PromoId,
-                  subtitle: "Project Initiation",
-                  headers: ["Name", "User Input", "Client", "Info"],
-                  rows: [
-                    [ "Project", removeA, "Client Company", removeEscapeQuote(req.body.ClientCompany1)],
-                    [ "Title", req.body.ProjectTitle, "Client Abbreviation", (req.body.ClientAbbrev1 == null || req.body.ClientAbbrev1 == undefined || req.body.ClientAbbrev1 == '')?"none":removeEscapeQuote(req.body.ClientAbbrev1)],
-                    ["Project Manager", req.body.ProjectMgrName, "Client First Name", removeEscapeQuote(req.body.ClientContactFirstName1)],
-                    ["QAQC Person", req.body.QA_QCPersonName, "Client Last Name", removeEscapeQuote(req.body.ClientContactLastName1)],
-                    ["Team Members", req.body.TeamMemberNames, "Relationship", req.body.ClientRelation],
-                    ["Start Date", formatDate(req.body.StartDate), "Job Title", removeEscapeQuote(req.body.Title1)],
-                    ["Close Date", formatDate(req.body.CloseDate), "Address", removeEscapeQuote(req.body.Address1_1)],
-                    ["Location", removeEscapeQuote(req.body.ProjectLocation), "2nd Address", removeEscapeQuote(req.body.Address2_1)],
-                    ["Latitude", removeEscapeQuote(req.body.Latitude),"City", removeEscapeQuote(req.body.City1)],
-                    ["Longitude", removeEscapeQuote(req.body.Longitude), "State", req.body.State1],
-                    ["Keywords", req.body.ProjectKeywords, "Zip", req.body.Zip1],
-                    ["SHN Office", req.body.SHNOffice, "Work Phone", removeEscapeQuote(req.body.PhoneW1)],
-                    ["Service Area", req.body.ServiceArea, "Home Phone", removeEscapeQuote(req.body.PhoneH1)],
-                    ["Total Contract", req.body.TotalContract, "Cell Phone", removeEscapeQuote(req.body.Cell1)],
-                    ["Service Agreement", req.body.ServiceAgreement, "Fax", removeEscapeQuote(req.body.Fax1)],
-                    ["If yes, why?", req.body.Explanation, "Email", removeEscapeQuote(req.body.Email1)],
-                    ["Retainer", removeEscapeQuote(retainMe), "Binder Size", req.body.BinderSize],
-                    ["Profile Code", req.body.ProfileCode, "Binder Location", req.body.BinderLocation],
-                    ["Contract Type", req.body.contactTypeName,'',''],
-                    ["Invoice Format", req.body.InvoiceFormat,'',''],
-                    ["Client Contract/PO#", req.body.ClientContractPONumber,'',''],
-                    ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'',''],
-                    ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE)],
-                    ["Billing Instructions", removeEscapeQuote(req.body.SpecialBillingInstructins),'',''],
-                    ["See Also", req.body.SEEALSO],
-                    ["AutoCAD", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
-                    ["GIS Job", (req.body.GIS_Project == -1)?'Yes':'No','',''],
-                    ["Project Specifications", (req.body.Project_Specifications == -1)?'Yes':'No','Created on',new Date().toString()],
-                    ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
-                  ]
+                    title: (req.body.Projectid != null && req.body.Projectid != undefined)?req.body.Projectid:req.body.PromoId,
+                    subtitle: "Project Initiation",
+                    headers: ["Name", "User Input", "Client", "Info"],
+                    rows: [
+                        [ "Project", removeA, "Client Company", removeEscapeQuote(req.body.ClientCompany1)],
+                        [ "Title", req.body.ProjectTitle, "Client Abbreviation", (req.body.ClientAbbrev1 == null || req.body.ClientAbbrev1 == undefined || req.body.ClientAbbrev1 == '')?"none":removeEscapeQuote(req.body.ClientAbbrev1)],
+                        ["Project Manager", req.body.ProjectMgrName, "Client First Name", removeEscapeQuote(req.body.ClientContactFirstName1)],
+                        ["QAQC Person", req.body.QA_QCPersonName, "Client Last Name", removeEscapeQuote(req.body.ClientContactLastName1)],
+                        ["Team Members", req.body.TeamMemberNames, "Relationship", req.body.ClientRelation],
+                        ["Start Date", formatDate(req.body.StartDate), "Job Title", removeEscapeQuote(req.body.Title1)],
+                        ["Close Date", formatDate(req.body.CloseDate), "Address", removeEscapeQuote(req.body.Address1_1)],
+                        ["Location", removeEscapeQuote(req.body.ProjectLocation), "2nd Address", removeEscapeQuote(req.body.Address2_1)],
+                        ["Latitude", removeEscapeQuote(req.body.Latitude),"City", removeEscapeQuote(req.body.City1)],
+                        ["Longitude", removeEscapeQuote(req.body.Longitude), "State", req.body.State1],
+                        ["Keywords", req.body.ProjectKeywords, "Zip", req.body.Zip1],
+                        ["SHN Office", req.body.SHNOffice, "Work Phone", removeEscapeQuote(req.body.PhoneW1)],
+                        ["Service Area", req.body.ServiceArea, "Home Phone", removeEscapeQuote(req.body.PhoneH1)],
+                        ["Total Contract", req.body.TotalContract, "Cell Phone", removeEscapeQuote(req.body.Cell1)],
+                        ["Service Agreement", req.body.ServiceAgreement, "Fax", removeEscapeQuote(req.body.Fax1)],
+                        ["If yes, why?", req.body.Explanation, "Email", removeEscapeQuote(req.body.Email1)],
+                        ["Retainer", removeEscapeQuote(retainMe), "Binder Size", req.body.BinderSize],
+                        ["Profile Code", req.body.ProfileCode, "Binder Location", req.body.BinderLocation],
+                        ["Contract Type", req.body.contactTypeName,'',''],
+                        ["Invoice Format", req.body.InvoiceFormat,'',''],
+                        ["Client Contract/PO#", req.body.ClientContractPONumber,'',''],
+                        ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'',''],
+                        ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE)],
+                        ["Billing Instructions", removeEscapeQuote(req.body.SpecialBillingInstructins),'',''],
+                        ["See Also", req.body.SEEALSO],
+                        ["AutoCAD", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
+                        ["GIS Job", (req.body.GIS_Project == -1)?'Yes':'No','',''],
+                        ["Project Specifications", (req.body.Project_Specifications == -1)?'Yes':'No','Created on',new Date().toString()],
+                        ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
+                    ]
                 };
-
+            
                 await doc.table(table, {
                     columnsSize: [ 120, 130, 100, 130],
                     padding: 2,
@@ -358,7 +341,6 @@ app.post('/result', jsonParser, (req, res) => {
                             .lineTo(x + 250, y)
                             .stroke();
                         }
-
                         doc.fontSize(10).fillColor('#000000');
                     }
                 });
@@ -370,10 +352,10 @@ app.post('/result', jsonParser, (req, res) => {
 
                 // Create the directories for Project.
                 createDirectories(dir, true);
-
+            
                 // Start of array of who to notify of this creation.
                 const admins = jsonData.email.admins;
-
+            
                 let officeAdmins = [];
                 // Get cooresponding admin office group to notify of this project creation.
                 if(projnum.length > 6) {
@@ -387,24 +369,26 @@ app.post('/result', jsonParser, (req, res) => {
                     admins.push(admin);
                 }
                 // Get individual Project manager to notify.
-                connection.query('SELECT Email FROM Contacts WHERE ID = '+ req.body.ProjectMgr +' AND Email IS NOT NULL').then(emails => {
-                    Object.entries(emails).forEach(email => {
-                        if(!admins.includes(email[1].Email + '@shn-engr.com' || email[1].Email != undefined)) {
-                            admins.push(email[1].Email + '@shn-engr.com');
-                        }
-                    });
-                    // Finally, send out email notice.
-                    // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
-                }).catch(awNo => {
-                    console.log('Could not send email.  The following error occurred instead:\n' + awNo);
-                    createTicket(awNo, "Project initiation email could not be sent:");
+                pool.query('SELECT Email FROM Contacts WHERE ID = '+ req.body.ProjectMgr +' AND Email IS NOT NULL').then((awNo, emails) => {
+                    if(awNo) {
+                        console.log('Could not send email.  The following error occurred instead:\n' + awNo);
+                        createTicket(awNo, "Project initiation email could not be sent:");
+                    }
+                    else {
+                        Object.entries(emails).forEach(email => {
+                            if(!admins.includes(email[1].Email + '@shn-engr.com' || email[1].Email != undefined)) {
+                                admins.push(email[1].Email + '@shn-engr.com');
+                            }
+                        });
+                        // Finally, send out email notice.
+                        // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
+                    }
                 });
-              })();
+            })();
             // If all is successful, send project number to user.
             res.send(JSON.parse('{"Status":"'+ projnum + '"}'));
-        });
-    })
-    .catch(err => { // If something fails, print error and attempt to send error back to user.
+        }
+    }).catch(err => { // If something fails, print error and attempt to send error back to user.
         console.error(err);
         try{
             res.send(JSON.stringify(err));
@@ -413,8 +397,7 @@ app.post('/result', jsonParser, (req, res) => {
         catch(OhNo) {
             console.log("Could not send back error response for project " + projnum);
         }
-    });
-    
+    });    
 });
 
 /**
@@ -1934,7 +1917,7 @@ function denyGroupDelete(folderPath) {
 
 // const port = Number(process.env.PORT) || 3000;
 // app.listen(port, () => console.log(`Listening to port ${port}...`));
-
+pool.open();
 https.createServer(options, app, function (req, res) {
     res.statusCode = 200;
   }).listen(3000);
