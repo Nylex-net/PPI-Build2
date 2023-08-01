@@ -389,7 +389,6 @@ app.post('/result', jsonParser, (req, res) => {
                         Object.entries(emails).forEach(email => {
                             if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
                                 admins.push(email.email + '@shn-engr.com');
-                                console.log(admins);
                             }
                         });
                         // Finally, send out email notice.
