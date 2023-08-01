@@ -51,11 +51,11 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
  */
 
 // Directory for production environment.
-// process.chdir("P:\\");
+process.chdir("P:\\");
 
 // Directory for testing environment.
-process.chdir("U:\\Eureka\\Nylex\\test\\Mock_Drive");
-const PATH = "U:/Eureka/Nylex/test/Mock_Drive";
+process.chdir("P:\\");
+const PATH = "P:\\";
 
 // create application/json parser
 var jsonParser = bodyParser.json();
@@ -229,7 +229,7 @@ app.post('/result', jsonParser, (req, res) => {
         counter = counter.toString();
     }
 
-    // append last 2 digits of the year and the value of coutner.
+    // append last 2 digits of the year and the value of counter.
     projnum += dateYear.toString().slice(-2) + counter;
 
     // Append ID and project title to be apart of the new project directory.
@@ -240,31 +240,41 @@ app.post('/result', jsonParser, (req, res) => {
     else{
         dir += '/' + projnum + '-' + removeSpace(removeEscapeQuote(req.body.ProjectTitle));
     }
-    // Format retainer.
-    let retainMe = (req.body.RetainerPaid == 'None') ? req.body.Retainer:'$'+req.body.RetainerPaid;
+
+    // Project initiation date.
+    const mydate = new Date();
+    let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
+
     // Begin building SQL query.
 
     // let latLongNaN = false;
-    const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, TeamMembers, closed, start_date, close_date, project_location, latitude, longitude, ' +
-            'ProjectKeywords, SHNOffice, ServiceArea, ToatlContract, RetainerPaid, ProfileCode, ContractType, InvoiceFormat, '+
-            'PREVAILING_WAGE, SpecialBillingInstructins, SEEALSO, AutoCAD_Project, GIS_Project, Project_Specifications, ClientCompany1, OfficeMailingLists1, '+
-            'ClientAbbrev1, ClientContactFirstName1, ClientContactLastName1, Title1, Address1_1, Address2_1, City1, State1, Zip1, PhoneW1, PhoneH1, Cell1, Fax1, Email1, '+
-            'BinderSize, BinderLocation, DescriptionService, DTStamp'+
-            ') VALUES (' + '\''+ projnum + '\', \''+ req.body.ProjectTitle + '\', \'' + req.body.ProjectMgr + '\', \'' + req.body.QA_QCPerson + '\', \''+ req.body.TeamMembers +'\', 0, \''+
-            req.body.StartDate + '\', \''+ req.body.CloseDate +'\' , \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
-            '\'' + req.body.SHNOffice + '\', \''+ req.body.ServiceArea + '\', \''+ req.body.TotalContract +'\', \''+ retainMe + '\', \'' + req.body.ProfileCode +'\', \''+
-            req.body.ContractType +'\', \''+ req.body.InvoiceFormat + '\', \'' + req.body.PREVAILING_WAGE + '\', \''+ req.body.SpecialBillingInstructins + '\', \'' + 
-            req.body.SEEALSO +'\', '+ req.body.AutoCAD_Project + ', '+ req.body.GIS_Project + ', \'' + req.body.Project_Specifications + '\', \'' +
-            req.body.ClientCompany1 + '\', \'' + req.body.OfficeMailingLists1 + '\', \'' + req.body.ClientAbbrev1 + '\', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', \'' +
-            req.body.Title1 + '\', \'' + req.body.Address1_1 + '\', \'' + req.body.Address2_1 + '\', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
-            req.body.PhoneW1 + '\', \'' + req.body.PhoneH1 + '\', \'' + req.body.Cell1 + '\', \'' + req.body.Fax1 + '\', \'' + req.body.Email1 + '\', \'' + req.body.BinderSize + '\', \'' + req.body.BinderLocation + '\', \'' +
-            req.body.DescriptionService + '\', \''+ req.body.CreatedOn +'\'' +
+    const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, closed, start_date, close_date, project_location, latitude, longitude, ' +
+            'SHNOffice_ID, service_area, total_contract, exempt_agreement, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup,'+
+            'prevailing_wage, agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, '+
+            'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, fax, email, '+
+            'binder_size, binder_location, description_service, created'+
+            ') VALUES (' + '\''+ projnum + '\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
+            req.body.StartDate + '\', \''+ req.body.CloseDate +'\', \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
+            '' + req.body.officeID + ', \''+ req.body.ServiceArea + '\', \''+ req.body.TotalContract +'\', '+ req.body.ServiceAgreement +', \''+ req.body.Retainer + '\', '+ req.body.RetainerPaid +', \''+ req.body.WaivedBy +'\', ' + req.body.ProfileCode +', '+
+            req.body.ContractType +', \''+ req.body.InvoiceID + '\', \''+ req.body.ClientContractPONumber +'\', '+ req.body.OutsideMarkup +', ' + req.body.PREVAILING_WAGE + ', '+ (req.body.agency != 'NULL'?'\''+req.body.agency +'\'':req.body.agency) +', '+ (req.body.SpecialBillingInstructins != 'NULL'?'\''+ req.body.SpecialBillingInstructins + '\'':req.body.SpecialBillingInstructins) + ', ' + 
+            (req.body.SEEALSO != 'NULL'?'\''+req.body.SEEALSO+'\'':req.body.SEEALSO) +', '+ req.body.AutoCAD_Project + ', '+ req.body.GIS_Project + ', ' + req.body.Project_Specifications + ', \'' +
+            req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL'?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', ' + (req.body.OfficeMailingLists1 != 'NULL'?'\''+req.body.OfficeMailingLists1 +'\'':req.body.OfficeMailingLists1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
+            (req.body.ClientRelation != 'NULL'?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL'?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
+            req.body.PhoneW1 + '\', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
+            req.body.DescriptionService + '\', \''+ myDate +'\'' +
             ')';
 
     pool.query(query, (err, data) => {
         if(err) {
-            console.log("Error for entry ID: " + element.ID);
-            throw err;
+            console.log("Error for query:\n" + query);
+            console.error(err);
+            try{
+                res.send(JSON.stringify(err));
+                createTicket(err, "Error in initiating a project:");
+            }
+            catch(OhNo) {
+                console.log("Could not send back error response for project " + projnum);
+            }
         }
         else {
             if(!fs.existsSync(dir)) {
@@ -305,7 +315,7 @@ app.post('/result', jsonParser, (req, res) => {
                         ["Total Contract", req.body.TotalContract, "Cell Phone", removeEscapeQuote(req.body.Cell1)],
                         ["Service Agreement", req.body.ServiceAgreement, "Fax", removeEscapeQuote(req.body.Fax1)],
                         ["If yes, why?", req.body.Explanation, "Email", removeEscapeQuote(req.body.Email1)],
-                        ["Retainer", removeEscapeQuote(retainMe), "Binder Size", req.body.BinderSize],
+                        ["Retainer", removeEscapeQuote((req.body.Retainer == 'enterAmnt'?req.body.RetainerPaid:(req.body.Retainer == 'Waived by X'?req.body.WaivedBy:req.body.Retainer))), "Binder Size", req.body.BinderSize],
                         ["Profile Code", req.body.ProfileCode, "Binder Location", req.body.BinderLocation],
                         ["Contract Type", req.body.contactTypeName,'',''],
                         ["Invoice Format", req.body.InvoiceFormat,'',''],
@@ -316,7 +326,7 @@ app.post('/result', jsonParser, (req, res) => {
                         ["See Also", req.body.SEEALSO],
                         ["AutoCAD", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
                         ["GIS Job", (req.body.GIS_Project == -1)?'Yes':'No','',''],
-                        ["Project Specifications", (req.body.Project_Specifications == -1)?'Yes':'No','Created on',new Date().toString()],
+                        ["Project Specifications", (req.body.Project_Specifications == -1)?'Yes':'No','Created on',mydate.toString()],
                         ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
                     ]
                 };
@@ -369,15 +379,17 @@ app.post('/result', jsonParser, (req, res) => {
                     admins.push(admin);
                 }
                 // Get individual Project manager to notify.
-                pool.query('SELECT Email FROM Contacts WHERE ID = '+ req.body.ProjectMgr +' AND Email IS NOT NULL').then((awNo, emails) => {
+                pool.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr +' AND email IS NOT NULL AND email <> \'\'', (awNo, emails) => {
                     if(awNo) {
-                        console.log('Could not send email.  The following error occurred instead:\n' + awNo);
+                        console.log('Could not query emails.  The following error occurred instead:\n' + awNo);
                         createTicket(awNo, "Project initiation email could not be sent:");
                     }
                     else {
+                        console.log("Emails:\n" + emails);
                         Object.entries(emails).forEach(email => {
-                            if(!admins.includes(email[1].Email + '@shn-engr.com' || email[1].Email != undefined)) {
-                                admins.push(email[1].Email + '@shn-engr.com');
+                            if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
+                                admins.push(email.email + '@shn-engr.com');
+                                console.log(admins);
                             }
                         });
                         // Finally, send out email notice.
@@ -388,16 +400,7 @@ app.post('/result', jsonParser, (req, res) => {
             // If all is successful, send project number to user.
             res.send(JSON.parse('{"Status":"'+ projnum + '"}'));
         }
-    }).catch(err => { // If something fails, print error and attempt to send error back to user.
-        console.error(err);
-        try{
-            res.send(JSON.stringify(err));
-            createTicket(err, "Error in initiating a project:");
-        }
-        catch(OhNo) {
-            console.log("Could not send back error response for project " + projnum);
-        }
-    });    
+    });
 });
 
 /**
