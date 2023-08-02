@@ -418,8 +418,8 @@ app.post('/promo', jsonParser, (req, res) => {
     else {
         projnum = req.body.Id;
     }
-    // Connect to database.
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
+    // // Connect to database.
+    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 
     // Begin creating directory.
     let dir = '.';
@@ -484,9 +484,161 @@ app.post('/promo', jsonParser, (req, res) => {
         dir += '/' + projnum + '-' + removeSpace(removeEscapeQuote(req.body.ProjectTitle));
     }
 
-    // let latLongNaN = false;
-    let query; // Begin making SQL query.
+    // Project initiation date.
+    const mydate = new Date();
+    let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
+    // let latLongNaN = false;
+    // Begin making SQL query.
+    const query = 'INSERT INTO Promos (is_project, proj_ID, promo_id, promo_type, promo_title, manager_ID, qaqc_person_ID, closed, start_date, close_date, promo_location, latitude, longitude, ' +
+    'SHNOffice_ID, service_area, profile_code_id, client_company, client_abbreviation, '+
+    'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, fax, email, '+
+    'binder_size, description_service, created'+
+    ') VALUES (0, NULL,' + '\''+ projnum + '\', \''+req.body.AlternateTitle+'\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
+    req.body.StartDate + '\', \''+ req.body.CloseDate +'\', \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
+    '' + req.body.officeID + ', \''+ req.body.ServiceArea + '\', '+ req.body.ProfileCode + ', \'' +
+    req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL'?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
+    (req.body.ClientRelation != 'NULL' && req.body.ClientRelation != null && req.body.ClientRelation != undefined ?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL'?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
+    req.body.PhoneW1 + '\', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', \''+
+    req.body.DescriptionService + '\', \''+ myDate +'\'' +
+    ')';
+
+    // Execute query.
+    pool.query(query, (error, data) => {
+        // Start creating Promo directories.
+        if(error) {
+            console.log(query);
+            console.error("promo query error:\n" + error);
+            try{
+                createTicket(error, "Promo Initiation failed:");
+                res.send(JSON.stringify(error));
+            }
+            catch(AwMan) {
+                console.log("Could not send error response for Promo " + projnum);
+            }
+        }
+        else {
+            if(!fs.existsSync(dir)) {
+                fs.mkdir((dir), err => {
+                    if(err){
+                        throw err;
+                    }
+                });
+            }
+    
+            // Remove A from Promo number if it's an Arcata office.
+            let removeA = projnum;
+            if(projnum.length > 10 && projnum[10] == 'A') {
+                removeA = projnum.substring(0,10);
+            }
+    
+            // Start creation of PDF document.
+            const doc = new PDFDocument();
+            const myPath = dir + '/'+ removeA +'.pdf';
+            doc.pipe(fs.createWriteStream(myPath));
+    
+            (async function(){
+                // table 
+                const table = {
+                  title: (req.body.Projectid != null && req.body.Projectid != undefined)?req.body.Projectid:req.body.PromoId,
+                  subtitle: "Promo Initiation",
+                  headers: ["Name", "User Input", "Client", "Info"],
+                  rows: [
+                    [ "Promo", removeA, "Client Company", removeEscapeQuote(req.body.ClientCompany1)],
+                    [ "Title", req.body.ProjectTitle, "Client Abbreviation", (req.body.ClientAbbrev1 == null || req.body.ClientAbbrev1 == undefined || req.body.ClientAbbrev1 == '')?"none":removeEscapeQuote(req.body.ClientAbbrev1)],
+                    ["Project Manager", req.body.ProjectMgrName, "Client First Name", removeEscapeQuote(req.body.ClientContactFirstName1)],
+                    ["Type of Promo", removeEscapeQuote(req.body.AlternateTitle), "Client Last Name", removeEscapeQuote(req.body.ClientContactLastName1)],
+                    ["QAQC Person", req.body.QA_QCPersonName, "Relationship", req.body.ClientRelation],
+                    ["Team Members", req.body.TeamMemberNames, "Job Title", removeEscapeQuote(req.body.Title1)],
+                    ["Start Date", formatDate(req.body.StartDate), "Address", removeEscapeQuote(req.body.Address1_1)],
+                    ["Close Date", formatDate(req.body.CloseDate), "2nd Address", removeEscapeQuote(req.body.Address2_1)],
+                    ["Location", removeEscapeQuote(req.body.ProjectLocation),"City", removeEscapeQuote(req.body.City1)],
+                    ["Latitude", removeEscapeQuote(req.body.Latitude), "State", req.body.State1],
+                    ["Longitude", removeEscapeQuote(req.body.Longitude), "Zip", req.body.Zip1],
+                    ["Keywords", req.body.ProjectKeywords, "Work Phone", removeEscapeQuote(req.body.PhoneW1)],
+                    ["SHN Office", req.body.SHNOffice, "Home Phone", removeEscapeQuote(req.body.PhoneH1)],
+                    ["Service Area", req.body.ServiceArea, "Cell Phone", removeEscapeQuote(req.body.Cell1)],
+                    ["Profile Code", req.body.ProfileCode, "Fax", removeEscapeQuote(req.body.Fax1)],
+                    ["-", '-', "Email", removeEscapeQuote(req.body.Email1)],
+                    ["-", '-', "Binder Size", req.body.BinderSize],
+                    ['-','-','Created On', mydate.toString()],
+                    ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
+                  ]
+                };
+                // A4 595.28 x 841.89 (portrait) (about width sizes)
+                // width
+                // await doc.table(table, { 
+                //   width: 400
+                // });
+                // or columnsSize
+                await doc.table(table, {
+                    columnsSize: [ 120, 130, 100, 130],
+                    padding: 2,
+                    prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+                        (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
+                        const {x, y, width, height} = rectCell;
+                        if(indexColumn === 1 && indexRow != table.rows.length - 1) {
+                            doc
+                            .lineWidth(1)
+                            .moveTo(x + width, y)
+                            .lineTo(x + width, y + height)
+                            .stroke();
+                        }
+                        if((indexRow === 7) && indexColumn === 0) {
+                            doc
+                            .lineWidth(2)
+                            .moveTo(x, y)
+                            .lineTo(x + 250, y)
+                            .stroke();
+                        }
+    
+                        doc.fontSize(10).fillColor('#000000');
+                    }
+                });
+                // done!
+                doc.end();
+    
+                // Create directories for Promo folder.
+                createDirectories(dir, true);
+    
+                // Array to store contacts of who to notify of this creation.
+                const admins = jsonData.email.admins;
+    
+                // Get cooresponding admin office.
+                let officeAdmins = [];
+                if(projnum.length > 10) {
+                    officeAdmins = getAdmin(projnum[0], projnum[10]);
+                }
+                else {
+                    officeAdmins = getAdmin(projnum[0], 'Z');
+                }
+                // push admin office into admins array.
+                for(let admin of officeAdmins) {
+                    admins.push(admin);
+                }
+                // Query the Project manager's email.
+                pool.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr + ' AND email IS NOT NULL', (awNo, emails) => {
+                    // console.log(emails);
+                    if(awNo) {
+                        console.log('Could not query emails.  The following error occurred instead:\n' + awNo);
+                        createTicket(awNo, "Project initiation email could not be sent:");
+                    }
+                    else {
+                        Object.entries(emails).forEach(email => {
+                            if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
+                                admins.push(email.email + '@shn-engr.com');
+                            }
+                        });
+                        // Finally, send out email notice.
+                        // emailPersonel(removeA +'.pdf', myPath, 'Promo with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Promo with ID ' + projnum + ' initialized.');
+                    }
+                });
+            })();
+              // If all is successful, send back the Promo number.
+            res.send(JSON.parse('{"Status":"'+ projnum +'"}'));
+        }
+    });
+    /*
     connection.query('SELECT TOP 1 MAX(Id) AS Id FROM Projects') // Get highest ID in database.
     .then(bigNum => {
         // If we can insert latitude and longitude as numbers, do so.  Otherwise, don't bother.
@@ -654,7 +806,7 @@ app.post('/promo', jsonParser, (req, res) => {
         catch(AwMan) {
             console.log("Could not send error response for Promo " + projnum);
         }
-    });
+    });*/
 });
 
 /**
@@ -885,10 +1037,10 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                     admins.push(admin);
                 }
                 // Get individual Project manager to notify.
-                connection.query('SELECT Email FROM Contacts WHERE ID = '+ req.body.ProjectMgr +' AND Email IS NOT NULL').then(emails => {
+                pool.query('SELECT Email FROM Contacts WHERE ID = '+ req.body.ProjectMgr +' AND Email IS NOT NULL', (awNO, emails) => {
                     Object.entries(emails).forEach(email => {
-                        if(!admins.includes(email[1].Email + '@shn-engr.com' || email[1].Email != undefined)) {
-                            admins.push(email[1].Email + '@shn-engr.com');
+                        if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
+                            admins.push(email.email + '@shn-engr.com');
                         }
                     });
                     // Finally, send out email notice.
