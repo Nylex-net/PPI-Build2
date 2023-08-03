@@ -245,6 +245,11 @@ app.post('/result', jsonParser, (req, res) => {
     const mydate = new Date();
     let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
+    // let team = "INSERT INTO ProjectTeam (project_id, member_id) VALUES ((SELECT ID FROM Projects WHERE project_id = '"+ +"'))"
+    // req.body.TeamMembers.forEach(member => {
+
+    // });
+
     // Begin building SQL query.
 
     // let latLongNaN = false;
@@ -277,6 +282,36 @@ app.post('/result', jsonParser, (req, res) => {
             }
         }
         else {
+            pool.query("SELECT ID FROM Projects WHERE project_id = '"+ projnum +"'", (error, ID) => {
+                if(error) {
+                    console.log("Cannot get Project ID for " + projnum);
+                    console.error(error);
+                    try{
+                        res.send(JSON.stringify(error));
+                        createTicket(err, "Cannot get Project ID for " + projnum);
+                    }
+                    catch(OhNo) {
+                        console.log("Could not send back error response for project " + projnum);
+                    }
+                }
+                else if(ID.length > 0) {
+                    let teamArr = req.body.TeamMembers.split(',');
+                    let teamQuery = '';
+                    teamArr.forEach((memb) => {
+                        teamQuery += "INSERT INTO ProjectTeam VALUES ("+ID[0].ID+", "+memb+");"
+                    });
+                    let keyArr = req.body.KeyIDs.split(',');
+                    keyArr.forEach((key) => {
+                        teamQuery += "INSERT INTO ProjectKeywords VALUES ("+ID[0].ID+", "+key+");"
+                    });
+                    pool.query(teamQuery, (uwu) => {
+                        if(uwu) {
+                            console.log("Error with query:\n" + teamQuery);
+                            console.error(uwu);
+                        }
+                    });
+                }
+            });
             if(!fs.existsSync(dir)) {
                 fs.mkdir((dir), err => {
                     if(err){
@@ -385,12 +420,12 @@ app.post('/result', jsonParser, (req, res) => {
                         createTicket(awNo, "Project initiation email could not be sent:");
                     }
                     else {
-                        console.log("Emails:\n" + emails);
                         Object.entries(emails).forEach(email => {
-                            if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
-                                admins.push(email.email + '@shn-engr.com');
+                            if(!admins.includes(email[1].email + '@shn-engr.com') && email[1].email != undefined && email[1].email != 'undefined' && email[1].email != null && email[1].email != 'NULL') {
+                                admins.push(email[1].email + '@shn-engr.com');
                             }
                         });
+                        // console.log(admins);
                         // Finally, send out email notice.
                         // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     }
@@ -518,6 +553,36 @@ app.post('/promo', jsonParser, (req, res) => {
             }
         }
         else {
+            pool.query("SELECT ID FROM Promos WHERE promo_id = '"+ projnum +"'", (error, ID) => {
+                if(error) {
+                    console.log("Cannot get Promo ID for " + projnum);
+                    console.error(error);
+                    try{
+                        // res.send(JSON.stringify(error));
+                        createTicket(err, "Cannot get Promo ID for " + projnum);
+                    }
+                    catch(OhNo) {
+                        console.log("Could not send back error response for promo " + projnum);
+                    }
+                }
+                else if(ID.length > 0) {
+                    let teamArr = req.body.TeamMembers.split(',');
+                    let teamQuery = '';
+                    teamArr.forEach((memb) => {
+                        teamQuery += "INSERT INTO PromoTeam VALUES ("+ID[0].ID+", "+memb+");"
+                    });
+                    let keyArr = req.body.KeyIDs.split(',');
+                    keyArr.forEach((key) => {
+                        teamQuery += "INSERT INTO PromoKeywords VALUES ("+ID[0].ID+", "+key+");"
+                    });
+                    pool.query(teamQuery, (uwu) => {
+                        if(uwu) {
+                            console.log("Error with query:\n" + teamQuery);
+                            console.error(uwu);
+                        }
+                    });
+                }
+            });
             if(!fs.existsSync(dir)) {
                 fs.mkdir((dir), err => {
                     if(err){
@@ -625,8 +690,8 @@ app.post('/promo', jsonParser, (req, res) => {
                     }
                     else {
                         Object.entries(emails).forEach(email => {
-                            if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
-                                admins.push(email.email + '@shn-engr.com');
+                            if(!admins.includes(email[1].email + '@shn-engr.com') && email[1].email != undefined && email[1].email != 'undefined' && email[1].email != null && email[1].email != 'NULL') {
+                                admins.push(email[1].email + '@shn-engr.com');
                             }
                         });
                         // Finally, send out email notice.
@@ -638,175 +703,6 @@ app.post('/promo', jsonParser, (req, res) => {
             res.send(JSON.parse('{"Status":"'+ projnum +'"}'));
         }
     });
-    /*
-    connection.query('SELECT TOP 1 MAX(Id) AS Id FROM Projects') // Get highest ID in database.
-    .then(bigNum => {
-        // If we can insert latitude and longitude as numbers, do so.  Otherwise, don't bother.
-        if(isNaN(req.body.Latitude) || isNaN(req.body.Longitude)) {
-            query = 'INSERT INTO Projects (Id, PromoId, ProjectTitle, AlternateTitle, ProjectMgr, QA_QCPerson, TeamMembers, StartDate, CloseDate, ProjectLoation, ' +
-            'ProjectKeywords, SHNOffice, ServiceArea, ProfileCode, ClientCompany1, OfficeMailingLists1, '+
-            'ClientAbbrev1, ClientContactFirstName1, ClientContactLastName1, Title1, Address1_1, Address2_1, City1, State1, Zip1, PhoneW1, PhoneH1, Cell1, Fax1, Email1, '+
-            'BinderSize, DescriptionService, DTStamp'+
-            ') VALUES (' + Number(bigNum[0].Id + 1) + ', \''+ projnum + '\', \''+ req.body.ProjectTitle + '\', \'' + req.body.AlternateTitle + '\', \'' + req.body.ProjectMgr + '\', \'' + req.body.QA_QCPerson + '\', \''+ req.body.TeamMembers +'\', \''+
-            req.body.StartDate + '\', \''+ req.body.CloseDate +'\' , \''+ req.body.ProjectLocation +'\', \''+ req.body.ProjectKeywords +'\', '+
-            '\'' + req.body.SHNOffice + '\', \''+ req.body.ServiceArea + '\', \'' + req.body.ProfileCode +'\', \''+
-            req.body.ClientCompany1 + '\', \'' + req.body.OfficeMailingLists1 + '\', \'' + req.body.ClientAbbrev1 + '\', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', \'' +
-            req.body.Title1 + '\', \'' + req.body.Address1_1 + '\', \'' + req.body.Address2_1 + '\', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
-            req.body.PhoneW1 + '\', \'' + req.body.PhoneH1 + '\', \'' + req.body.Cell1 + '\', \'' + req.body.Fax1 + '\', \'' + req.body.Email1 + '\', \'' + req.body.BinderSize + '\', \'' +
-            req.body.DescriptionService + '\', \''+ req.body.CreatedOn+'\'' +
-            ')';
-            // latLongNaN = true;
-        }
-        else {
-            query = 'INSERT INTO Projects (Id, PromoId, ProjectTitle, AlternateTitle, ProjectMgr, QA_QCPerson, TeamMembers, StartDate, CloseDate, ProjectLoation, ' +
-            'Lattitude, Longitude, ProjectKeywords, SHNOffice, ServiceArea, ProfileCode, ClientCompany1, OfficeMailingLists1, '+
-            'ClientAbbrev1, ClientContactFirstName1, ClientContactLastName1, Title1, Address1_1, Address2_1, City1, State1, Zip1, PhoneW1, PhoneH1, Cell1, Fax1, Email1, '+
-            'BinderSize, DescriptionService, DTStamp'+
-            ') VALUES (' + Number(bigNum[0].Id + 1) + ', \''+ projnum + '\', \''+ req.body.ProjectTitle + '\', \'' + req.body.AlternateTitle + '\', \'' + req.body.ProjectMgr + '\', \'' + req.body.QA_QCPerson + '\', \''+ req.body.TeamMembers +'\', \''+
-            req.body.StartDate + '\', \''+ req.body.CloseDate +'\' , \''+ req.body.ProjectLocation +'\', '+ req.body.Latitude +', '+ req.body.Longitude +', \''+ req.body.ProjectKeywords +'\', '+
-            '\'' + req.body.SHNOffice + '\', \''+ req.body.ServiceArea + '\', \'' + req.body.ProfileCode +'\', \''+
-            req.body.ClientCompany1 + '\', \'' + req.body.OfficeMailingLists1 + '\', \'' + req.body.ClientAbbrev1 + '\', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', \'' +
-            req.body.Title1 + '\', \'' + req.body.Address1_1 + '\', \'' + req.body.Address2_1 + '\', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
-            req.body.PhoneW1 + '\', \'' + req.body.PhoneH1 + '\', \'' + req.body.Cell1 + '\', \'' + req.body.Fax1 + '\', \'' + req.body.Email1 + '\', \'' + req.body.BinderSize + '\', \'' +
-            req.body.DescriptionService + '\', \''+ req.body.CreatedOn +'\'' +
-            ')';
-        }
-        connection.execute(query) // Execute query.
-        .then(data => {
-    
-            // if(latLongNaN) {
-            //     connection.execute('INSERT INTO Project_Coordinates (ID, PID, Lat, [Long]) VALUES (\''+ Number(projnum) +'\', \'' + projnum + '\', \''+ req.body.Latitude +'\', \''+ req.body.Longitude +'\')');
-            // }
-
-            // Create directory of new promo folder.
-            if(!fs.existsSync(dir)) {
-                fs.mkdir((dir), err => {
-                    if(err){
-                        throw err;
-                    }
-                });
-            }
-
-            // Remove A from Promo number if it's an Arcata office.
-            let removeA = projnum;
-            if(projnum.length > 10 && projnum[10] == 'A') {
-                removeA = projnum.substring(0,10);
-            }
-    
-            // Start creation of PDF document.
-            const doc = new PDFDocument();
-            const myPath = dir + '/'+ removeA +'.pdf';
-            doc.pipe(fs.createWriteStream(myPath));
-    
-            // Content of PDF.
-            (async function(){
-                // table 
-                const table = {
-                  title: (req.body.Projectid != null && req.body.Projectid != undefined)?req.body.Projectid:req.body.PromoId,
-                  subtitle: "Promo Initiation",
-                  headers: ["Name", "User Input", "Client", "Info"],
-                  rows: [
-                    [ "Promo", removeA, "Client Company", removeEscapeQuote(req.body.ClientCompany1)],
-                    [ "Title", req.body.ProjectTitle, "Client Abbreviation", (req.body.ClientAbbrev1 == null || req.body.ClientAbbrev1 == undefined || req.body.ClientAbbrev1 == '')?"none":removeEscapeQuote(req.body.ClientAbbrev1)],
-                    ["Project Manager", req.body.ProjectMgrName, "Client First Name", removeEscapeQuote(req.body.ClientContactFirstName1)],
-                    ["Type of Promo", removeEscapeQuote(req.body.AlternateTitle), "Client Last Name", removeEscapeQuote(req.body.ClientContactLastName1)],
-                    ["QAQC Person", req.body.QA_QCPersonName, "Relationship", req.body.ClientRelation],
-                    ["Team Members", req.body.TeamMemberNames, "Job Title", removeEscapeQuote(req.body.Title1)],
-                    ["Start Date", formatDate(req.body.StartDate), "Address", removeEscapeQuote(req.body.Address1_1)],
-                    ["Close Date", formatDate(req.body.CloseDate), "2nd Address", removeEscapeQuote(req.body.Address2_1)],
-                    ["Location", removeEscapeQuote(req.body.ProjectLocation),"City", removeEscapeQuote(req.body.City1)],
-                    ["Latitude", removeEscapeQuote(req.body.Latitude), "State", req.body.State1],
-                    ["Longitude", removeEscapeQuote(req.body.Longitude), "Zip", req.body.Zip1],
-                    ["Keywords", req.body.ProjectKeywords, "Work Phone", removeEscapeQuote(req.body.PhoneW1)],
-                    ["SHN Office", req.body.SHNOffice, "Home Phone", removeEscapeQuote(req.body.PhoneH1)],
-                    ["Service Area", req.body.ServiceArea, "Cell Phone", removeEscapeQuote(req.body.Cell1)],
-                    ["Profile Code", req.body.ProfileCode, "Fax", removeEscapeQuote(req.body.Fax1)],
-                    ["-", '-', "Email", removeEscapeQuote(req.body.Email1)],
-                    ["-", '-', "Binder Size", req.body.BinderSize],
-                    ['-','-','Created On',new Date().toString()],
-                    ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
-                  ]
-                };
-                // A4 595.28 x 841.89 (portrait) (about width sizes)
-                // width
-                // await doc.table(table, { 
-                //   width: 400
-                // });
-                // or columnsSize
-                await doc.table(table, {
-                    columnsSize: [ 120, 130, 100, 130],
-                    padding: 2,
-                    prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-                        (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                        const {x, y, width, height} = rectCell;
-                        if(indexColumn === 1 && indexRow != table.rows.length - 1) {
-                            doc
-                            .lineWidth(1)
-                            .moveTo(x + width, y)
-                            .lineTo(x + width, y + height)
-                            .stroke();
-                        }
-                        if((indexRow === 7) && indexColumn === 0) {
-                            doc
-                            .lineWidth(2)
-                            .moveTo(x, y)
-                            .lineTo(x + 250, y)
-                            .stroke();
-                        }
-
-                        doc.fontSize(10).fillColor('#000000');
-                    }
-                });
-                // done!
-                doc.end();
-
-                // Create directories for Promo folder.
-                createDirectories(dir, true);
-
-                // Array to store contacts of who to notify of this creation.
-                const admins = jsonData.email.admins;
-
-                // Get cooresponding admin office.
-                let officeAdmins = [];
-                if(projnum.length > 10) {
-                    officeAdmins = getAdmin(projnum[0], projnum[10]);
-                }
-                else {
-                    officeAdmins = getAdmin(projnum[0], 'Z');
-                }
-                // push admin office into admins array.
-                for(let admin of officeAdmins) {
-                    admins.push(admin);
-                }
-                // Query the Project manager's email.
-                connection.query('SELECT Email FROM Contacts WHERE ID = '+ req.body.ProjectMgr + ' AND Email IS NOT NULL').then(emails => {
-                    // console.log(emails);
-                    Object.entries(emails).forEach(email => { // Include their email in the admins array.
-                        if(!admins.includes(email[1].Email + '@shn-engr.com' || email[1].Email != undefined)) {
-                            admins.push(email[1].Email + '@shn-engr.com');
-                        }
-                    });
-                    // Finally, send the email.
-                    // emailPersonel(removeA +'.pdf', myPath, 'Promo with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Promo with ID ' + projnum + ' initialized.');
-                }).catch(awNo => { // If email query fails, print error.
-                    createTicket(awNo, "Could not send Promo Initiation email:");
-                    console.log('Could not send email.  The following error occurred instead:\n' + awNo);
-                });
-              })();
-              // If all is successful, send back the Promo number.
-            res.send(JSON.parse('{"Status":"'+ projnum +'"}'));
-        });
-    })
-    .catch(error => { // If any errors happen, print and send error.
-        console.error(error);
-        try{
-            createTicket(error, "Promo Initiation failed:");
-            res.send(JSON.stringify(error));
-        }
-        catch(AwMan) {
-            console.log("Could not send error response for Promo " + projnum);
-        }
-    });*/
 });
 
 /**
@@ -842,7 +738,7 @@ app.post('/keyName', jsonParser, (req, res) => {
 
 app.post('/ProjPromo', jsonParser, (req, res) => {
     // let myResponse = 'Null response';
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
+    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
     let projnum = '';
     if(req.body.PromoId[0] == 1) {
         projnum = "0";
@@ -912,25 +808,38 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
     // chosenJson.ClientContractPONumber = format(contractPONum);
     // chosenJson.OutsideMarkup = outsideMarkup;
     let retainMe = (req.body.RetainerPaid == 'None') ? req.body.Retainer:'$'+req.body.RetainerPaid;
-    let updateQuery = '';
-    if(isNaN(req.body.Latitude) || isNaN(req.body.Longitude)) {
-        updateQuery = 'UPDATE Projects SET Projectid = \''+ projnum + '\', ProjectTitle = \''+ req.body.ProjectTitle + '\', ProjectMgr = \'' + req.body.ProjectMgr + '\', QA_QCPerson = \'' + req.body.QA_QCPerson + '\', TeamMembers = \''+ req.body.TeamMembers +'\', StartDate = \'' + req.body.StartDate + '\', CloseDate = \''+ req.body.CloseDate +'\', ProjectLoation = \''+ req.body.ProjectLocation +'\', ' +
-        'ProjectKeywords = \''+ req.body.ProjectKeywords +'\', SHNOffice = \'' + req.body.SHNOffice + '\', ToatlContract = \'' + req.body.TotalContract + '\', RetainerPaid = \'' + retainMe + '\', ProfileCode = \'' + req.body.ProfileCode + '\', ServiceArea = \''+ req.body.ServiceArea + '\', ContractType = \'' + req.body.ContractType + '\', InvoiceFormat = \'' + req.body.InvoiceFormat + '\', OutsideMarkup = \'' + req.body.OutsideMarkup + '\', SpecialBillingInstructins = \'' + req.body.SpecialBillingInstructins + '\', SEEALSO = \'' + req.body.SEEALSO + '\', Project_Specifications = ' + req.body.Project_Specifications +
-        ', AutoCAD_Project = ' + req.body.AutoCAD_Project + ', GIS_Project = ' + req.body.GIS_Project + ', ClientCompany1 = \'' + req.body.ClientCompany1 + '\', OfficeMailingLists1 = \'' + req.body.OfficeMailingLists1 + '\','+
-        'ClientAbbrev1 = \'' + req.body.ClientAbbrev1 + '\', ClientContactFirstName1 = \'' + req.body.ClientContactFirstName1 + '\', ClientContactLastName1 = \'' + req.body.ClientContactLastName1 + '\', Title1 = \'' + req.body.Title1 + '\', Address1_1 = \'' + req.body.Address1_1 + '\', Address2_1 = \'' + req.body.Address2_1 + '\', City1 = \'' + req.body.City1 + '\', State1 = \'' + req.body.State1 + '\', Zip1 = \'' + req.body.Zip1 + '\', PhoneW1 = \''+ req.body.PhoneW1 + '\', PhoneH1 = \'' + req.body.PhoneH1 + '\', Cell1 = \'' + req.body.Cell1 + '\', Fax1 = \'' + req.body.Fax1 + '\', Email1 = \'' + req.body.Email1 + '\', '+
-        'BinderSize = \'' + req.body.BinderSize + '\', BinderLocation = \'' + req.body.BinderLocation + '\', DescriptionService = \''+  req.body.DescriptionService + '\', DTStamp = \''+ req.body.CreatedOn + '\' WHERE PromoId = \'' + req.body.PromoId + '\'';
-        latLongNaN = true;
-    }
-    else {
-        updateQuery = 'UPDATE Projects SET Projectid = \''+ projnum + '\', ProjectTitle = \''+ req.body.ProjectTitle + '\', ProjectMgr = \'' + req.body.ProjectMgr + '\', QA_QCPerson = \'' + req.body.QA_QCPerson + '\', TeamMembers = \''+ req.body.TeamMembers +'\', StartDate = \'' + req.body.StartDate + '\', CloseDate = \''+ req.body.CloseDate +'\', ProjectLoation = \''+ req.body.ProjectLocation +'\', ' +
-        'Lattitude = '+ req.body.Latitude +', Longitude = '+ req.body.Longitude +', ProjectKeywords = \''+ req.body.ProjectKeywords +'\', SHNOffice = \'' + req.body.SHNOffice + '\', ToatlContract = \'' + req.body.TotalContract + '\', RetainerPaid = \'' + retainMe + '\', ProfileCode = \'' + req.body.ProfileCode + '\', ContractType = \'' + req.body.ContractType + '\', InvoiceFormat = \'' + req.body.InvoiceFormat + '\', OutsideMarkup = \'' + req.body.OutsideMarkup + '\', SpecialBillingInstructins = \'' + req.body.SpecialBillingInstructins +
-        '\', SEEALSO = \'' + req.body.SEEALSO + '\', AutoCAD_Project = ' + req.body.AutoCAD_Project + ', GIS_Project = ' + req.body.GIS_Project + ', Project_Specifications = ' + req.body.Project_Specifications + ', ServiceArea = \''+ req.body.ServiceArea + '\', ClientCompany1 = \'' + req.body.ClientCompany1 + '\', OfficeMailingLists1 = \'' + req.body.OfficeMailingLists1 + '\', '+
-        'ClientAbbrev1 = \'' + req.body.ClientAbbrev1 + '\', ClientContactFirstName1 = \'' + req.body.ClientContactFirstName1 + '\', ClientContactLastName1 = \'' + req.body.ClientContactLastName1 + '\', Title1 = \'' + req.body.Title1 + '\', Address1_1 = \'' + req.body.Address1_1 + '\', Address2_1 = \'' + req.body.Address2_1 + '\', City1 = \'' + req.body.City1 + '\', State1 = \'' + req.body.State1 + '\', Zip1 = \'' + req.body.Zip1 + '\', PhoneW1 = \''+ req.body.PhoneW1 + '\', PhoneH1 = \'' + req.body.PhoneH1 + '\', Cell1 = \'' + req.body.Cell1 + '\', Fax1 = \'' + req.body.Fax1 + '\', Email1 = \'' + req.body.Email1 + '\', '+
-        'BinderSize = \'' + req.body.BinderSize + '\', BinderLocation = \'' + req.body.BinderLocation + '\', DescriptionService = \''+  req.body.DescriptionService + '\', DTStamp = \''+ req.body.CreatedOn +'\' WHERE PromoId = \'' + req.body.PromoId + '\'';
-    }
+
+    const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, closed, start_date, close_date, project_location, latitude, longitude, ' +
+            'SHNOffice_ID, service_area, total_contract, exempt_agreement, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup,'+
+            'prevailing_wage, agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, '+
+            'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, fax, email, '+
+            'binder_size, binder_location, description_service, created'+
+            ') VALUES (' + '\''+ projnum + '\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
+            req.body.StartDate + '\', \''+ req.body.CloseDate +'\', \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
+            '' + req.body.officeID + ', \''+ req.body.ServiceArea + '\', \''+ req.body.TotalContract +'\', '+ req.body.ServiceAgreement +', \''+ req.body.Retainer + '\', '+ req.body.RetainerPaid +', \''+ req.body.WaivedBy +'\', ' + req.body.ProfileCode +', '+
+            req.body.ContractType +', \''+ req.body.InvoiceID + '\', \''+ req.body.ClientContractPONumber +'\', '+ req.body.OutsideMarkup +', ' + req.body.PREVAILING_WAGE + ', '+ (req.body.agency != 'NULL'?'\''+req.body.agency +'\'':req.body.agency) +', '+ (req.body.SpecialBillingInstructins != 'NULL'?'\''+ req.body.SpecialBillingInstructins + '\'':req.body.SpecialBillingInstructins) + ', ' + 
+            (req.body.SEEALSO != 'NULL'?'\''+req.body.SEEALSO+'\'':req.body.SEEALSO) +', '+ req.body.AutoCAD_Project + ', '+ req.body.GIS_Project + ', ' + req.body.Project_Specifications + ', \'' +
+            req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL'?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', ' + (req.body.OfficeMailingLists1 != 'NULL'?'\''+req.body.OfficeMailingLists1 +'\'':req.body.OfficeMailingLists1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
+            (req.body.ClientRelation != 'NULL'?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL'?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
+            req.body.PhoneW1 + '\', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
+            req.body.DescriptionService + '\', \''+ myDate +'\'' +
+
     // console.log(updateQuery);
     // console.log('Project Number is ' + req.body.ProjectNumber + ', and Description is ' + req.body.Description);
-    connection.execute(updateQuery)
+    pool.query(query, (err, memes) => { // MEMES >:)
+        if(err) {
+            console.log(query);
+            console.error("promo query error:\n" + err);
+            try{
+                createTicket(err, "Promo Initiation failed:");
+                res.send(JSON.stringify(err));
+            }
+            catch(AwMan) {
+                console.log("Could not send error response for Promo " + projnum);
+            }
+        }
+    });
+    /* connection.execute(updateQuery)
     .then(memes => { // memes >:)
 
         if(!fs.existsSync(dir)) {
@@ -1055,7 +964,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
         myResponse = error;
         res.send(JSON.stringify(error));
         createTicket(error, "Could not convert Promo to Project:");
-    });
+    });*/
 })
 
 /**

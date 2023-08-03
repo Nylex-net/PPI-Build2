@@ -23,14 +23,15 @@ let totalContract = ''; // required
 let ServAgree = false; // required
 let ifYesWhy = '';
 let retainer = 0;
-let retainAmnt = 'None';
+let retainAmnt = 'NULL';
 let senior = '';
 let profCode = -1; // required
 let contactType = 0; // required
 let invoiceFormat = "B";
 let contractPONum = ''; // required
 let outsideMarkup = 15; // required
-let prevWage = "No"; // required
+let prevWage = "0"; // required
+let agency_name = '';
 let specBillInstr = '';
 let seeAlso = '';
 let autoCad = false;
@@ -56,7 +57,7 @@ let homePhone = '';
 let cell = '';
 let fax = '';
 let email = ''; // required
-let binderSize = 'NA';
+let binderSize = 'NULL';
 let binderLoc = '';
 let descOfServ = ''; // required
 let schedOfDeliv = '';
@@ -193,6 +194,7 @@ function getUsers(num) {
             checkEmpl.innerHTML = '';
 
             // A forEach loop to create the rest of the dropdown elements from our data retrieval.
+
             data.forEach((entry) => {
                 // Create an option in every iteration.
 
@@ -201,9 +203,8 @@ function getUsers(num) {
 
                 // Each option is assigned it's value using the employee ID, and its text is their last and first name.
                 // If user is a project manager, they join the project manager list.
-                
+
                 if(entry.PM == 1) {
-                
                     option.value = entry.ID;
                     option.text = entry.last + ", " + entry.first;
                     quackOpt.value = entry.ID;
@@ -379,10 +380,11 @@ function getUsers(num) {
             codeEl.appendChild(codeOpt);
 
             // forEach loop to createing and appending the remaining elements in the dropdown.
-            data.forEach((entry) => {
+
+            Object.entries(data).forEach((entry) => {
                 codeOpt = document.createElement("option");
-                codeOpt.value = entry.ID;
-                codeOpt.text = entry.Code + " - " + entry.Description;
+                codeOpt.value = entry[1].ID;
+                codeOpt.text = entry[1].Code + " - " + entry[1].Description;
                 codeEl.appendChild(codeOpt);
             });
 
@@ -418,7 +420,7 @@ function preparePost() {
     let formatCloseDate = new Date(endDate)
     formatCloseDate = ((formatCloseDate.getMonth() + 1) + '-' + formatCloseDate.getDate() + '-' + formatCloseDate.getFullYear()).toString();
     if(retainer != 'enterAmnt') {
-        retainAmnt == 'None';
+        retainAmnt == 'NULL';
     }
     else if(isNaN(retainAmnt)) {
         alert('An invalid value has been detected for retainer amount: ' + retainAmnt);
@@ -446,15 +448,15 @@ function preparePost() {
 
     let cadNum = 0;
     if(autoCad) {
-        cadNum = -1;
+        cadNum = 1;
     }
     let gisNum = 0;
     if(GIS) {
-        gisNum = -1;
+        gisNum = 1;
     }
     let projSpecNum = 0;
     if(projSpec) {
-        projSpecNum = -1;
+        projSpecNum = 1;
     }
 
     // Prefill "None" into the empty optional fields, because the pdf formatting forces these to overlap when the fields are empty.
@@ -464,39 +466,39 @@ function preparePost() {
     }
 
     if(specBillInstr == '') {
-        specBillInstr = 'None';
+        specBillInstr = 'NULL';
     }
 
     if(seeAlso == '') {
-        seeAlso = 'None';
+        seeAlso = 'NULL';
     }
 
     if(clientAbbr == '') {
-        clientAbbr = 'None';
+        clientAbbr = 'NULL';
     }
 
     if(title == '') {
-        title = 'None';
+        title = 'NULL';
     }
 
     if(addr2 == '') {
-        addr2 = 'None';
+        addr2 = 'NULL';
     }
 
     if(homePhone == '') {
-        homePhone = 'None';
+        homePhone = 'NULL';
     }
 
     if(cell == '') {
-        cell = 'None';
+        cell = 'NULL';
     }
 
     if(fax == '') {
-        fax = 'None';
+        fax = 'NULL';
     }
 
     if(binderLoc == '') {
-        binderLoc = 'None';
+        binderLoc = 'NULL';
     }
 
     let myNames = '';
@@ -507,14 +509,14 @@ function preparePost() {
         }
     }
 
-    let Service_Agreement = 'No';
+    let Service_Agreement = 0;
     if(ServAgree) {
-        Service_Agreement = 'Yes';
+        Service_Agreement = 1;
     }
     else {
-        ifYesWhy = 'NA';
+        ifYesWhy = 'NULL';
     }
-    let waiver = (retainer == 'Waived by X') ? 'Waived by ' + senior:retainer;
+    let waiver = (retainer == 'Waived by X') ? senior:'NULL';
     document.getElementById('sending').innerHTML = '<p id="submitStat">Submitting...</p>';
 
     let sql = '{"Id":"' + id + '", "ProjectTitle":"'+ format(projTitle) + '",' +
@@ -527,30 +529,35 @@ function preparePost() {
     '"StartDate":"'+ startDate + '",' +
     '"CloseDate":"' + endDate + '",' +
     '"ProjectLocation":"'+ format(projLoc) + '",' +
-    '"Latitude":"'+ format(latitude) + '",' +
-    '"Longitude":"'+ format(longitude) + '",' +
+    '"Latitude":"'+ latitude + '",' +
+    '"Longitude":"'+ longitude + '",' +
+    '"KeyIDs":"'+ Projkeywords + '",' +
     '"ProjectKeywords":"'+ teamString(keyNames) + ' || '+ myNames + '",' +
+    '"officeID":"'+ shnOffice + '",' +
     '"SHNOffice":"'+ officeName1 + '",' +
     '"ServiceArea":"'+ servName + '",' +
     '"TotalContract":"'+ totalContract + '",' +
     '"ServiceAgreement":"'+ Service_Agreement +'",' +
     '"Explanation":'+ JSON.stringify(formatMultiline(ifYesWhy)) +',' +
-    '"Retainer":"'+ format(waiver) + '",' +
+    '"Retainer":"'+ retainer + '",' +
     '"RetainerPaid":"'+ retainAmnt + '",' +
+    '"WaivedBy":"'+ format(waiver) + '",' +
     '"ProfileCode":"'+ profCode + '",' +
     '"ContractType":"'+ contactType + '",' +
     '"contactTypeName":"'+contactTypeName + '",'+
+    '"InvoiceID":"'+ invoiceFormat + '",'+
     '"InvoiceFormat":"'+ invoiceName + '",' +
     '"ClientContractPONumber":"'+ format(contractPONum) + '",' +
     '"OutsideMarkup":"' + outsideMarkup + '",' +
     '"PREVAILING_WAGE":"'+ prevWage + '",' +
+    '"agency":"'+ (agency_name == ''?"NULL":format(agency_name)) + '",' +
     '"SpecialBillingInstructins":'+ JSON.stringify(formatMultiline(specBillInstr)) + ',' +
     '"SEEALSO":'+ JSON.stringify(formatMultiline(seeAlso)) + ',' +
     '"AutoCAD_Project":'+ cadNum + ',' +
     '"GIS_Project":'+ gisNum + ',' +
     '"Project_Specifications":"'+ projSpecNum + '",' +
     '"ClientCompany1":"'+ format(clientComp) + '",' +
-    '"ClientRelation":"'+ format(clientComp) + '",' +
+    '"ClientRelation":"'+ format(clientRelation) + '",' +
     '"OfficeMailingLists1":"'+ mailList + '",' +
     '"ClientAbbrev1":"'+ format(clientAbbr) + '",' +
     '"ClientContactFirstName1":"'+ format(clientFirst) + '",' +
@@ -765,8 +772,8 @@ function expandWhy() {
  */
 
 function agency() {
-    if(document.getElementById('wage').value == "Yes") {
-        document.getElementById('agent').innerHTML = '<br><label for="agentcy">Name of Agency:<span class="astrick">*</span></label><br><input type="text" id="agency" name="agenct" title="Agency" maxlength="10">';
+    if(document.getElementById('wage').value == "1") {
+        document.getElementById('agent').innerHTML = '<br><label for="agentcy">Name of Agency:<span class="astrick">*</span></label><br><input type="text" id="agency" name="agency" title="Agency" maxlength="255">';
     }
     else {
         document.getElementById('agent').innerHTML = '';
@@ -808,8 +815,8 @@ function page1() {
 
 function page2() {
     return '<div class="grid-container">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
-    getTextField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, true) +
-    getTextField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, true)
+    getNumberField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, -1, -90, 90, true) +
+    getNumberField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, -1, -90, 90, true)
     + '<div class="grid-item"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
     '<div class="grid-item"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
     +'</div>';
@@ -837,7 +844,7 @@ function page4() {
     getTextField('Client Contract/PO #', 'PO', contractPONum, true) +
     '<div class="grid-item"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
     '<div class="grid-item"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-    '<div class="grid-item"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agency();" required><option value="Yes">Yes</option><option value="No" selected>No</option></select><div id="agent"></div></div>'+
+    '<div class="grid-item"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
     '<div class="grid-item"><label for="billInst">Special Billing Instructions</label></div><div class="grid-item"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
     '<div class="grid-item"><label for="seeAlso">See Also</label></div><div class="grid-item"><textarea id="seeAlso" name="seeAlso" rows="5" cols="50" maxlength="200"></textarea></div>'+
     '<div class="grid-item"><label for="autocad">AutoCAD Job</label></div><div class="grid-item"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
@@ -865,7 +872,7 @@ function page5() {
 
 function page6() {
     return '<div class="grid-container">' +
-    '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NA" selected>N/A</option><option value="1/2">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+    '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
     '<div class="grid-item"><label for="bindLoc">Binder Location</label></div><div class="grid-item"><input type="text" id="bindLoc" name="bindLoc"></div>' +
     '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search_demo.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div></div>';
 }
@@ -894,7 +901,7 @@ function page7() {
         mailList = 'Christmas';
     }
     else {
-        mailList = 'None';
+        mailList = 'NULL';
     }
 
     let autoCadName = 'no';
@@ -970,6 +977,8 @@ function page7() {
     + '<div class="grid-item">' + outsideMarkup + '</div>'+
     '<div class="grid-item">Prevailige Wage' + '</div>'
     + '<div class="grid-item">' + prevWage + '</div>'+
+    '<div class="grid-item">Agency' + '</div>'
+    + '<div class="grid-item">' + agency_name + '</div>'+
     '<div class="grid-item">Special Billing Instructions' + '</div>'
     + '<div class="grid-item">' + specBillInstr + '</div>'+
     '<div class="grid-item">See Also' + '</div>'
@@ -1086,7 +1095,8 @@ function saveChoices(currPage) {
         contractPONum = document.getElementById('PO').value.trim();
         outsideMarkup = document.getElementById('OutMark').value;
         // outsideMarkupName = document.getElementById('OutMark').options[document.getElementById("OutMark").selectedIndex].text;
-        prevWage = (document.getElementById('wage').value == 'Yes' && document.getElementById('agency').value != undefined && document.getElementById('agency').value != null)?document.getElementById('agency').value.trim():'No';
+        prevWage = document.getElementById('wage').value;
+        agency_name = (document.getElementById('wage').value == '1' && document.getElementById('agency').value != undefined && document.getElementById('agency').value != null)?document.getElementById('agency').value.trim():'';
         specBillInstr = document.getElementById('billInst').value.trim();
         seeAlso = document.getElementById('seeAlso').value.trim();
         autoCad = document.getElementById('yesAuto').checked;
@@ -1467,10 +1477,10 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         document.getElementById('invoiceFormat').value = invoiceFormat;
         document.getElementById('PO').value = contractPONum;
         document.getElementById('OutMark').value = outsideMarkup;
-        document.getElementById('wage').value = (prevWage == "No")?'No':"Yes";
-        if(prevWage != "No") {
+        document.getElementById('wage').value = (prevWage == "0")?'0':"1";
+        if(prevWage != "0") {
             agency();
-            document.getElementById("agency").value = prevWage;
+            document.getElementById("agency").value = agency_name;
         }
         document.getElementById('billInst').value = specBillInstr;
         document.getElementById('seeAlso').value = seeAlso;
