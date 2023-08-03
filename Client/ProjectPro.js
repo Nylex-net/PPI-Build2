@@ -36,7 +36,7 @@ let homePhone = '';
 let cell = '';
 let fax = ''; // required
 let email = ''; // required
-let binderSize = 'NA';
+let binderSize = 'NULL';
 let descOfServ = ''; // required
 
 // Below global variables are for the review page for a more proper display.
@@ -135,31 +135,31 @@ function preparePost() {
     // Prefill "None" into the empty optional fields, because the pdf formatting forces these to overlap when the fields are empty.
 
     if(endDate.trim() == '' || endDate == undefined) {
-        endDate = "None";
+        endDate = "NULL";
     }
 
     if(clientAbbr == '') {
-        clientAbbr = 'None';
+        clientAbbr = 'NULL';
     }
 
     if(title == '') {
-        title = 'None';
+        title = 'NULL';
     }
 
     if(addr2 == '') {
-        addr2 = 'None';
+        addr2 = 'NULL';
     }
 
     if(homePhone == '') {
-        homePhone = 'None';
+        homePhone = 'NULL';
     }
 
     if(cell == '') {
-        cell = 'None';
+        cell = 'NULL';
     }
 
     if(fax == '') {
-        fax = 'None';
+        fax = 'NULL';
     }
 
     let myNames = '';
@@ -183,14 +183,17 @@ function preparePost() {
     '"ProjectLocation":"'+ format(projLoc) + '",' +
     '"Latitude":"'+ format(latitude) + '",' +
     '"Longitude":"'+ format(longitude) + '",' +
+    '"KeyIDs":"'+ Projkeywords + '",' +
     '"ProjectKeywords":"'+ teamString(keyNames) + ' || '+ myNames + '",' +
     '"SHNOffice":"'+ officeName1 + '",' +
+    '"officeID":"'+ shnOffice + '",' +
     '"ServiceArea":"'+ servName + '",' +
     '"ProfileCode":"'+ profCode + '",' +
     '"ClientCompany1":"'+ format(clientComp) + '",' +
     '"ClientAbbrev1":"'+ format(clientAbbr) + '",' +
     '"ClientContactFirstName1":"'+ format(clientFirst) + '",' +
     '"ClientContactLastName1":"'+ format(clientLast) + '",' +
+    '"ClientRelation":"'+ clientRelation + '",' +
     '"Title1":"'+ format(title) + '",' +
     '"Address1_1":"'+ format(addr1) + '",' +
     '"Address2_1":"'+ format(addr2) + '",'+
@@ -307,16 +310,13 @@ If server code SHNserver.js isn't running or a connection error occurs, the page
 function getUsers(num) {
 
     let accessErr = false;
-
     // If-statements are to determine which page is making the call.
-
     if(num == 1) { // for page1()
         fetch("https://e-hv-ppi.shn-engr.com:3000").then(response => { // Makes a call for employees.
             let myEmpl = response.json();
             return myEmpl; // returns to the ".then" statement's data below for processing.
         }).then(data => {
-
-            if(!data[0].hasOwnProperty('ID')) {
+            if(!data[0].hasOwnProperty("ID")) {
                 accessErr = true;
                 console.log(data);
                 throw error;
@@ -328,9 +328,9 @@ function getUsers(num) {
             let qaqcMgr = document.createElement('select');
             selectMgr.name = "projectManagers";
             selectMgr.id = "projMgr";
-            selectMgr.required = true;
             qaqcMgr.name = "qaqcPerson";
             qaqcMgr.id = "qaqc";
+            selectMgr.required = true;
             qaqcMgr.required = true;
 
             // Creates the default "-Select-" option and appends to the inside of the dropdown.
@@ -343,7 +343,7 @@ function getUsers(num) {
             quackOpt.text = "-Select-";
             selectMgr.appendChild(option);
             qaqcMgr.appendChild(quackOpt);
-            
+
             // checkEmpl will hold all the checkboxes to select team members for the project.
 
             let checkEmpl = document.getElementById('emplCol');
@@ -355,8 +355,7 @@ function getUsers(num) {
 
             // A forEach loop to create the rest of the dropdown elements from our data retrieval.
 
-            Object.entries(data).forEach((entry) => {
-
+            data.forEach((entry) => {
                 // Create an option in every iteration.
 
                 option = document.createElement("option");
@@ -364,17 +363,20 @@ function getUsers(num) {
 
                 // Each option is assigned it's value using the employee ID, and its text is their last and first name.
                 // If user is a project manager, they join the project manager list.
-                if(entry[1].PM == -1) {
-                    option.value = entry[1].ID;
-                    option.text = entry[1].Last + ", " + entry[1].First;
-                    quackOpt.value = entry[1].ID;
-                    quackOpt.text = entry[1].Last + ", " + entry[1].First;
+
+                if(entry.PM == 1) {
+                    option.value = entry.ID;
+                    option.text = entry.last + ", " + entry.first;
+                    quackOpt.value = entry.ID;
+                    quackOpt.text = entry.last + ", " + entry.first;
 
                     // Append employee to the dropdowns.
 
                     selectMgr.appendChild(option);
                     qaqcMgr.appendChild(quackOpt);
                 }
+
+                // Finally, we use function getCheckbox() to create a checkbox and append into our 4 column table.
             });
 
             // Math to determine the order of adding employee checkboxes in alphabetical order in columns.
@@ -388,7 +390,7 @@ function getUsers(num) {
                 jumpTo = row;
                 iter = 0;
                 while(iter < 4 && jumpTo < data.length) {
-                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].First + " " + data[jumpTo].Last, data[jumpTo].Last + ", " + data[jumpTo].First);
+                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].first + " " + data[jumpTo].last, data[jumpTo].last + ", " + data[jumpTo].first);
                     jumpTo += floor;
                     iter++;
                 }
@@ -401,7 +403,7 @@ function getUsers(num) {
                 jumpTo = floor * 4;
                 while(jumpTo < data.length) {
                     checkEmpl.innerHTML += '<div></div><div></div><div></div>';
-                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].First + " " + data[jumpTo].Last, data[jumpTo].Last + ", " + data[jumpTo].First);
+                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].first + " " + data[jumpTo].last, data[jumpTo].last + ", " + data[jumpTo].first);
                     jumpTo++;
                 }
             }
@@ -414,9 +416,10 @@ function getUsers(num) {
             document.getElementById("projFiller").appendChild(selectMgr);
             document.getElementById("qaqcFill").appendChild(qaqcMgr);
 
-            // Call fillPage(num) to fill in the default / user-selected values.
+            // fillAfterLoad fills the previous selected answers.
 
             fillAfterLoad(num);
+
         }).catch(error => { // If we can't connect to our server for whatever reason, we'll write an error mesage into our table.
 
             document.getElementById("projFiller").innerHTML = 'Oh no! SHN had a connection error!';
@@ -436,7 +439,7 @@ function getUsers(num) {
             return myKeys; // returns to the ".then" statement's data below for processing.
         }).then(data => {
 
-            if(!data[0].hasOwnProperty('ID')) {
+            if(!data[0].hasOwnProperty("ID")) {
                 accessErr = true;
                 console.log(data);
                 throw error;
@@ -446,9 +449,16 @@ function getUsers(num) {
             // In function page(1), the html displays "Getting keywords..." by default to show that the information is getting fetched.
 
             let keyEl = document.getElementById('keywords');
+
             keyEl.innerHTML = '';
             keyResult = [];   
-            keyIDMap.clear();
+            keyIDMap.clear();         // A forEach loop to create the checkbox elements from our data retrieval.
+
+            // Object.entries(data).forEach((entry) => {
+            //     // keyEl.innerHTML += getCheckbox('key', entry[1].ID, entry[1].Keyword, entry[1].Keyword);
+            //     keyResult.push(entry[1].Keyword);
+            //     keyIDMap.set(entry[1].Keyword, getCheckbox('key', entry[1].ID, entry[1].Keyword, entry[1].Keyword));
+            // });
 
             const floor = Math.floor(data.length / 4);
             let row = 0;
@@ -482,10 +492,8 @@ function getUsers(num) {
 
             keywordString = keyEl.innerHTML;
 
-            // Now call fillPage(num) to fill the fields with default and/or user-selected values.
-
-            // fillPage(num);
             fillAfterLoad(num);
+
         }).catch(error => { // If an error occurs with our connection to the server, we'll write an error mesage into our table.
 
             document.getElementById('keywords').innerHTML = 'Oh no! Keywords couldn\'t be retrieved!';
@@ -503,7 +511,7 @@ function getUsers(num) {
             return myCodes; // returns to the ".then" statement's data below for processing.
         }).then(data => {
 
-            if(!data[0].hasOwnProperty('Code')) {
+            if(!data[0].hasOwnProperty("Code")) {
                 accessErr = true;
                 console.log(data);
                 throw error;
@@ -535,8 +543,8 @@ function getUsers(num) {
 
             Object.entries(data).forEach((entry) => {
                 codeOpt = document.createElement("option");
-                codeOpt.value = entry[1].Code;
-                codeOpt.text = entry[1].Code + " - " + entry[1].CodeDescription;
+                codeOpt.value = entry[1].ID;
+                codeOpt.text = entry[1].Code + " - " + entry[1].Description;
                 codeEl.appendChild(codeOpt);
             });
 
@@ -545,11 +553,9 @@ function getUsers(num) {
 
             document.getElementById('codeFill').innerHTML = '';
             document.getElementById('codeFill').appendChild(codeEl);
+            fillPage(num);
 
-            // Now call fillPage(num) to fill the fields with default and/or user-selected values.
-
-            // fillPage(num);
-            fillAfterLoad(num);
+            document.getElementById(codeEl.id).value = profCode;
 
         }).catch(error => { // If an error occurs with our connection to the server, we'll write an error mesage into our table.
 
@@ -670,7 +676,7 @@ They simply return the html syntax to create the table with the needed options.
 function page1() {
     return '<div class="grid-container">' + getTextField('Promo Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', projTitle, true) +
     '<div class="grid-item"><label for="promo-type">Type of Promo<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><select name="promo-type" id="promo-type" title="Promo" required><option value="" selected>-Select-</option><option value="on-going">On-going</option><option value="letter">Letter</option><option value="soq">SOQ</option><option value="Proposal-Prime">Proposal-Prime</option><option value="Proposal-Sub">Proposal-Sub</option></select></div>'+
+    '<div class="grid-item"><select name="promo-type" id="promo-type" title="Promo" required><option value="" selected>-Select-</option><option value="on-going">On-going</option><option value="letter">Letter</option><option value="soq">SOQ</option><option value="ProPri">Proposal-Prime</option><option value="ProSub">Proposal-Sub</option></select></div>'+
     '<div class="grid-item"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
     '<div class="grid-item" id="projFiller">Loading managers...</div>'+
     '<div class="grid-item"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
@@ -686,8 +692,8 @@ function page1() {
 
 function page2() {
     return '<div class="grid-container">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
-    getTextField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, true) +
-    getTextField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, true)
+    getNumberField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, -1, -90, 90, true) +
+    getNumberField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, -1, -90, 90, true)
     + '<div class="grid-item"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
     '<div class="grid-item"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
     +'</div>';
@@ -706,21 +712,23 @@ function page4() {
     return '<div class="grid-container">' + getTextField('Client Company', 'clientComp', clientComp, true) + getTextField('Client Abbreviation', 'clientAbbr', clientAbbr, false) + 
     getTextField('Client First Name', 'cFirst', clientFirst, true) + getTextField('Client Last Name', 'cLast', clientLast, true) + 
     '<div class="grid-item"><label for="relation">Client Relationship</label></div><div class="grid-item"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
-    getTextField('Title', 'title', title, false) + getTextField("Address 1", 'ad1', addr1, true) + getTextField('Address 2', 'ad2', addr2, false) + 
+    getTextField('Title', 'title', title, false) +
+    getTextField('Address 1', 'addy1', addr1, true) +
+    getTextField('Address 2', 'addy2', addr2, false) + 
     getTextField('City', 'city', city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
-            '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="20" required></div>'+
-            '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="20"></div>'+
-            '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="20"></div>'+
-            '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="20"></div>'+
-            '<div class="grid-item"><label for="email">Email<span class="astrick">*</span></label></div><div class="grid-item"><input type="email" id="email" name="email" maxlength="75" required></div>'
-    + '</div>';
+    '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
+    '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
+    '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="20" required></div>'+
+    '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="20"></div>'+
+    '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="20"></div>'+
+    '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="20"></div>'+
+    '<div class="grid-item"><label for="email">Email<span class="astrick">*</span></label></div><div class="grid-item"><input type="email" id="email" name="email" maxlength="75" required></div>'+
+    '</div>';
 }
 
 function page5() {
     return '<div class="grid-container">' +
-    '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NA" selected>N/A</option><option value="1/2">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+    '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="1/2">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
     '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search_demo.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'
     +'</div>';
 }
@@ -860,8 +868,8 @@ function saveChoices(currPage) {
         clientLast = document.getElementById('cLast').value.trim();
         clientRelation = document.getElementById('relation').value;
         title = document.getElementById('title').value.trim();
-        addr1 = document.getElementById('ad1').value.trim();
-        addr2 = document.getElementById('ad2').value.trim();
+        addr1 = document.getElementById('addy1').value.trim();
+        addr2 = document.getElementById('addy2').value.trim();
         city = document.getElementById('city').value.trim();
         state = document.getElementById('state').value;
         zip = document.getElementById('zip').value;
@@ -1122,6 +1130,10 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
             numOther--;
         }
     }
+    else if(newPage == 3) {
+        document.getElementById('office').value = shnOffice;
+        document.getElementById('service').value = serviceArea;
+    }
     else if(newPage == 4) { // Fill page 4.
 
         // Set previous or default values to fields.
@@ -1132,8 +1144,8 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         document.getElementById('cLast').value = clientLast;
         document.getElementById('relation').value = clientRelation;
         document.getElementById('title').value = title;
-        document.getElementById('ad1').value = addr1;
-        document.getElementById('ad2').value = addr2;
+        document.getElementById('addy1').value = addr1;
+        document.getElementById('addy2').value = addr2;
         document.getElementById('city').value = city;
         document.getElementById('state').value = state;
         document.getElementById('zip').value = zip;
@@ -1203,8 +1215,6 @@ function fillAfterLoad(currPage) {
         }
     }
     else if(currPage == 3) {
-        document.getElementById('office').value = shnOffice;
-        document.getElementById('service').value = serviceArea;
         document.getElementById('code').value = profCode;
     }
 }
