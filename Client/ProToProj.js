@@ -7,6 +7,7 @@ let jsonResults;
 let chosenJson;
 let formatMap = new Map();
 let projectMap = new Map();
+let rizz = new Array();
 let projTitle = ''; // required
 let projMgr = 0; // required
 let qaqc = 0; // required
@@ -25,7 +26,7 @@ let totalContract = ''; // required
 let ServAgree = false; // required
 let ifYesWhy = '';
 let retainer = 0;
-let retainAmnt = 'None';
+let retainAmnt = 'NULL';
 let waiver = '';
 let profCode = -1; // required
 let contactType = 0; // required
@@ -33,6 +34,7 @@ let invoiceFormat = "B";
 let contractPONum = ''; // required
 let outsideMarkup = 15; // required
 let prevWage = "No"; // required
+let agency_name = '';
 let specBillInstr = '';
 let seeAlso = '';
 let autoCad = false;
@@ -98,7 +100,7 @@ function findPromos() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
             var json = JSON.parse(xhr.responseText);
-            if(json.hasOwnProperty('process')) {
+            if(json.hasOwnProperty('sqlstate')) {
                 document.getElementById('results').innerHTML = 'No results.';
             }
             else if(json.length <= 0) {
@@ -129,15 +131,16 @@ function findPromos() {
 
 function resultString(jsonRes) {
     let result = '';
+    rizz = jsonRes;
     console.log(jsonRes);
     projectMap.clear();
     formatMap.clear();
     for(let i = 0; i < jsonRes.length; i++) {
-        jsonRes[i].ProjectTitle = (jsonRes[i].ProjectTitle == null || jsonRes[i].ProjectTitle == undefined || jsonRes[i].ProjectTitle == '') ? '[NO TITLE]':jsonRes[i].ProjectTitle;
-        if(!formatMap.has(jsonRes[i].PromoId)) {
-            formatMap.set(jsonRes[i].PromoId, '<p>Promo Number: ' + jsonRes[i].PromoId + ' || Title: ' + jsonRes[i].ProjectTitle + '<br>Project Manager: ' + jsonRes[i].First + " " + jsonRes[i].Last + " || Client: "+jsonRes[i].ClientContactFirstName1 + " " + jsonRes[i].ClientContactLastName1 + "<br>Client Company: " + jsonRes[i].ClientCompany1);
+        jsonRes[i].promo_title = (jsonRes[i].promo_title == null || jsonRes[i].promo_title == undefined || jsonRes[i].promo_title == '') ? '[NO TITLE]':jsonRes[i].promo_title;
+        if(!formatMap.has(jsonRes[i].promo_id)) {
+            formatMap.set(jsonRes[i].promo_id, '<p>Promo Number: ' + jsonRes[i].promo_id + ' || Title: ' + jsonRes[i].promo_title + '<br>Project Manager: ' + jsonRes[i].first + " " + jsonRes[i].last + " || Client: "+jsonRes[i].first_name + " " + jsonRes[i].last_name + "<br>Client Company: " + jsonRes[i].client_company);
         }
-        projectMap.set(jsonRes[i].PromoId, jsonRes[i]);
+        projectMap.set(jsonRes[i].promo_id, jsonRes[i]);
     }
     for(let key of formatMap.keys()) {
         formatMap.set(key, formatMap.get(key) + '</p>' + addFields(key));
@@ -166,39 +169,55 @@ function starter(res) {
     if(selectedPromo == undefined || selectedPromo == null) {
         return;
     }
+    rizz = rizz.filter((data) => {
+        return data.promo_id === selectedPromo;
+    });
     document.getElementById('inserter').innerHTML = '<form name="myForm" id="projForm" onsubmit="reqField();" action="" method=""><div class="grid-container"></div></form>';
     chosenJson = projectMap.get(selectedPromo);
-    getKeysByName();
-    projTitle = chosenJson.ProjectTitle;
-    projMgr = chosenJson.ProjectMgr;
-    qaqc = chosenJson.QA_QCPerson;
-    teamMem = chosenJson.TeamMembers.split(',');
-    startDate = chosenJson.StartDate;
-    endDate = chosenJson.CloseDate;
-    projLoc = chosenJson.ProjectLoation;
-    latitude = chosenJson.Lattitude;
-    longitude = chosenJson.Longitude;
-    shnOffice = getOfficeNum(chosenJson.SHNOffice);
-    serviceArea = chosenJson.ServiceArea;
-    totalContract = chosenJson.ToatlContract;
-    profCode = chosenJson.ProfileCode;
-    clientComp = chosenJson.ClientCompany1;
-    clientAbbr = chosenJson.ClientAbbrev1;
-    clientFirst = chosenJson.ClientContactFirstName1;
-    clientLast = chosenJson.ClientContactLastName1;
-    addr1 = chosenJson.Address1_1;
-    addr2 = chosenJson.Address2_1;
-    title = chosenJson.Title1;
-    city = chosenJson.City1;
-    state = chosenJson.State1;
-    zip = chosenJson.Zip1;
-    workPhone = chosenJson.PhoneW1;
-    homePhone = chosenJson.PhoneH1;
-    cell = chosenJson.Cell1;
-    fax = chosenJson.Fax1;
-    email = chosenJson.Email1;
-    binderSize = chosenJson.BinderSize;
-    descOfServ = chosenJson.DescriptionService;
+    // getKeysByName();
+    projTitle = chosenJson.promo_title;
+    projMgr = chosenJson.manager_id;
+    qaqc = chosenJson.qaqc_person_ID;
+    // teamMem = chosenJson.TeamMembers.split(',');
+    startDate = chosenJson.start_date.substring(0, chosenJson.start_date.indexOf('T'));
+    endDate = chosenJson.close_date.substring(0, chosenJson.close_date.indexOf('T'));
+    projLoc = chosenJson.promo_location;
+    latitude = chosenJson.latitude;
+    longitude = chosenJson.longitude;
+    shnOffice = chosenJson.SHNOffice_ID;
+    serviceArea = chosenJson.service_area;
+    // totalContract = chosenJson.ToatlContract;
+    profCode = chosenJson.profile_code_id;
+    clientComp = chosenJson.client_company;
+    clientAbbr = chosenJson.client_abbreviation;
+    clientFirst = chosenJson.first_name;
+    clientLast = chosenJson.last_name;
+    clientRelation = chosenJson.relationship;
+    addr1 = chosenJson.address1;
+    addr2 = chosenJson.address2;
+    title = chosenJson.job_title;
+    city = chosenJson.city;
+    state = chosenJson.state;
+    zip = chosenJson.zip_code;
+    workPhone = chosenJson.work_phone;
+    homePhone = chosenJson.home_phone;
+    cell = chosenJson.cell;
+    fax = chosenJson.fax;
+    email = chosenJson.email;
+    binderSize = chosenJson.binder_size;
+    descOfServ = chosenJson.description_service;
+
+    rizz.forEach(entry => {
+        if(!teamMem.includes(entry.manager_id)) {
+            teamMem.push(entry.manager_id);
+        }
+        if(!teamMem.includes(entry.member_id)) {
+            teamMem.push(entry.member_id);
+        }
+        if(!Projkeywords.includes(entry.keyword_id)) {
+            Projkeywords.push(entry.keyword_id);
+        }
+    });
 
     getPage(1);
 }
@@ -383,8 +402,7 @@ function getUsers(num) {
 
             // A forEach loop to create the rest of the dropdown elements from our data retrieval.
 
-            Object.entries(data).forEach((entry) => {
-
+            data.forEach((entry) => {
                 // Create an option in every iteration.
 
                 option = document.createElement("option");
@@ -393,11 +411,11 @@ function getUsers(num) {
                 // Each option is assigned it's value using the employee ID, and its text is their last and first name.
                 // If user is a project manager, they join the project manager list.
 
-                if(entry[1].PM == -1) {
-                    option.value = entry[1].ID;
-                    option.text = entry[1].Last + ", " + entry[1].First;
-                    quackOpt.value = entry[1].ID;
-                    quackOpt.text = entry[1].Last + ", " + entry[1].First;
+                if(entry.PM == 1) {
+                    option.value = entry.ID;
+                    option.text = entry.last + ", " + entry.first;
+                    quackOpt.value = entry.ID;
+                    quackOpt.text = entry.last + ", " + entry.first;
 
                     // Append employee to the dropdowns.
 
@@ -406,25 +424,8 @@ function getUsers(num) {
                 }
 
                 // Finally, we use function getCheckbox() to create a checkbox and append into our 4 column table.
-
-                // emplArray.push(getCheckbox('Team', entry[1].ID, entry[1].First + " " + entry[1].Last, entry[1].Last + ", " + entry[1].First));
-                // checkEmpl.innerHTML += getCheckbox('Team', entry[1].ID, entry[1].First + " " + entry[1].Last, entry[1].Last + ", " + entry[1].First);
-
             });
 
-            // let perCol = Math.floor(emplArray.length / 4);
-            // let skipper = 0;
-            // let jumper = 0;
-            // while(skipper < perCol) {
-            //     if(jumper >= emplArray.length) {
-            //         skipper++;
-            //         jumper = skipper;
-            //     }
-            //     if(skipper > perCol) {
-            //         break;
-            //     }
-            //     checkEmpl.innerHTML += emplArray[];
-            // }
             // Math to determine the order of adding employee checkboxes in alphabetical order in columns.
             // By default, employees are ordered from left to right when appending each to checkEmpl.innerHTML.
 
@@ -436,7 +437,7 @@ function getUsers(num) {
                 jumpTo = row;
                 iter = 0;
                 while(iter < 4 && jumpTo < data.length) {
-                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].First + " " + data[jumpTo].Last, data[jumpTo].Last + ", " + data[jumpTo].First);
+                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].first + " " + data[jumpTo].last, data[jumpTo].last + ", " + data[jumpTo].first);
                     jumpTo += floor;
                     iter++;
                 }
@@ -449,7 +450,7 @@ function getUsers(num) {
                 jumpTo = floor * 4;
                 while(jumpTo < data.length) {
                     checkEmpl.innerHTML += '<div></div><div></div><div></div>';
-                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].First + " " + data[jumpTo].Last, data[jumpTo].Last + ", " + data[jumpTo].First);
+                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].first + " " + data[jumpTo].last, data[jumpTo].last + ", " + data[jumpTo].first);
                     jumpTo++;
                 }
             }
@@ -500,6 +501,12 @@ function getUsers(num) {
             keyResult = [];   
             keyIDMap.clear();         // A forEach loop to create the checkbox elements from our data retrieval.
 
+            // Object.entries(data).forEach((entry) => {
+            //     // keyEl.innerHTML += getCheckbox('key', entry[1].ID, entry[1].Keyword, entry[1].Keyword);
+            //     keyResult.push(entry[1].Keyword);
+            //     keyIDMap.set(entry[1].Keyword, getCheckbox('key', entry[1].ID, entry[1].Keyword, entry[1].Keyword));
+            // });
+
             const floor = Math.floor(data.length / 4);
             let row = 0;
             let jumpTo = 0;
@@ -529,6 +536,7 @@ function getUsers(num) {
                     jumpTo++;
                 }
             }
+
             keywordString = keyEl.innerHTML;
 
             fillAfterLoad(num);
@@ -582,8 +590,8 @@ function getUsers(num) {
 
             Object.entries(data).forEach((entry) => {
                 codeOpt = document.createElement("option");
-                codeOpt.value = entry[1].Code;
-                codeOpt.text = entry[1].Code + " - " + entry[1].CodeDescription;
+                codeOpt.value = entry[1].ID;
+                codeOpt.text = entry[1].Code + " - " + entry[1].Description;
                 codeEl.appendChild(codeOpt);
             });
 
@@ -645,65 +653,65 @@ function preparePost() {
 
     let cadNum = 0;
     if(autoCad) {
-        cadNum = -1;
+        cadNum = 1;
     }
     let gisNum = 0;
     if(GIS) {
-        gisNum = -1;
+        gisNum = 1;
     }
     let projSpecNum = 0;
     if(projSpec) {
-        projSpecNum = -1;
+        projSpecNum = 1;
     }
 
     // Prefill "None" into the empty optional fields, because the pdf formatting forces these to overlap when the fields are empty.
 
     if(endDate.trim() == "" || endDate == undefined) {
-        endDate = "None";
+        endDate = "NULL";
     }
 
     if(specBillInstr == '') {
-        specBillInstr = 'None';
+        specBillInstr = 'NULL';
     }
 
     if(seeAlso == '') {
-        seeAlso = 'None';
+        seeAlso = 'NULL';
     }
 
     if(clientAbbr == '') {
-        clientAbbr = 'None';
+        clientAbbr = 'NULL';
     }
 
     if(title == '') {
-        title = 'None';
+        title = 'NULL';
     }
 
     if(addr2 == '') {
-        addr2 = 'None';
+        addr2 = 'NULL';
     }
 
     if(homePhone == '') {
-        homePhone = 'None';
+        homePhone = 'NULL';
     }
 
     if(cell == '') {
-        cell = 'None';
+        cell = 'NULL';
     }
 
     if(fax == '') {
-        fax = 'None';
+        fax = 'NULL';
     }
 
     if(binderLoc == '') {
-        binderLoc = 'None';
+        binderLoc = 'NULL';
     }
 
-    let Service_Agreement = 'No';
+    let Service_Agreement = 0;
     if(ServAgree) {
-        Service_Agreement = 'Yes';
+        Service_Agreement = 1;
     }
     else {
-        ifYesWhy = 'NA';
+        ifYesWhy = 'NULL';
     }
 
     let myNames = '';
@@ -716,7 +724,7 @@ function preparePost() {
 
     document.getElementById('sending').innerHTML = '<p id="submitStat">Submitting...</p>';
 
-    let sql = '{"Id":"' + id + '", "PromoId":"'+ chosenJson.PromoId +'", "ProjectTitle":"'+ format(projTitle) + '",' +
+    let sql = '{"Id":"' + id + '", "PromoId":"'+ chosenJson.promo_id +'", "ProjectTitle":"'+ format(projTitle) + '",' +
     '"ProjectMgr":"'+ projMgr + '",' +
     '"ProjectMgrName":"'+ mgrName + '",' +
     '"QA_QCPerson":"'+ qaqc + '",' +
@@ -726,29 +734,35 @@ function preparePost() {
     '"StartDate":"'+ startDate + '",' +
     '"CloseDate":"' + endDate + '",' +
     '"ProjectLocation":"'+ format(projLoc) + '",' +
-    '"Latitude":"'+ format(latitude) + '",' +
-    '"Longitude":"'+ format(longitude) + '",' +
+    '"Latitude":"'+ latitude + '",' +
+    '"Longitude":"'+ longitude + '",' +
+    '"KeyIDs":"'+ Projkeywords + '",' +
     '"ProjectKeywords":"'+ teamString(keyNames) + ' || '+ myNames + '",' +
+    '"officeID":"'+ shnOffice + '",' +
     '"SHNOffice":"'+ officeName1 + '",' +
     '"ServiceArea":"'+ servName + '",' +
     '"TotalContract":"'+ totalContract + '",' +
     '"ServiceAgreement":"'+ Service_Agreement +'",' +
-    '"Explanation":'+ JSON.stringify(formatMultiline(ifYesWhy)) +',' + 
-    '"Retainer":"'+ format(waived) + '",' +
+    '"Explanation":'+ JSON.stringify(formatMultiline(ifYesWhy)) +',' +
+    '"Retainer":"'+ retainer + '",' +
     '"RetainerPaid":"'+ retainAmnt + '",' +
+    '"WaivedBy":"'+ format(waiver) + '",' +
     '"ProfileCode":"'+ profCode + '",' +
     '"ContractType":"'+ contactType + '",' +
     '"contactTypeName":"'+contactTypeName + '",'+
+    '"InvoiceID":"'+ invoiceFormat + '",'+
     '"InvoiceFormat":"'+ invoiceName + '",' +
     '"ClientContractPONumber":"'+ format(contractPONum) + '",' +
     '"OutsideMarkup":"' + outsideMarkup + '",' +
-    '"PREVAILING_WAGE":"'+ format(prevWage) + '",' +
+    '"PREVAILING_WAGE":"'+ prevWage + '",' +
+    '"agency":"'+ (agency_name == ''?"NULL":format(agency_name)) + '",' +
     '"SpecialBillingInstructins":'+ JSON.stringify(formatMultiline(specBillInstr)) + ',' +
     '"SEEALSO":'+ JSON.stringify(formatMultiline(seeAlso)) + ',' +
     '"AutoCAD_Project":'+ cadNum + ',' +
     '"GIS_Project":'+ gisNum + ',' +
     '"Project_Specifications":"'+ projSpecNum + '",' +
     '"ClientCompany1":"'+ format(clientComp) + '",' +
+    '"ClientRelation":"'+ format(clientRelation) + '",' +
     '"OfficeMailingLists1":"'+ mailList + '",' +
     '"ClientAbbrev1":"'+ format(clientAbbr) + '",' +
     '"ClientContactFirstName1":"'+ format(clientFirst) + '",' +
@@ -765,7 +779,7 @@ function preparePost() {
     '"Fax1":"'+ format(fax) + '",'+
     '"Email1":"'+ format(email) + '",' +
     '"BinderSize":"'+ binderSize + '",' +
-    '"BinderLocation":"'+ binderLoc +'",'+
+    '"BinderLocation":"'+ format(binderLoc) + '",' +
     '"CreatedBy":"'+ format(activeUser) + '",' +
     '"CreatedOn":"'+ format(new Date().toString()) + '",' +
     '"DescriptionService":'+ JSON.stringify(formatMultiline(descOfServ)) + '}';
@@ -1036,7 +1050,7 @@ function page5() {
     getTextField('Client Abbreviation', 'clientAbbr', clientAbbr, false) + 
     getTextField('Client First Name', 'cFirst', clientFirst, true) + getTextField('Client Last Name', 'cLast', clientLast, true) + 
     '<div class="grid-item"><label for="relation">Client Relationship</label></div><div class="grid-item"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
-    getTextField('Title', 'title', title, false) + getTextField("Address 1", 'ad1', addr1, true) + getTextField('Address 2', 'ad2', addr2, false) + 
+    getTextField('Title', 'title', title, false) + getTextField("Address 1", 'addy1', addr1, true) + getTextField('Address 2', 'addy2', addr2, false) + 
     getTextField('City', 'city', city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
             '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
@@ -1287,8 +1301,8 @@ function saveChoices(currPage) {
         clientLast = document.getElementById('cLast').value.trim();
         clientRelation = document.getElementById('relation').value;
         title = document.getElementById('title').value.trim();
-        addr1 = document.getElementById('ad1').value.trim();
-        addr2 = document.getElementById('ad2').value.trim();
+        addr1 = document.getElementById('addy1').value.trim();
+        addr2 = document.getElementById('addy2').value.trim();
         city = document.getElementById('city').value.trim();
         state = document.getElementById('state').value;
         zip = document.getElementById('zip').value;
@@ -1644,8 +1658,8 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         document.getElementById('cLast').value = clientLast;
         document.getElementById('relation').value = clientRelation;
         document.getElementById('title').value = title;
-        document.getElementById('ad1').value = addr1;
-        document.getElementById('ad2').value = addr2;
+        document.getElementById('addy1').value = addr1;
+        document.getElementById('addy2').value = addr2;
         document.getElementById('city').value = city;
         document.getElementById('state').value = state;
         document.getElementById('zip').value = zip;
