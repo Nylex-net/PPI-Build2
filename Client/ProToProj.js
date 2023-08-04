@@ -192,7 +192,7 @@ function starter(res) {
     clientAbbr = chosenJson.client_abbreviation;
     clientFirst = chosenJson.first_name;
     clientLast = chosenJson.last_name;
-    clientRelation = chosenJson.relationship;
+    clientRelation = (chosenJson.relationship == "NULL" || chosenJson.relationship == null ? "none":chosenJson.relationship);
     addr1 = chosenJson.address1;
     addr2 = chosenJson.address2;
     title = chosenJson.job_title;
@@ -204,7 +204,7 @@ function starter(res) {
     cell = chosenJson.cell;
     fax = chosenJson.fax;
     email = chosenJson.email;
-    binderSize = chosenJson.binder_size;
+    binderSize = (chosenJson.binder_size == null || chosenJson.binder_size == "NULL" || isNaN(chosenJson.binder_size) ? "NA":chosenJson.binder_size);
     descOfServ = chosenJson.description_service;
 
     rizz.forEach(entry => {
@@ -622,8 +622,8 @@ Function preparePost() prepares a JSON of data needed to be sent to be processed
 */
 
 function preparePost() {
-    if(retainer != 'enterAmnt') {
-        retainAmnt = 'None';
+    if(retainer != 'Enter Amount') {
+        retainAmnt = 'NULL';
     }
     else if(isNaN(retainAmnt)) {
         alert('An invalid value has been detected for retainer amount: ' + retainAmnt);
@@ -633,7 +633,7 @@ function preparePost() {
         retainAmnt = Number(retainAmnt);
     }
 
-    let waived = (retainer == 'Waived by X') ? 'Waived by ' + waiver:retainer;
+    let waived = (retainer == 'Waived by X') ? 'Waived by X' + waiver:"NULL";
 
     if(autoCad != true && autoCad != false) {
         alert('An invalid value has been detected for AutoCAD Job: ' + autoCad);
@@ -714,6 +714,8 @@ function preparePost() {
         ifYesWhy = 'NULL';
     }
 
+    let relate = (clientRelation == "current" || clientRelation == "past")?clientRelation:"NULL";
+
     let myNames = '';
     for(let i = 0; i < otherKeys.length; i++) {
         myNames += format(otherKeys[i]);
@@ -724,7 +726,7 @@ function preparePost() {
 
     document.getElementById('sending').innerHTML = '<p id="submitStat">Submitting...</p>';
 
-    let sql = '{"Id":"' + id + '", "PromoId":"'+ chosenJson.promo_id +'", "ProjectTitle":"'+ format(projTitle) + '",' +
+    let sql = '{"Id":"' + id + '", "PromoId":"'+ chosenJson.promo_id +'", "ProjectTitle":"'+ format(projTitle) + '", "ID":"'+ chosenJson.ID+'",' +
     '"ProjectMgr":"'+ projMgr + '",' +
     '"ProjectMgrName":"'+ mgrName + '",' +
     '"QA_QCPerson":"'+ qaqc + '",' +
@@ -746,7 +748,7 @@ function preparePost() {
     '"Explanation":'+ JSON.stringify(formatMultiline(ifYesWhy)) +',' +
     '"Retainer":"'+ retainer + '",' +
     '"RetainerPaid":"'+ retainAmnt + '",' +
-    '"WaivedBy":"'+ format(waiver) + '",' +
+    '"WaivedBy":"'+ format(waived) + '",' +
     '"ProfileCode":"'+ profCode + '",' +
     '"ContractType":"'+ contactType + '",' +
     '"contactTypeName":"'+contactTypeName + '",'+
@@ -754,7 +756,7 @@ function preparePost() {
     '"InvoiceFormat":"'+ invoiceName + '",' +
     '"ClientContractPONumber":"'+ format(contractPONum) + '",' +
     '"OutsideMarkup":"' + outsideMarkup + '",' +
-    '"PREVAILING_WAGE":"'+ prevWage + '",' +
+    '"PREVAILING_WAGE":"'+ (prevWage == 'Yes'?1:0) + '",' +
     '"agency":"'+ (agency_name == ''?"NULL":format(agency_name)) + '",' +
     '"SpecialBillingInstructins":'+ JSON.stringify(formatMultiline(specBillInstr)) + ',' +
     '"SEEALSO":'+ JSON.stringify(formatMultiline(seeAlso)) + ',' +
@@ -762,7 +764,7 @@ function preparePost() {
     '"GIS_Project":'+ gisNum + ',' +
     '"Project_Specifications":"'+ projSpecNum + '",' +
     '"ClientCompany1":"'+ format(clientComp) + '",' +
-    '"ClientRelation":"'+ format(clientRelation) + '",' +
+    '"ClientRelation":"'+ format(relate) + '",' +
     '"OfficeMailingLists1":"'+ mailList + '",' +
     '"ClientAbbrev1":"'+ format(clientAbbr) + '",' +
     '"ClientContactFirstName1":"'+ format(clientFirst) + '",' +
@@ -778,7 +780,7 @@ function preparePost() {
     '"Cell1":"'+ format(cell) + '",'+
     '"Fax1":"'+ format(fax) + '",'+
     '"Email1":"'+ format(email) + '",' +
-    '"BinderSize":"'+ binderSize + '",' +
+    '"BinderSize":"'+ (binderSize == "NA"?"NULL":binderSize) + '",' +
     '"BinderLocation":"'+ format(binderLoc) + '",' +
     '"CreatedBy":"'+ format(activeUser) + '",' +
     '"CreatedOn":"'+ format(new Date().toString()) + '",' +
