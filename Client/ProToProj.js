@@ -81,7 +81,7 @@ let tempKeyID = [];
 let officeName1;
 let servName;
 let officeName2;
-let profCodeName;
+let profCodeName = '';
 let contactTypeName;
 let invoiceName;
 let selectedPromo;
@@ -750,6 +750,7 @@ function preparePost() {
     '"RetainerPaid":"'+ retainAmnt + '",' +
     '"WaivedBy":"'+ format(waived) + '",' +
     '"ProfileCode":"'+ profCode + '",' +
+    '"ProfileCodeName":"'+ profCodeName + '",' +
     '"ContractType":"'+ contactType + '",' +
     '"contactTypeName":"'+contactTypeName + '",'+
     '"InvoiceID":"'+ invoiceFormat + '",'+

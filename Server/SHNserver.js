@@ -729,7 +729,7 @@ app.post('/keyName', jsonParser, (req, res) => {
         createTicket(err, "Could not retrieve Keyword IDs:");
         res.send(JSON.parse(JSON.stringify(err)));
     });
-})
+});
 
 /**
  * API to convert a promo to a project.
@@ -807,7 +807,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
     // chosenJson.contactTypeName = contactTypeName;
     // chosenJson.ClientContractPONumber = format(contractPONum);
     // chosenJson.OutsideMarkup = outsideMarkup;
-    let retainMe = (req.body.RetainerPaid == 'None') ? req.body.Retainer:'$'+req.body.RetainerPaid;
+    let retainMe = (req.body.Retainer == 'Enter Amount')?'$'+req.body.RetainerPaid:(req.body.Retainer.includes("Waived by X")?"Waived by "+req.body.WaivedBy:req.body.Retainer);
 
     // Project initiation date.
     const mydate = new Date();
@@ -827,8 +827,6 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             (req.body.ClientRelation != 'NULL'?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL' && req.body.Address2_1!=null?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
             req.body.PhoneW1 + '\', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
             req.body.DescriptionService + '\', \''+ myDate +'\')';
-
-    console.log(query);
     // console.log('Project Number is ' + req.body.ProjectNumber + ', and Description is ' + req.body.Description);
     pool.query(query, (err, memes) => { // MEMES >:)
         if(err) {
@@ -899,33 +897,33 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                       headers: ["Name", "User Input", "Client", "Info"],
                       rows: [
                         [ "Project", removeA , "Client Company", removeEscapeQuote(req.body.ClientCompany1)],
-                        [ "Title", req.body.ProjectTitle, "Client Abbreviation", (req.body.ClientAbbrev1 == null || req.body.ClientAbbrev1 == undefined || req.body.ClientAbbrev1 == '')?"none":removeEscapeQuote(req.body.ClientAbbrev1)],
+                        [ "Title", req.body.ProjectTitle, "Client Abbreviation", (req.body.ClientAbbrev1 == null || req.body.ClientAbbrev1 == undefined || req.body.ClientAbbrev1 == '' || req.body.ClientAbbrev1 == 'NULL')?"NONE":removeEscapeQuote(req.body.ClientAbbrev1)],
                         ["Project Manager", req.body.ProjectMgrName, "Client First Name", removeEscapeQuote(req.body.ClientContactFirstName1)],
                         ["QAQC Person", req.body.QA_QCPersonName, "Client Last Name", removeEscapeQuote(req.body.ClientContactLastName1)],
-                        ["Team Members", req.body.TeamMemberNames, "Relationship", req.body.ClientRelation],
-                        ["Start Date", formatDate(req.body.StartDate), "Job Title", removeEscapeQuote(req.body.Title1)],
+                        ["Team Members", req.body.TeamMemberNames, "Relationship", (req.body.ClientRelation == "NULL")?"None or Distant":req.body.ClientRelation],
+                        ["Start Date", formatDate(req.body.StartDate), "Job Title", (req.body.Title1 == "NULL" || req.body.Title1 == "" || req.body.Title1 == null)?"-":removeEscapeQuote(req.body.Title1)],
                         ["Close Date", formatDate(req.body.CloseDate), "Address", removeEscapeQuote(req.body.Address1_1)],
-                        ["Location", removeEscapeQuote(req.body.ProjectLocation), "2nd Address", removeEscapeQuote(req.body.Address2_1)],
+                        ["Location", removeEscapeQuote(req.body.ProjectLocation), "2nd Address", (req.body.Address2_1 == "NULL" || req.body.Address2_1 == "" || req.body.Address2_1 == null)?"-":removeEscapeQuote(req.body.Address2_1)],
                         ["Latitude", removeEscapeQuote(req.body.Latitude),"City", removeEscapeQuote(req.body.City1)],
                         ["Longitude", removeEscapeQuote(req.body.Longitude), "State", req.body.State1],
                         ["Keywords", req.body.ProjectKeywords, "Zip", req.body.Zip1],
                         ["SHN Office", req.body.SHNOffice, "Work Phone", removeEscapeQuote(req.body.PhoneW1)],
-                        ["Service Area", req.body.ServiceArea, "Home Phone", removeEscapeQuote(req.body.PhoneH1)],
-                        ["Total Contract", req.body.TotalContract, "Cell Phone", removeEscapeQuote(req.body.Cell1)],
-                        ["Service Agreement", req.body.ServiceAgreement, "Fax", removeEscapeQuote(req.body.Fax1)],
-                        ["If yes, why?", req.body.Explanation, "Email", removeEscapeQuote(req.body.Email1)],
-                        ["Retainer", removeEscapeQuote(retainMe), "Binder Size", req.body.BinderSize],
-                        ["Profile Code", req.body.ProfileCode, "Binder Location", req.body.BinderLocation],
+                        ["Service Area", req.body.ServiceArea, "Home Phone", (req.body.PhoneH1 == "NULL" || req.body.PhoneH1 == "" || req.body.PhoneH1 == null)?"-":removeEscapeQuote(req.body.PhoneH1)],
+                        ["Total Contract", req.body.TotalContract, "Cell Phone", (req.body.Cell1 == "NULL" || req.body.Cell1 == "" || req.body.Cell1 == null)?"-":removeEscapeQuote(req.body.Cell1)],
+                        ["Service Agreement", (req.body.ServiceAgreement == 1?"Yes":"No"), "Fax", (req.body.Fax1 == "NULL" || req.body.Fax1 == "" || req.body.Fax1 == null)?"-":removeEscapeQuote(req.body.Fax1)],
+                        ["If yes, why?", (req.body.Explanation == "NULL"?"-":removeEscapeQuote(req.body.Explanation)), "Email", removeEscapeQuote(req.body.Email1)],
+                        ["Retainer", removeEscapeQuote(retainMe), "Binder Size", (req.body.BinderSize == "NULL" || req.body.BinderSize == "" || req.body.BinderSize == null)?"-":req.body.BinderSize],
+                        ["Profile Code", req.body.ProfileCodeName, "Binder Location", (req.body.BinderLocation == "NULL" || req.body.BinderLocation == "" || req.body.BinderLocation == null)?"-":req.body.BinderLocation],
                         ["Contract Type", req.body.contactTypeName,'',''],
                         ["Invoice Format", req.body.InvoiceFormat,'',''],
                         ["Client Contract/PO#", req.body.ClientContractPONumber,'',''],
                         ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'',''],
-                        ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE)],
-                        ["Billing Instructions", removeEscapeQuote(req.body.SpecialBillingInstructins),'',''],
-                        ["See Also", req.body.SEEALSO],
-                        ["AutoCAD", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
-                        ["GIS Job", (req.body.GIS_Project == -1)?'Yes':'No','',''],
-                        ["Project Specifications", (req.body.Project_Specifications == -1)?'Yes':'No','Created on', mydate],
+                        ["Prevailing Wage", (req.body.PREVAILING_WAGE == 1)?"Yes":"No"],
+                        ["Billing Instructions", removeEscapeQuote((req.body.SpecialBillingInstructins == "NULL"?"-":req.body.SpecialBillingInstructins)),'',''],
+                        ["See Also", removeEscapeQuote((req.body.SEEALSO == "NULL"?"-":req.body.SEEALSO))],
+                        ["AutoCAD", (req.body.AutoCAD_Project == 1)?'Yes':'No','',''],
+                        ["GIS Job", (req.body.GIS_Project == 1)?'Yes':'No','',''],
+                        ["Project Specifications", (req.body.Project_Specifications == 1)?'Yes':'No','Created on', mydate.toString()],
                         ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
                       ]
                     };
@@ -996,7 +994,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             res.send(JSON.parse(JSON.stringify('{"Status":"'+ projnum +'"}')));
         }
     });
-})
+});
 
 /**
  * '/info' API used by the advanced search function to return specific results.
@@ -1030,7 +1028,7 @@ app.post('/info', jsonParser, (req, res) => {
     .catch(error => {
         res.send(JSON.stringify(error)); // send back error if an error occurs.
     });
-})
+});
 
 /**
  * General search API to search multiple fields from single input entry.
