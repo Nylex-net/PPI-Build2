@@ -1,7 +1,7 @@
 let activeUser = '';
-let billingMap = new Map();
-let formatMap = new Map();
-let jsonMap = new Map();
+let billingMap = new Array();
+let formatMap = '';
+let jsonMap = new Array();
 let billingList = [];
 let ProjectNumberGlobal = '';
 let manager = '';
@@ -74,9 +74,9 @@ function findProjects() {
             if(json.length > 0 && json[0].hasOwnProperty('ID')) {
                 document.getElementById('billRes').innerHTML = '<label for="billGrp">Exact Project</label><input type="text" id="billGrp"/><br><button type="button" onclick="findProjects();">Search Projects</button><p>Projects:<br><p id="results"></p></p>';
                 resultString(json);
-                for(let content of formatMap.values()) {
-                    document.getElementById('results').innerHTML = content;
-                }
+                // for(let content of formatMap.values()) {
+                //     document.getElementById('results').innerHTML = content;
+                // }
             }
             else{
                 document.getElementById('billRes').innerHTML = '<label for="billGrp">Exact Project</label><input type="text" id="billGrp"/><button type="button" onclick="findProjects();">Search Projects</button><p>No Projects found.</p>';
@@ -88,34 +88,47 @@ function findProjects() {
 }
 
 function resultString(jsonRes) {
-    formatMap.clear();
-    billingMap.clear();
-    jsonMap.clear();
-    for(let i = 0; i < jsonRes.length; i++) {
-        if(jsonRes[i].first_name == '' || jsonRes[i].first_name == null) {
-            jsonRes[i].ClientFirst = 'None';
-        }
-        if(jsonRes[i].ClientContactLastName1 == '' || jsonRes[i].ClientContactLastName1 == null) {
-            jsonRes[i].ClientContactLastName1 = 'None';
-        }
-        if(!jsonMap.has(jsonRes[i].Projectid)) {
-            formatMap.set(jsonRes[i].Projectid, '<p>Project Number: ' + jsonRes[i].Projectid + ' || Project Name: ' + jsonRes[i].ProjectTitle + '<br>Project Manager: ' + jsonRes[i].First + " " + jsonRes[i].Last + " || Client: "+jsonRes[i].ClientContactFirstName1 + " " + jsonRes[i].ClientContactLastName1 + "<br>Billing Groups: ")
-            jsonMap.set(jsonRes[i].Projectid, jsonRes[i]);
-        }
-        if(jsonRes[i].BillGrp != null && jsonRes[i].BillGrp.trim() > 0 && jsonRes[i].BillGrp != undefined) {
-            formatMap.set(jsonRes[i].Projectid, formatMap.get(jsonRes[i].Projectid) + jsonRes[i].BillGrp + ' ')
-        }
-        // projectMap.set(jsonRes[i].Project, jsonRes[i].Last + ', ' + jsonRes[i].First + ';' + jsonRes[i].QAQC + ';' + jsonRes[i].Members + ';' + jsonRes[i].ClientLast + ', ' + jsonRes[i].ClientFirst + ';' + jsonRes[i].ProjectName);
-        if(billingMap.has(jsonRes[i].Projectid)) {
-            billingMap.set(jsonRes[i].Projectid, billingMap.get(jsonRes[i].Projectid) + ' ' + jsonRes[i].BillGrp);
-        }
-        else if(jsonRes[i].BillGrp != null && jsonRes[i].BillGrp != undefined) {
-            billingMap.set(jsonRes[i].Projectid, jsonRes[i].BillGrp);
-        }
+    formatMap = '';
+    billingMap = [];
+    jsonMap = [];
+    if(jsonRes.length >= 1) {
+        jsonMap.push(jsonRes[0]);
     }
-    for(let key of formatMap.keys()) {
-        formatMap.set(key, formatMap.get(key) + '</p>' + addFields(key));
+    formatMap = '<p>Project Number: ' + jsonRes[0].project_id + ' || Project Name: ' + jsonRes[0].project_title + '<br>Project Manager: ' + jsonRes[0].staff_first + " " + jsonRes[0].staff_last + " || Client: "+jsonRes[0].first_name + " " + jsonRes[0].last_name + "<br>Billing Groups: ";
+    if(Array.isArray(jsonRes[jsonRes.length - 1])) {
+        jsonRes[jsonRes.length - 1].forEach((group) => {
+            billingMap.push(group);
+            formatMap += group.group_number + ', ';
+        });
+        formatMap = formatMap.substring(0,formatMap.length - 2);
     }
+    formatMap += '</p>' + addFields(jsonRes[0].ID);
+
+    document.getElementById('results').innerHTML = formatMap;
+    //     if(jsonRes[i].first_name == '' || jsonRes[i].first_name == null) {
+    //         jsonRes[i].ClientFirst = 'None';
+    //     }
+    //     if(jsonRes[i].ClientContactLastName1 == '' || jsonRes[i].ClientContactLastName1 == null) {
+    //         jsonRes[i].ClientContactLastName1 = 'None';
+    //     }
+    //     if(!jsonMap.has(jsonRes[i].Projectid)) {
+    //         formatMap.set(jsonRes[i].Projectid, '<p>Project Number: ' + jsonRes[i].Projectid + ' || Project Name: ' + jsonRes[i].ProjectTitle + '<br>Project Manager: ' + jsonRes[i].First + " " + jsonRes[i].Last + " || Client: "+jsonRes[i].ClientContactFirstName1 + " " + jsonRes[i].ClientContactLastName1 + "<br>Billing Groups: ")
+    //         jsonMap.set(jsonRes[i].Projectid, jsonRes[i]);
+    //     }
+    //     if(jsonRes[i].BillGrp != null && jsonRes[i].BillGrp.trim() > 0 && jsonRes[i].BillGrp != undefined) {
+    //         formatMap.set(jsonRes[i].Projectid, formatMap.get(jsonRes[i].Projectid) + jsonRes[i].BillGrp + ' ')
+    //     }
+    //     // projectMap.set(jsonRes[i].Project, jsonRes[i].Last + ', ' + jsonRes[i].First + ';' + jsonRes[i].QAQC + ';' + jsonRes[i].Members + ';' + jsonRes[i].ClientLast + ', ' + jsonRes[i].ClientFirst + ';' + jsonRes[i].ProjectName);
+    //     if(billingMap.has(jsonRes[i].Projectid)) {
+    //         billingMap.set(jsonRes[i].Projectid, billingMap.get(jsonRes[i].Projectid) + ' ' + jsonRes[i].BillGrp);
+    //     }
+    //     else if(jsonRes[i].BillGrp != null && jsonRes[i].BillGrp != undefined) {
+    //         billingMap.set(jsonRes[i].Projectid, jsonRes[i].BillGrp);
+    //     }
+    // }
+    // for(let key of formatMap.keys()) {
+    //     formatMap.set(key, formatMap.get(key) + '</p>' + addFields(key));
+    // }
 }
 
 function addFields(projects) {
@@ -127,15 +140,11 @@ function start(proj) {
     signIn();
 }
 
-function billForm(proj) {
+function billForm() {
     // ProjectNumberGlobal = proj;
-    let qaqc = jsonMap.get(proj).QA_QCPerson
-    let team = jsonMap.get(proj).TeamMembers;
-    if(billingMap.has(ProjectNumberGlobal)) {
-        billingList = billingMap.get(ProjectNumberGlobal).split(" ");
-    }
-    console.log("QAQC: " + qaqc + " || Team: " + team);
-    var jsonString = '{"QAQC":"'+ qaqc +'","Team":"'+ team +'"}';
+    // let qaqc = (jsonMap[0].qaqc_person_ID != jsonMap[0].project_manager_ID && !Array.isArray(jsonMap[1])? jsonMap[1].staff_first + " " + jsonMap[1].staff_last:jsonMap[0].staff_first + " " + jsonMap[0].staff_last);
+    // let team = jsonMap.get(proj).TeamMembers;
+    var jsonString = '{"id":"'+ jsonMap[0].qaqc_person_ID +'"}';
 
     document.getElementById('results').innerHTML = "Loading form...";
     var xhr = new XMLHttpRequest();
@@ -150,30 +159,31 @@ function billForm(proj) {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var json = JSON.parse(xhr.responseText);
             console.log(json);
-            if(json[0].hasOwnProperty('Last') && json[0].hasOwnProperty('First')) {
+            if(json[0].hasOwnProperty('last') && json[0].hasOwnProperty('first')) {
                 document.getElementById('billRes').innerHTML = '<form name="myForm" id="projForm" onsubmit="reqField();" action="" method=""><div class="grid-container"></div></form>';
-                document.getElementById('projForm').innerHTML = gotPage(json, proj);
+                document.getElementById('projForm').innerHTML = gotPage(json);
 
                 // Initialize values from database entries.
-                projMgr = Number(jsonMap.get(proj).ProjectMgr)
-                qaqcNew = Number(jsonMap.get(proj).QA_QCPerson);
-                startDate = jsonMap.get(proj).StartDate;
-                endDate = jsonMap.get(proj).CloseDate;
-                teamMem = jsonMap.get(proj).TeamMembers.split(',');
-                autoCad = (jsonMap.get(proj).AutoCAD_Project == -1)?true:false;
-                GIS = (jsonMap.get(proj).GIS_Project == -1)?true:false;
-                projLoc = (jsonMap.get(proj).ProjectLoation == null || jsonMap.get(proj).ProjectLoation == undefined)?'':jsonMap.get(proj).ProjectLoation;
-                latitude = (jsonMap.get(proj).Lattitude == null || jsonMap.get(proj).Lattitude == undefined)?'0':jsonMap.get(proj).Lattitude;
-                longitude = (jsonMap.get(proj).Longitude == null || jsonMap.get(proj).Longitude == undefined)?'0':jsonMap.get(proj).Longitude;
-                profCode = jsonMap.get(proj).ProfileCode;
-                serviceArea = jsonMap.get(proj).ServiceArea;
-                contactType = (jsonMap.get(proj).ContractType == null || jsonMap.get(proj).ContractType == undefined || typeof jsonMap.get(proj).ContractType != 'string')?'0':jsonMap.get(proj).ContractType[0];
-                totalContract = (jsonMap.get(proj).ToatlContract == null || jsonMap.get(proj).ToatlContract == undefined)?'':jsonMap.get(proj).ToatlContract;
-                invoiceFormat = ((jsonMap.get(proj).InvoiceFormat == null || jsonMap.get(proj).InvoiceFormat == undefined) && (jsonMap.get(proj).InvoiceFormat[0] == 'A' || jsonMap.get(proj).InvoiceFormat.includes('Emp. Name, Dates, Hrs, and Billing Rates')))?'A':(jsonMap.get(proj).InvoiceFormat[0] == 'C' || jsonMap.get(proj).InvoiceFormat.includes('Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task'))?'C':'B';
-                outsideMarkup = jsonMap.get(proj).OutsideMarkup;
-                specBillInstr = (jsonMap.get(proj).SpecialBillingInstructins == null || jsonMap.get(proj).SpecialBillingInstructins == undefined)?'':jsonMap.get(proj).SpecialBillingInstructins;
-                binderSize = (jsonMap.get(proj).BinderSize == null || jsonMap.get(proj).BinderSize == undefined || jsonMap.get(proj).BinderSize == '')?'NA':jsonMap.get(proj).BinderSize;
-                descOfServ = jsonMap.get(proj).DescriptionService;
+                projMgr = Number(jsonMap[0].project_manager_ID)
+                qaqcNew = Number(jsonMap[0].qaqc_person_ID);
+                let qaqc = json[0].last + ", " + json[0].first;
+                startDate = jsonMap[0].start_date;
+                endDate = jsonMap[0].close_date;
+                // teamMem = jsonMap[0].TeamMembers.split(',');
+                autoCad = (jsonMap[0].autoCAD == 1)?true:false;
+                GIS = (jsonMap[0].GIS == 1)?true:false;
+                projLoc = (jsonMap[0].project_location == null || jsonMap[0].project_location == undefined)?'':jsonMap[0].project_location;
+                latitude = (jsonMap[0].latitude == null || jsonMap[0].latitude == undefined)?'0':jsonMap[0].latitude;
+                longitude = (jsonMap[0].longitude == null || jsonMap[0].longitude == undefined)?'0':jsonMap[0].longitude;
+                profCode = jsonMap[0].profile_code_id;
+                serviceArea = jsonMap[0].service_area;
+                contactType = (jsonMap[0].contract_ID == null || jsonMap[0].contract_ID == undefined)?'0':jsonMap[0].contract_ID;
+                totalContract = (jsonMap[0].total_contract == null || jsonMap[0].total_contract == undefined)?'0':jsonMap[0].total_contract;
+                invoiceFormat = (jsonMap[0].invoice_format == null || jsonMap[0].invoice_format == undefined)?'NULL':jsonMap[0].invoice_format;
+                outsideMarkup = jsonMap[0].outside_markup;
+                specBillInstr = (jsonMap[0].special_billing_instructions == null || jsonMap[0].special_billing_instructions == undefined)?'':jsonMap[0].special_billing_instructions;
+                binderSize = (jsonMap[0].binder_size == null || jsonMap[0].binder_size == undefined || jsonMap[0].binder_size == '')?'NULL':jsonMap[0].binder_size;
+                descOfServ = jsonMap[0].description_service;
                 getKeyIDs();
                 fillMe(1);
                 getUsers(1);
@@ -194,34 +204,34 @@ async function getKeyIDs() {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.parse(JSON.stringify('{"keyText":"' + jsonMap.get(ProjectNumberGlobal).ProjectKeywords + '"}'))
+        body: JSON.parse(JSON.stringify('{"project":"' + ProjectNumberGlobal + '"}'))
     }).then(keysBoi => {
         return keysBoi.json();
     }).then(keysBoi => {
-        if(keysBoi.length > 0 && keysBoi[0].hasOwnProperty('ID')) {
+        if(keysBoi.length > 0 && keysBoi[0].hasOwnProperty('keyword_id')) {
             for(let id of keysBoi) {
-                Projkeywords.push(id.ID);
+                Projkeywords.push(id.keyword_id);
             }
         }
     });
 }
 
-function gotPage(data, projNum) {
+function gotPage(data) {
     teamWee = '';
 
     for(let entry of data) {
-        if(entry.hasOwnProperty('First') && entry.hasOwnProperty('Last')) {
-            teamWee += entry.Last + ', ' + entry.First+ ' || ';
+        if(entry.hasOwnProperty('first') && entry.hasOwnProperty('last')) {
+            teamWee += entry.last + ', ' + entry.first+ ' || ';
         }
     };
     
     teamWee = teamWee.substring(0, teamWee.length - 4);
     
     // Prefill known data.
-    manager = jsonMap.get(projNum).Last + ',' + jsonMap.get(projNum).First;
+    manager = jsonMap[0].Last + ',' + jsonMap[0].First;
     qaqc = data[data.length - 1].QAQCLast + ',' + data[data.length - 1].QAQCFirst;
-    projName = jsonMap.get(projNum).ProjectTitle;
-    client = jsonMap.get(projNum).ClientCompany1;
+    projName = jsonMap[0].ProjectTitle;
+    client = jsonMap[0].client_company;
 
     return '<div class="grid-container">'+
     '<div class="grid-item">Project</div>'+
@@ -1264,5 +1274,5 @@ function agency() {
  */
 function starter(res) {
     activeUser = res.account.name;
-    billForm(ProjectNumberGlobal);
+    billForm();
 }

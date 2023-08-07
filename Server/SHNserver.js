@@ -1096,7 +1096,7 @@ app.post('/search', jsonParser, (req, res) => {
 app.post('/billMe', jsonParser, (req, res) => {
     // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
     // console.log('Project Number is ' + req.body.ProjectNumber + ', and Description is ' + req.body.Description);
-    pool.query('SELECT Projects.*, Staff.ID AS staff_id, Staff.first AS staff_first, Staff.last AS staff_last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID OR Projects.qaqc_person_ID = Staff.ID WHERE Projects.project_id = \''+ req.body.ProjectNumber +'\'', (error, data) => {
+    pool.query('SELECT Projects.*, Staff.ID AS staff_id, Staff.first AS staff_first, Staff.last AS staff_last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id = \''+ req.body.ProjectNumber +'\'', (error, data) => {
         if(error) {
             console.log(error);
             res.send(JSON.stringify(error));
@@ -1127,30 +1127,14 @@ app.post('/billMe', jsonParser, (req, res) => {
  */
 
 app.post('/mgrs', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    let teamArr = req.body.Team;
-    if(teamArr[teamArr.length - 1] == ',') { // Remove ending comma, so we don't accidently query the entire Contacts database.
-        teamArr = teamArr.substring(0, teamArr.length - 1);
-    }
-    teamArr = teamArr.split(',');
-    let orStatement = '';
-    for(let mem of teamArr) { // Build conditions for WHERE clause.
-        orStatement += 'ID = '+ mem +' OR ';
-    }
-    orStatement = orStatement.substring(0,orStatement.length - 4);
-    // Execute query.
-    connection.query('SELECT Last, First, ID FROM Contacts WHERE ' + orStatement).then(mgr => {
-        connection.query('SELECT Last AS QAQCLast, First AS QAQCFirst FROM Contacts WHERE ID = ' + req.body.QAQC).then(pers => {
-            mgr.push(pers[0]);
-            res.send(JSON.parse(JSON.stringify(mgr)));
-        }).catch(err => {
-            res.send(JSON.parse(JSON.stringify(err)));
-        });
-        // Return results.
-    }).catch(error => {
-        // send error if error occurs.
-        createTicket(error, "Could not return manager names by ID:");
-        res.send(JSON.parse(JSON.stringify(error)));
+    pool.query("SELECT first, last FROM Staff WHERE Staff.ID = " + req.body.id, (err, data) => {
+        if(err) {
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            res.send(JSON.stringify(data));
+        }
     });
 })
 
