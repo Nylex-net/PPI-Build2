@@ -1094,19 +1094,31 @@ app.post('/search', jsonParser, (req, res) => {
 // Searches for projects to add a billing group to.
 
 app.post('/billMe', jsonParser, (req, res) => {
-    let myResponse = 'No Projects Found';
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
+    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
     // console.log('Project Number is ' + req.body.ProjectNumber + ', and Description is ' + req.body.Description);
-    connection.query('SELECT Projects.*, Contacts.First AS [First], Contacts.Last AS [Last] FROM Projects, Contacts WHERE Projects.Projectid = \''+ req.body.ProjectNumber +'\' AND Cint(Projects.ProjectMgr) = Contacts.ID')
-    .then(data => {
-        myResponse = data;
-        res.send(JSON.stringify(data));
-    })
-    .catch(error => {
-        myResponse = error;
-        res.send(JSON.stringify(error));
+    pool.query('SELECT Projects.*, Staff.ID AS staff_id, Staff.first AS staff_first, Staff.last AS staff_last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID OR Projects.qaqc_person_ID = Staff.ID WHERE Projects.project_id = \''+ req.body.ProjectNumber +'\'', (error, data) => {
+        if(error) {
+            console.log(error);
+            res.send(JSON.stringify(error));
+        }
+        else if(data.length > 0) {
+            let result = data;
+            pool.query("SELECT * FROM BillingGroups WHERE project_ID = " + data[0].ID, (err, billing) => {
+                if(err) {
+                    console.error(err);
+                }
+                else if (billing.length > 0){
+                    result.push(billing);
+                    // console.log(result);
+                }
+                res.send(JSON.stringify(result));
+            });
+        }
+        else {
+            res.send(JSON.stringify(data));
+        }
     });
-})
+});
 
 /**
  * Get Project Team members by ID for auto-selecting previously selected team members.

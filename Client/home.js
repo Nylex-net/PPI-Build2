@@ -43,7 +43,8 @@ let invoiceFormat = "B";
 let invoiceName = 'Emp. Name, Hrs, and Billing Rates (No Dates)';
 let contractPONum = '';
 let outsideMarkup = 15; // required
-let prevWage = "No";
+let prevWage = "0";
+let agency_name = '';
 let specBillInstr = '';
 let autoCad = false;
 let GIS = false;
@@ -70,7 +71,7 @@ function findProjects() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var json = JSON.parse(xhr.responseText);
             console.log(json);
-            if(json.length > 0 && json[0].hasOwnProperty('Projectid')) {
+            if(json.length > 0 && json[0].hasOwnProperty('ID')) {
                 document.getElementById('billRes').innerHTML = '<label for="billGrp">Exact Project</label><input type="text" id="billGrp"/><br><button type="button" onclick="findProjects();">Search Projects</button><p>Projects:<br><p id="results"></p></p>';
                 resultString(json);
                 for(let content of formatMap.values()) {
@@ -87,12 +88,11 @@ function findProjects() {
 }
 
 function resultString(jsonRes) {
-    console.log(jsonRes);
     formatMap.clear();
     billingMap.clear();
     jsonMap.clear();
     for(let i = 0; i < jsonRes.length; i++) {
-        if(jsonRes[i].ClientContactFirstName1 == '' || jsonRes[i].ClientContactFirstName1 == null) {
+        if(jsonRes[i].first_name == '' || jsonRes[i].first_name == null) {
             jsonRes[i].ClientFirst = 'None';
         }
         if(jsonRes[i].ClientContactLastName1 == '' || jsonRes[i].ClientContactLastName1 == null) {
@@ -349,8 +349,8 @@ function nextPage(num) {
     }
     else if(num == 2) {
         document.getElementById('projForm').innerHTML = '<div class="grid-container">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
-        getTextField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, true) +
-        getTextField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, true)
+        getNumberField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, -1, -90, 90, true) +
+        getNumberField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, -1, -90, 90, true)
         + '<div class="grid-item"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
         '<div class="grid-item"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
         +'</div><div id="submitter"><button type="button" onclick="goBack(1)">Back</button><button type="button" onclick="reqField(2)">Next</button></div>';
@@ -371,9 +371,9 @@ function nextPage(num) {
         getTextField('Client Contract/PO #', 'PO', contractPONum, false) +
         '<div class="grid-item"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
         '<div class="grid-item"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-        '<div class="grid-item"><label for="wage">Prevailing Wage</label></div><div class="grid-item"><select name="wage" id="wage" title="wage" required><option value="Yes">Yes</option><option value="No" selected>No</option></select></div>'+
+        '<div class="grid-item"><label for="wage">Prevailing Wage</label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select></div>'+
         '<div class="grid-item"><label for="billInst">Special Billing Instructions</label></div><div class="grid-item"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
-        '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NA" selected>N/A</option><option value="1/2">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+        '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
         '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search_demo.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'+
         '</div><div id="submitter"><button type="button" onclick="goBack(2)">Back</button><button type="button" onclick="reqField(3)">Review</button></div>';
         fillMe(3);
@@ -456,7 +456,9 @@ function nextPage(num) {
         '<div class="grid-item">Outside Markup' + '</div>'
         + '<div class="grid-item">' + outsideMarkup + '</div>'+
         '<div class="grid-item">Prevailige Wage' + '</div>'
-        + '<div class="grid-item">' + prevWage + '</div>'+
+        + '<div class="grid-item">' + (prevWage == 1?"Yes":"No") + '</div>'+
+        '<div class="grid-item">Agency' + '</div>'
+        + '<div class="grid-item">' + (prevWage == 1?agency_name:"N/A") + '</div>'+
         '<div class="grid-item">Special Billing Instructions' + '</div>'
         + '<div class="grid-item">' + specBillInstr + '</div>'+
         '<div class="grid-item">AutoCAD Job' + '</div>'
@@ -1145,6 +1147,7 @@ function submitBilling() {
         '"ClientContractPONumber":"'+ format(contractPONum) + '",' +
         '"OutsideMarkup":"' + outsideMarkup + '",' +
         '"PREVAILING_WAGE":"'+ prevWage + '",' +
+        '"agency":"'+ (agency_name == ''?"NULL":format(agency_name)) + '",' +
         '"SpecialBillingInstructins":'+ JSON.stringify(formatMultiline(specBillInstr)) + ',' +
         '"AutoCAD_Project":'+ cadNum + ',' +
         '"GIS_Project":'+ gisNum + ',' +
@@ -1239,6 +1242,20 @@ function teamString(memberArray) {
         }
     }
     return mems;
+}
+
+/**
+ * Updates page by inserting a field to type an agency name when "Prevailing Wage" is selected.
+ * @returns nothing.
+ */
+
+function agency() {
+    if(document.getElementById('wage').value == "1") {
+        document.getElementById('agent').innerHTML = '<br><label for="agentcy">Name of Agency:<span class="astrick">*</span></label><br><input type="text" id="agency" name="agency" title="Agency" maxlength="255">';
+    }
+    else {
+        document.getElementById('agent').innerHTML = '';
+    }
 }
 
 /**
