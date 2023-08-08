@@ -1095,7 +1095,7 @@ app.post('/billMe', jsonParser, (req, res) => {
         }
         else if(data.length > 0) {
             let result = data;
-            pool.query("SELECT * FROM BillingGroups WHERE project_ID = " + data[0].ID, (err, billing) => {
+            pool.query("SELECT * FROM BillingGroups WHERE project_ID = " + data[0].ID + " ORDER BY group_number", (err, billing) => {
                 if(err) {
                     console.error(err);
                 }
@@ -1139,9 +1139,161 @@ app.post('/mgrs', jsonParser, (req, res) => {
  */
 
 app.post('/submitBill', jsonParser, (req, res) => {
-    // Connect to database.
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
+    // Billing group initiation date.
+    const mydate = new Date();
+    let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
+
+    let dir = PATH + getDir(req.body.ProjectId[0]) + '/20' + req.body.ProjectId[1] + req.body.ProjectId[2]; // + '/' + req.body.ProjectId + '-' + removeSpace(data[0].ProjectTitle) + '/';
+    // let ArcataOffice = false;
+    // let ArcDir = '';
+    let projFolder = req.body.ProjectId;
+
+    // Redact A for matching a project file.
+    let dirFiles = fs.readdirSync(dir);
+    if(req.body.ProjectId.length > 6 && req.body.ProjectId[6] == 'A') {
+        projFolder = req.body.ProjectId.substring(0, req.body.ProjectId.length - 1);
+    }
+
+    let found = false;
+    dirFiles.forEach(file => {
+        if(file.substring(0,6).includes(projFolder) && !found) {
+            dir += '/' + file;
+            found = true;
+        }
+    });
+
     // Get first occurring Project entry for cooresponding project.
+    const query = "INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, group_location, "+
+    "latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, "+
+    "prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service)"+
+    " VALUES ("+req.body.ProjectId+", '"+req.body.BillingNum+"', '"+req.body.BillingName+"', "+req.body.AutoCAD_Project+", "+ req.body.GIS_Project+", "+req.body.NewMgr+", "+req.body.QAQC+", '"+myDate+
+    "', '"+ req.body.StartDate +"', '"+ req.body.CloseDate +"', '"+ req.body.ProjectLocation +"', "+ req.body.Latitude +", "+ req.body.Longitude +", "+ (req.body.ServiceArea == "NULL"?"NULL":"'"+req.body.ServiceArea+"'") +", "+ req.body.TotalContract +", '"+
+    req.body.Retainer +"', "+req.body.RetainerPaid+", "+(req.body.waiver == "NULL"?req.body.waiver:"'"+req.body.waiver+"'")+", "+req.body.ProfileCode+", "+req.body.ContractType+", "+
+    req.body.InvoiceFormat+", '"+req.body.ClientContractPONumber+"', "+ req.body.OutsideMarkup +", "+req.body.PREVAILING_WAGE+", "+(req.body.agency == "NULL"?"NULL":"'"+req.body.agency+"'")+", "+
+    (req.body.SpecialBillingInstructins == "NULL"?"NULL":"'"+req.body.SpecialBillingInstructins+"'")+", '"+req.body.DescriptionService+"');SELECT ID FROM BillingGroups WHERE project_ID = " + req.body.ProjectId + " AND group_number = '" + req.body.BillingNum + "';";
+    console.log(query);
+    pool.query(query, (error, foo) => {
+        if(error) {
+            console.error(error);
+        }
+        else {
+            if(fs.existsSync(dir)) {
+                dir += '/' + req.body.BillingNum + '-' + removeSpace(removeEscapeQuote(req.body.BillingName));
+                if(!fs.existsSync(dir)) {
+                    fs.mkdir((dir), err => {
+                        if(err){
+                            throw err;
+                        }
+                    });
+                }
+                console.log("Directory is " + dir);
+                createDirectories(dir, false);
+                const doc = new PDFDocument();
+                        doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
+                        // Content of PDF.
+                        (async function(){
+                            // table 
+                            const table = {
+                            title: req.body.ProjectId,
+                            subtitle: 'Billing group ' + req.body.BillingNum + ' created for ' + req.body.ProjectId,
+                            headers: ["Billing", "Input", "Project", "Info"],
+                            rows: [
+                                [ "Billing Group #", req.body.BillingNum, "Project ID", req.body.ProjectId],
+                                [ "Billing Title", req.body.BillingName, "Project Title", removeEscapeQuote(req.body.ProjectName)],
+                                ['Group Manager', req.body.NewMgrName, "Project Manager", manager[0].Last + ", " + manager[0].First],
+                                ["Start Date", formatDate(req.body.StartDate),'',''],
+                                ["Close Date", formatDate(req.body.CloseDate),'',''],
+                                ["QAQC Person", req.body.QAQCName,'',''],
+                                ["Team Members", req.body.TeamMemberNames,'',''],
+                                ["Location", removeEscapeQuote(req.body.ProjectLocation),'',''],
+                                ["Latitude", removeEscapeQuote(req.body.Latitude),'',''],
+                                ["Longitude", removeEscapeQuote(req.body.Longitude),'',''],
+                                ["Keywords", req.body.ProjectKeywords,'',''],
+                                ["Service Area", removeEscapeQuote(req.body.ServiceArea),'',''],
+                                ["Profile Code", req.body.ProfileCode,'',''],
+                                ["Total Contract", removeEscapeQuote(req.body.TotalContract),'',''],
+                                ["Retainer", removeEscapeQuote(retainMe),'',''],
+                                ["Contract Type",req.body.contactTypeName,'',''],
+                                ["Client Contract/PO #", req.body.ClientContractPONumber,'',''],
+                                ["Outside Markup", req.body.OutsideMarkup,'',''],
+                                ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE),'',''],
+                                ["Billing Instructions", req.body.SpecialBillingInstructins,'',''],
+                                ["AutoCAD Project", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
+                                ["GIS Project", (req.body.GIS_Project == -1)?'Yes':'No','',''],
+                                ["Binder Size", req.body.BinderSize,'Created On',new Date().toString()],
+                                ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
+                            ]
+                            };
+                            // A4 595.28 x 841.89 (portrait) (about width sizes)
+                            // width
+                            // await doc.table(table, { 
+                            //   width: 400
+                            // });
+                            // or columnsSize
+                            await doc.table(table, {
+                                columnsSize: [ 120, 130, 100, 130],
+                                padding: 2,
+                                prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+                                    (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
+                                    const {x, y, width, height} = rectCell;
+                                    // first line 
+                                    // if(indexColumn === 0){
+                                    //     doc
+                                    //     .lineWidth(.5)
+                                    //     .moveTo(x, y)
+                                    //     .lineTo(x, y + height)
+                                    //     .stroke();  
+                                    // }
+                                    // else
+                                    if(indexColumn === 1) {
+                                        doc
+                                        .lineWidth(.5)
+                                        .moveTo(x + width, y)
+                                        .lineTo(x + width, y + height)
+                                        .stroke();
+                                    }
+
+                                    doc.fontSize(10).fillColor('#000000');
+                                }
+                            });
+                            // done!
+                            doc.end();
+
+                            // Array admin contacts for who to notify.
+                            const admins = jsonData.email.admins;
+
+                            // Get office of the associated project.
+                            let officeAdmins = [];
+                            if(req.body.ProjectId[0].length > 6) {
+                                officeAdmins = getAdmin(req.body.ProjectId[0], req.body.ProjectId[6]);
+                            }
+                            else {
+                                officeAdmins = getAdmin(req.body.ProjectId[0], 'Z');
+                            }
+                            // Push office email group into admins.
+                            for(let admin of officeAdmins) {
+                                admins.push(admin);
+                            }
+                            // Query for the Project manager's contact email.
+                            pool.query('SELECT email FROM Staff WHERE ID = '+ req.body.NewMgr +' AND email IS NOT NULL', (awNo, emails) => {
+                                if(awNo) {
+                                    console.log('Could not send email.  The following error occurred instead:\n' + awNo);
+                                }
+                                else {
+                                    Object.entries(emails).forEach(email => {
+                                        if(!admins.includes(email[1].email + '@shn-engr.com') && email[1].email != undefined && email[1].email != 'undefined' && email[1].email != null && email[1].email != 'NULL') {
+                                            admins.push(email[1].email + '@shn-engr.com');
+                                        }
+                                    });
+                                }
+                                // Finally, send out email notice.
+                                // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Billing Group ' + req.body.BillingNum + ' has been initialized for Project ' + projFolder +'!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
+                            });
+                        })();
+            }
+        }
+    });
+    /*
     connection.query('SELECT TOP 1 * FROM Projects WHERE Projectid = \'' + req.body.ProjectId + '\'')
     .then(data => {
         // Update the returned JSON's data with the user's new data.
@@ -1371,139 +1523,138 @@ app.post('/submitBill', jsonParser, (req, res) => {
                                 console.log('Could not send email.  The following error occurred instead:\n' + awNo);
                             });
                         })();
-                    }).catch(poop => { // Might error due to not finding a manager with the cooresponding ID.
-                        console.log("Could not find manager with ID " + data[0].ProjectMgr);
-                        console.log(poop); // Print error.
-                        // Attempt to create the PDF again, but this time the Project Manager part says "See Project for more info."
-                        const doc = new PDFDocument();
-                        doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
-                        (async function(){
-                            // table 
-                            const table = {
-                            title: req.body.ProjectId,
-                            subtitle: 'Billing group ' + req.body.BillingNum + ' created for ' + req.body.ProjectId,
-                            headers: ["Billing", "Input", "Project", "Info"],
-                            rows: [
-                                [ "Billing Group #", req.body.BillingNum, "Project ID", req.body.ProjectId],
-                                [ "Billing Title", req.body.BillingName, "Project Title", removeEscapeQuote(req.body.ProjectName)],
-                                ['Group Manager', req.body.NewMgrName, "Project Manager", "See project initiation for more info."],
-                                ["Start Date", formatDate(req.body.StartDate),'',''],
-                                ["Close Date", formatDate(req.body.CloseDate),'',''],
-                                ["QAQC Person", req.body.QAQCName,'',''],
-                                ["Team Members", req.body.TeamMemberNames,'',''],
-                                ["Location", removeEscapeQuote(req.body.ProjectLocation),'',''],
-                                ["Latitude", removeEscapeQuote(req.body.Latitude),'',''],
-                                ["Longitude", removeEscapeQuote(req.body.Longitude),'',''],
-                                ["Keywords", req.body.ProjectKeywords,'',''],
-                                ["Service Area", removeEscapeQuote(req.body.ServiceArea),'',''],
-                                ["Profile Code", req.body.ProfileCode,'',''],
-                                ["Total Contract", removeEscapeQuote(req.body.TotalContract),'',''],
-                                ["Retainer", removeEscapeQuote(retainMe),'',''],
-                                ["Contract Type",req.body.contactTypeName,'',''],
-                                ["Client Contract/PO #", req.body.ClientContractPONumber,'',''],
-                                ["Outside Markup", req.body.OutsideMarkup,'',''],
-                                ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE),'',''],
-                                ["Billing Instructions", req.body.SpecialBillingInstructins,'',''],
-                                ["AutoCAD Project", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
-                                ["GIS Project", (req.body.GIS_Project == -1)?'Yes':'No','',''],
-                                ["Binder Size", req.body.BinderSize,'Created On',new Date().toString()],
-                                ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
-                            ]
-                            };
-                            // A4 595.28 x 841.89 (portrait) (about width sizes)
-                            // width
-                            // await doc.table(table, { 
-                            //   width: 400
-                            // });
-                            // or columnsSize
-                            await doc.table(table, {
-                                columnsSize: [ 100, 150, 90, 150],
-                                padding: 2,
-                                prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-                                    (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                                    const {x, y, width, height} = rectCell;
-                                    // first line 
-                                    // if(indexColumn === 0){
-                                    //     doc
-                                    //     .lineWidth(.5)
-                                    //     .moveTo(x, y)
-                                    //     .lineTo(x, y + height)
-                                    //     .stroke();  
-                                    // }
-                                    // else
-                                    if(indexColumn === 1) {
-                                        doc
-                                        .lineWidth(.5)
-                                        .moveTo(x + width, y)
-                                        .lineTo(x + width, y + height)
-                                        .stroke();
-                                    }
-
-                                    doc.fontSize(10).fillColor('#000000');
-                                }
-                            });
-                            // done!
-                            doc.end();
-                            if(ArcataOffice && ArcDir.trim() != '') {
-                                doc.pipe(fs.createWriteStream(ArcDir + '/'+ req.body.BillingNum +'.pdf'));
-                                await doc.table(table, {
-                                    columnsSize: [ 100, 150, 90, 150],
-                                    padding: 2,
-                                    prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-                                        (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                                        doc.addBackground(rectRow, (indexRow % 2 ? '#555555' : '#60A13F'), 0.15);
-                                        const {x, y, width, height} = rectCell;
-                                        // first line 
-                                        // if(indexColumn === 0){
-                                        //     doc
-                                        //     .lineWidth(.5)
-                                        //     .moveTo(x, y)
-                                        //     .lineTo(x, y + height)
-                                        //     .stroke();  
-                                        // }
-                                        // else
-                                        if(indexColumn === 1) {
-                                            doc
-                                            .lineWidth(.5)
-                                            .moveTo(x + width, y)
-                                            .lineTo(x + width, y + height)
-                                            .stroke();
-                                        }
-
-                                        doc.fontSize(10).fillColor('#000000');
-                                    }
-                                });
-                                // done!
-                                doc.end();
-                            }
-                            
-                            // createDirectories(dir, true);
-
-                            const admins = jsonData.email.admins;
-
-                            let officeAdmins = [];
-                            if(req.body.ProjectId[0].length > 6) {
-                                officeAdmins = getAdmin(req.body.ProjectId[0], req.body.ProjectId[6]);
-                            }
-                            else {
-                                officeAdmins = getAdmin(req.body.ProjectId[0], 'Z');
-                            }
-                            for(let admin of officeAdmins) {
-                                admins.push(admin);
-                            }
-                            connection.query('SELECT Contacts.Email AS Email FROM Projects, Contacts WHERE Projects.Projectid = \''+ req.body.ProjectId +'\' AND Projects.BillGrp IS NULL AND Contacts.ID = Cint(Projects.ProjectMgr) AND Contacts.Email IS NOT NULL').then(emails => {
-                                Object.entries(emails).forEach(email => {
-                                    if(!admins.includes(email[1].Email + '@shn-engr.com') || email[1].Email != undefined) {
-                                        admins.push(email[1].Email + '@shn-engr.com');
-                                    }
-                                });
-                                // console.log(admins);
-                                // emailPersonel(req.body.BillingNum +'.pdf', dir + '/'+ req.body.BillingNum +'.pdf', 'Billing Group ID ' + req.body.BillingNum + ' called '+ req.body.BillingName +' was added to Project ID ' + req.body.ProjectId + '!<br>See PDF for more.', admins, 'Billing group ' + req.body.BillingNum + ' added to project ' + req.body.ProjectId);
-                            }).catch(awNo => {
-                                console.log('Could not send email.  The following error occurred instead:\n' + awNo);
-                            });
-                        })();
                     });
+                    // .catch(poop => { // Might error due to not finding a manager with the cooresponding ID.
+                    //     console.log("Could not find manager with ID " + data[0].ProjectMgr);
+                    //     console.log(poop); // Print error.
+                    //     // Attempt to create the PDF again, but this time the Project Manager part says "See Project for more info."
+                    //     const doc = new PDFDocument();
+                    //     doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
+                    //     (async function(){
+                    //         // table 
+                    //         const table = {
+                    //         title: req.body.ProjectId,
+                    //         subtitle: 'Billing group ' + req.body.BillingNum + ' created for ' + req.body.ProjectId,
+                    //         headers: ["Billing", "Input", "Project", "Info"],
+                    //         rows: [
+                    //             [ "Billing Group #", req.body.BillingNum, "Project ID", req.body.ProjectId],
+                    //             [ "Billing Title", req.body.BillingName, "Project Title", removeEscapeQuote(req.body.ProjectName)],
+                    //             ['Group Manager', req.body.NewMgrName, "Project Manager", "See project initiation for more info."],
+                    //             ["Start Date", formatDate(req.body.StartDate),'',''],
+                    //             ["Close Date", formatDate(req.body.CloseDate),'',''],
+                    //             ["QAQC Person", req.body.QAQCName,'',''],
+                    //             ["Team Members", req.body.TeamMemberNames,'',''],
+                    //             ["Location", removeEscapeQuote(req.body.ProjectLocation),'',''],
+                    //             ["Latitude", removeEscapeQuote(req.body.Latitude),'',''],
+                    //             ["Longitude", removeEscapeQuote(req.body.Longitude),'',''],
+                    //             ["Keywords", req.body.ProjectKeywords,'',''],
+                    //             ["Service Area", removeEscapeQuote(req.body.ServiceArea),'',''],
+                    //             ["Profile Code", req.body.ProfileCode,'',''],
+                    //             ["Total Contract", removeEscapeQuote(req.body.TotalContract),'',''],
+                    //             ["Retainer", removeEscapeQuote(retainMe),'',''],
+                    //             ["Contract Type",req.body.contactTypeName,'',''],
+                    //             ["Client Contract/PO #", req.body.ClientContractPONumber,'',''],
+                    //             ["Outside Markup", req.body.OutsideMarkup,'',''],
+                    //             ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE),'',''],
+                    //             ["Billing Instructions", req.body.SpecialBillingInstructins,'',''],
+                    //             ["AutoCAD Project", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
+                    //             ["GIS Project", (req.body.GIS_Project == -1)?'Yes':'No','',''],
+                    //             ["Binder Size", req.body.BinderSize,'Created On',new Date().toString()],
+                    //             ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
+                    //         ]
+                    //         };
+                    //         // A4 595.28 x 841.89 (portrait) (about width sizes)
+                    //         // width
+                    //         // await doc.table(table, { 
+                    //         //   width: 400
+                    //         // });
+                    //         // or columnsSize
+                    //         await doc.table(table, {
+                    //             columnsSize: [ 100, 150, 90, 150],
+                    //             padding: 2,
+                    //             prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+                    //                 (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
+                    //                 const {x, y, width, height} = rectCell;
+                    //                 // first line 
+                    //                 // if(indexColumn === 0){
+                    //                 //     doc
+                    //                 //     .lineWidth(.5)
+                    //                 //     .moveTo(x, y)
+                    //                 //     .lineTo(x, y + height)
+                    //                 //     .stroke();  
+                    //                 // }
+                    //                 // else
+                    //                 if(indexColumn === 1) {
+                    //                     doc
+                    //                     .lineWidth(.5)
+                    //                     .moveTo(x + width, y)
+                    //                     .lineTo(x + width, y + height)
+                    //                     .stroke();
+                    //                 }
+
+                    //                 doc.fontSize(10).fillColor('#000000');
+                    //             }
+                    //         });
+                    //         // done!
+                    //         doc.end();
+                    //         if(ArcataOffice && ArcDir.trim() != '') {
+                    //             doc.pipe(fs.createWriteStream(ArcDir + '/'+ req.body.BillingNum +'.pdf'));
+                    //             await doc.table(table, {
+                    //                 columnsSize: [ 100, 150, 90, 150],
+                    //                 padding: 2,
+                    //                 prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+                    //                     (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
+                    //                     doc.addBackground(rectRow, (indexRow % 2 ? '#555555' : '#60A13F'), 0.15);
+                    //                     const {x, y, width, height} = rectCell;
+                    //                     // first line 
+                    //                     // if(indexColumn === 0){
+                    //                     //     doc
+                    //                     //     .lineWidth(.5)
+                    //                     //     .moveTo(x, y)
+                    //                     //     .lineTo(x, y + height)
+                    //                     //     .stroke();  
+                    //                     // }
+                    //                     // else
+                    //                     if(indexColumn === 1) {
+                    //                         doc
+                    //                         .lineWidth(.5)
+                    //                         .moveTo(x + width, y)
+                    //                         .lineTo(x + width, y + height)
+                    //                         .stroke();
+                    //                     }
+
+                    //                     doc.fontSize(10).fillColor('#000000');
+                    //                 }
+                    //             });
+                    //             // done!
+                    //             doc.end();
+                    //         }
+                            
+                    //         // createDirectories(dir, true);
+
+                    //         const admins = jsonData.email.admins;
+
+                    //         let officeAdmins = [];
+                    //         if(req.body.ProjectId[0].length > 6) {
+                    //             officeAdmins = getAdmin(req.body.ProjectId[0], req.body.ProjectId[6]);
+                    //         }
+                    //         else {
+                    //             officeAdmins = getAdmin(req.body.ProjectId[0], 'Z');
+                    //         }
+                    //         for(let admin of officeAdmins) {
+                    //             admins.push(admin);
+                    //         }
+                    //         connection.query('SELECT Contacts.Email AS Email FROM Projects, Contacts WHERE Projects.Projectid = \''+ req.body.ProjectId +'\' AND Projects.BillGrp IS NULL AND Contacts.ID = Cint(Projects.ProjectMgr) AND Contacts.Email IS NOT NULL').then(emails => {
+                    //             Object.entries(emails).forEach(email => {
+                    //                 if(!admins.includes(email[1].email + '@shn-engr.com') || email[1].email != undefined) {
+                    //                     admins.push(email[1].email + '@shn-engr.com');
+                    //                 }
+                    //             });
+                    //             // console.log(admins);
+                    //             // emailPersonel(req.body.BillingNum +'.pdf', dir + '/'+ req.body.BillingNum +'.pdf', 'Billing Group ID ' + req.body.BillingNum + ' called '+ req.body.BillingName +' was added to Project ID ' + req.body.ProjectId + '!<br>See PDF for more.', admins, 'Billing group ' + req.body.BillingNum + ' added to project ' + req.body.ProjectId);
+                    //         });
+                    //     })();
+                    // });
                 }
                 else {
                     console.log('Failed to find directory.');
@@ -1512,12 +1663,8 @@ app.post('/submitBill', jsonParser, (req, res) => {
                 res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));
             });
         });
-    })
-    .catch(error => {
-        res.send(JSON.parse(JSON.stringify(error)));
-        createTicket(error, "Billing group failed:");
-    });
-})
+    });*/
+});
 
 /**
  * searchPromos API searches promos and is used by the search function for Promo To Project.

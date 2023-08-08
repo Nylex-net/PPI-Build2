@@ -144,6 +144,9 @@ function billForm() {
     // ProjectNumberGlobal = proj;
     // let qaqc = (jsonMap[0].qaqc_person_ID != jsonMap[0].project_manager_ID && !Array.isArray(jsonMap[1])? jsonMap[1].staff_first + " " + jsonMap[1].staff_last:jsonMap[0].staff_first + " " + jsonMap[0].staff_last);
     // let team = jsonMap.get(proj).TeamMembers;
+    billingMap.forEach(num => {
+        billingList.push(num.group_number);
+    });
     var jsonString = '{"id":"'+ jsonMap[0].ID +'"}';
 
     document.getElementById('results').innerHTML = "Loading form...";
@@ -183,7 +186,7 @@ function billForm() {
                 serviceArea = jsonMap[0].service_area;
                 contactType = (jsonMap[0].contract_ID == null || jsonMap[0].contract_ID == undefined)?'0':jsonMap[0].contract_ID;
                 totalContract = (jsonMap[0].total_contract == null || jsonMap[0].total_contract == undefined)?'0':jsonMap[0].total_contract;
-                invoiceFormat = (jsonMap[0].invoice_format == null || jsonMap[0].invoice_format == undefined)?'NULL':jsonMap[0].invoice_format;
+                invoiceFormat = (jsonMap[0].invoice_format == null || jsonMap[0].invoice_format == undefined)?'B':jsonMap[0].invoice_format;
                 outsideMarkup = jsonMap[0].outside_markup;
                 specBillInstr = (jsonMap[0].special_billing_instructions == null || jsonMap[0].special_billing_instructions == undefined)?'':jsonMap[0].special_billing_instructions;
                 binderSize = (jsonMap[0].binder_size == null || jsonMap[0].binder_size == undefined || jsonMap[0].binder_size == '')?'NULL':jsonMap[0].binder_size;
@@ -243,6 +246,8 @@ function gotPage(data) {
     '<div class="grid-item">'+ jsonMap[0].project_id +'</div>'+
     '<div class="grid-item">Project Name</div>'+
     '<div class="grid-item">'+ projName +'</div>'+
+    '<div class="grid-item">Project Manager</div>'+
+    '<div class="grid-item">'+ jsonMap[0].staff_last + ', ' + jsonMap[0].staff_first +'</div>'+
     '<div class="grid-item">Client</div>'+
     '<div class="grid-item">'+ client +'</div>'+
     '<div class="grid-item"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
@@ -328,6 +333,8 @@ function nextPage(num) {
         '<div class="grid-item">'+ jsonMap[0].project_id +'</div>'+
         '<div class="grid-item">Project Name</div>'+
         '<div class="grid-item">'+ projName +'</div>'+
+        '<div class="grid-item">Project Manager</div>'+
+        '<div class="grid-item">'+ jsonMap[0].staff_last + ', ' + jsonMap[0].staff_first +'</div>'+
         '<div class="grid-item">Client</div>'+
         '<div class="grid-item">'+ client +'</div>'+
         '<div class="grid-item"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
@@ -408,7 +415,7 @@ function nextPage(num) {
 
         let breakedDesc = descOfServ.replaceAll('\n', '<br>');
         let myAmount = retainAmnt;
-        if(retainer != 'enterAmnt') {
+        if(retainer != 'Enter Amount') {
             myAmount = 'None';
         }
         let waiver = (retainer == 'Waived by X') ? 'Waived by ' + senior:retainer;
@@ -419,7 +426,7 @@ function nextPage(num) {
         '<div class="grid-item">Billing Number' + '</div>'
         + '<div class="grid-item">' + BillingNum + '</div>'+
         '<div class="grid-item">Project Manager' + '</div>'
-        + '<div class="grid-item">' + manager + '</div>'+
+        + '<div class="grid-item">' + jsonMap[0].staff_last + ', ' + jsonMap[0].staff_first + '</div>'+
         '<div class="grid-item">Billing Group Manager' + '</div>'
         + '<div class="grid-item">' + mgrName + '</div>'+
         '<div class="grid-item">QAQC Person' + '</div>'
@@ -1107,15 +1114,15 @@ function submitBilling() {
 
     let cadNum = 0;
     if(autoCad) {
-        cadNum = -1;
+        cadNum = 1;
     }
     let gisNum = 0;
     if(GIS) {
-        gisNum = -1;
+        gisNum = 1;
     }
 
     if(serviceArea == 0) {
-        servName = 'None';
+        servName = 'NULL';
     }
     if(totalContract.length == 0) {
         totalContract = '0';
@@ -1124,18 +1131,18 @@ function submitBilling() {
         contractPONum = 'None';
     }
     if(specBillInstr.trim() == '') {
-        specBillInstr = 'None';
+        specBillInstr = 'NULL';
     }
 
-    let waiver = (retainer == 'Waived by X') ? 'Waived by ' + senior:retainer;
+    let waiver = (retainer == 'Waived by X') ? senior:"NULL";
 
     let sql = '{"ProjectId":"'+ ProjectNumberGlobal +
         '","ProjectName":"'+ format(projName) +
         '","BillingNum":"'+ BillingNum +
         '","BillingName":"'+ format(projTitle) +
-        '","Manager":"'+manager+
+        '","Manager":"'+jsonMap[0].staff_first + ' ' + jsonMap[0].staff_last+
         '","NewMgr":"'+projMgr+
-        '","NewMgrName":"'+mgrName+
+        '","NewMgrName":"'+format(mgrName)+
         '","QAQC":"'+qaqcNew+
         '","QAQCName":"'+qaqcName+
         '","TeamMembers":"'+ teamMem + '",' +
@@ -1150,11 +1157,11 @@ function submitBilling() {
         '"ContractType":"'+ contactType + '",' +
         '"contactTypeName":"'+ contactTypeName + '",'+
         '"InvoiceFormat":"'+ invoiceName + '",' +
-        '"Longitude":"'+ format(longitude) + '",' +
         '"ServiceArea":"'+ servName + '",' +
         '"TotalContract":"'+ totalContract + '",' +
-        '"Retainer":"'+ format(waiver) + '",' +
+        '"Retainer":"'+ format(retainer) + '",' +
         '"RetainerPaid":"'+ retainAmnt + '",' +
+        '"waiver":"'+ format(waiver) + '",' +
         '"ClientContractPONumber":"'+ format(contractPONum) + '",' +
         '"OutsideMarkup":"' + outsideMarkup + '",' +
         '"PREVAILING_WAGE":"'+ prevWage + '",' +
