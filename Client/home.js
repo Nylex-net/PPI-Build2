@@ -144,7 +144,7 @@ function billForm() {
     // ProjectNumberGlobal = proj;
     // let qaqc = (jsonMap[0].qaqc_person_ID != jsonMap[0].project_manager_ID && !Array.isArray(jsonMap[1])? jsonMap[1].staff_first + " " + jsonMap[1].staff_last:jsonMap[0].staff_first + " " + jsonMap[0].staff_last);
     // let team = jsonMap.get(proj).TeamMembers;
-    var jsonString = '{"id":"'+ jsonMap[0].qaqc_person_ID +'"}';
+    var jsonString = '{"id":"'+ jsonMap[0].ID +'"}';
 
     document.getElementById('results').innerHTML = "Loading form...";
     var xhr = new XMLHttpRequest();
@@ -159,14 +159,18 @@ function billForm() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var json = JSON.parse(xhr.responseText);
             console.log(json);
-            if(json[0].hasOwnProperty('last') && json[0].hasOwnProperty('first')) {
+            if(json[0].hasOwnProperty('member_id')) {
+                json.forEach(mem => {
+                    teamMem.push(mem.member_id);
+                });
                 document.getElementById('billRes').innerHTML = '<form name="myForm" id="projForm" onsubmit="reqField();" action="" method=""><div class="grid-container"></div></form>';
                 document.getElementById('projForm').innerHTML = gotPage(json);
 
                 // Initialize values from database entries.
                 projMgr = Number(jsonMap[0].project_manager_ID)
+                // manager = jsonMap[0].staff_last + ", " + jsonMap[0].staff_first;
                 qaqcNew = Number(jsonMap[0].qaqc_person_ID);
-                let qaqc = json[0].last + ", " + json[0].first;
+                // qaqc = json[0].last + ", " + json[0].first;
                 startDate = jsonMap[0].start_date;
                 endDate = jsonMap[0].close_date;
                 // teamMem = jsonMap[0].TeamMembers.split(',');
@@ -209,6 +213,7 @@ async function getKeyIDs() {
         return keysBoi.json();
     }).then(keysBoi => {
         if(keysBoi.length > 0 && keysBoi[0].hasOwnProperty('keyword_id')) {
+            Projkeywords = [];
             for(let id of keysBoi) {
                 Projkeywords.push(id.keyword_id);
             }
@@ -228,20 +233,14 @@ function gotPage(data) {
     teamWee = teamWee.substring(0, teamWee.length - 4);
     
     // Prefill known data.
-    manager = jsonMap[0].Last + ',' + jsonMap[0].First;
-    qaqc = data[data.length - 1].QAQCLast + ',' + data[data.length - 1].QAQCFirst;
-    projName = jsonMap[0].ProjectTitle;
+    // manager = jsonMap[0].Last + ',' + jsonMap[0].First;
+    // qaqc = data[data.length - 1].QAQCLast + ',' + data[data.length - 1].QAQCFirst;
+    projName = jsonMap[0].project_title;
     client = jsonMap[0].client_company;
 
     return '<div class="grid-container">'+
     '<div class="grid-item">Project</div>'+
-    '<div class="grid-item">'+ ProjectNumberGlobal +'</div>'+
-    '<div class="grid-item">Project Manager</div>'+
-    '<div class="grid-item">'+ manager +'</div>'+
-    '<div class="grid-item">QA QC Person</div>'+
-    '<div class="grid-item">'+ qaqc +'</div>'+
-    '<div class="grid-item">Team Members</div>'+
-    '<div class="grid-item">'+ teamWee +'</div>'+
+    '<div class="grid-item">'+ jsonMap[0].project_id +'</div>'+
     '<div class="grid-item">Project Name</div>'+
     '<div class="grid-item">'+ projName +'</div>'+
     '<div class="grid-item">Client</div>'+
@@ -273,8 +272,8 @@ function fillMe(page) {
         document.getElementById('newBillName').value = projTitle;
         document.getElementById('yesAuto').checked = autoCad;
         document.getElementById('gis').checked = GIS;
-        document.getElementById('start').value = startDate;
-        document.getElementById('end').value = endDate;
+        document.getElementById('start').value = startDate.substring(0, startDate.indexOf('T'));
+        document.getElementById('end').value = endDate.substring(0, endDate.indexOf('T'));
     }
     else if(page == 2) {
          // Set previous or default values to fields.
@@ -326,13 +325,7 @@ function nextPage(num) {
     if(num == 1) {
         document.getElementById('projForm').innerHTML = '<div class="grid-container">'+
         '<div class="grid-item">Project</div>'+
-        '<div class="grid-item">'+ ProjectNumberGlobal +'</div>'+
-        '<div class="grid-item">Project Manager</div>'+
-        '<div class="grid-item">'+ manager +'</div>'+
-        '<div class="grid-item">QA QC Person</div>'+
-        '<div class="grid-item">'+ qaqc +'</div>'+
-        '<div class="grid-item">Team Members</div>'+
-        '<div class="grid-item">'+ teamWee +'</div>'+
+        '<div class="grid-item">'+ jsonMap[0].project_id +'</div>'+
         '<div class="grid-item">Project Name</div>'+
         '<div class="grid-item">'+ projName +'</div>'+
         '<div class="grid-item">Client</div>'+
@@ -798,6 +791,7 @@ function isNum(num) {
 }
 
 function getUsers(num) {
+
     let accessErr = false;
     // If-statements are to determine which page is making the call.
     if(num == 1) { // for page1()
@@ -844,8 +838,7 @@ function getUsers(num) {
 
             // A forEach loop to create the rest of the dropdown elements from our data retrieval.
 
-            Object.entries(data).forEach((entry) => {
-
+            data.forEach((entry) => {
                 // Create an option in every iteration.
 
                 option = document.createElement("option");
@@ -854,11 +847,11 @@ function getUsers(num) {
                 // Each option is assigned it's value using the employee ID, and its text is their last and first name.
                 // If user is a project manager, they join the project manager list.
 
-                if(entry[1].PM == -1) {
-                    option.value = entry[1].ID;
-                    option.text = entry[1].Last + ", " + entry[1].First;
-                    quackOpt.value = entry[1].ID;
-                    quackOpt.text = entry[1].Last + ", " + entry[1].First;
+                if(entry.PM == 1) {
+                    option.value = entry.ID;
+                    option.text = entry.last + ", " + entry.first;
+                    quackOpt.value = entry.ID;
+                    quackOpt.text = entry.last + ", " + entry.first;
 
                     // Append employee to the dropdowns.
 
@@ -880,7 +873,7 @@ function getUsers(num) {
                 jumpTo = row;
                 iter = 0;
                 while(iter < 4 && jumpTo < data.length) {
-                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].First + " " + data[jumpTo].Last, data[jumpTo].Last + ", " + data[jumpTo].First);
+                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].first + " " + data[jumpTo].last, data[jumpTo].last + ", " + data[jumpTo].first);
                     jumpTo += floor;
                     iter++;
                 }
@@ -893,7 +886,7 @@ function getUsers(num) {
                 jumpTo = floor * 4;
                 while(jumpTo < data.length) {
                     checkEmpl.innerHTML += '<div></div><div></div><div></div>';
-                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].First + " " + data[jumpTo].Last, data[jumpTo].Last + ", " + data[jumpTo].First);
+                    checkEmpl.innerHTML += getCheckbox('Team', data[jumpTo].ID, data[jumpTo].first + " " + data[jumpTo].last, data[jumpTo].last + ", " + data[jumpTo].first);
                     jumpTo++;
                 }
             }
@@ -908,10 +901,11 @@ function getUsers(num) {
 
             // fillAfterLoad fills the previous selected answers.
 
-            fillAfterLoad(1);
+            fillAfterLoad(num);
 
         }).catch(error => { // If we can't connect to our server for whatever reason, we'll write an error mesage into our table.
 
+            document.getElementById("projFiller").innerHTML = 'Oh no! SHN had a connection error!';
             document.getElementById("qaqcFill").innerHTML = 'Oh no! SHN had a connection error!';
             document.getElementById('help').innerHTML = "Oh no! SHN had a connection error!";
 
@@ -942,6 +936,12 @@ function getUsers(num) {
             keyEl.innerHTML = '';
             keyResult = [];   
             keyIDMap.clear();         // A forEach loop to create the checkbox elements from our data retrieval.
+
+            // Object.entries(data).forEach((entry) => {
+            //     // keyEl.innerHTML += getCheckbox('key', entry[1].ID, entry[1].Keyword, entry[1].Keyword);
+            //     keyResult.push(entry[1].Keyword);
+            //     keyIDMap.set(entry[1].Keyword, getCheckbox('key', entry[1].ID, entry[1].Keyword, entry[1].Keyword));
+            // });
 
             const floor = Math.floor(data.length / 4);
             let row = 0;
@@ -975,7 +975,7 @@ function getUsers(num) {
 
             keywordString = keyEl.innerHTML;
 
-            fillAfterLoad(2);
+            fillAfterLoad(num);
 
         }).catch(error => { // If an error occurs with our connection to the server, we'll write an error mesage into our table.
 
@@ -1026,8 +1026,8 @@ function getUsers(num) {
 
             Object.entries(data).forEach((entry) => {
                 codeOpt = document.createElement("option");
-                codeOpt.value = entry[1].Code;
-                codeOpt.text = entry[1].Code + " - " + entry[1].CodeDescription;
+                codeOpt.value = entry[1].ID;
+                codeOpt.text = entry[1].Code + " - " + entry[1].Description;
                 codeEl.appendChild(codeOpt);
             });
 
@@ -1036,6 +1036,7 @@ function getUsers(num) {
 
             document.getElementById('codeFill').innerHTML = '';
             document.getElementById('codeFill').appendChild(codeEl);
+            fillMe(num);
 
             document.getElementById(codeEl.id).value = profCode;
 

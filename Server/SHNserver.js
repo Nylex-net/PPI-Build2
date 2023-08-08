@@ -711,23 +711,15 @@ app.post('/promo', jsonParser, (req, res) => {
  * Older project don't always conform to this separation.
  */
 
-app.post('/keyName', jsonParser, (req, res) => {
-    // Connect to database.
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    // Split keywords into array.
-    let keyArray = req.body.keyText.split(' || ');
-    let keyQuery = '';
-    for(let word of keyArray) { // Build query.
-        keyQuery += 'Keyword = \'' + word + '\' OR ';
-    }
-    keyQuery = keyQuery.substring(0, keyQuery.length - 4); // remove the final appended " OR ".
-    connection.query('SELECT ID FROM Keywords WHERE ' + keyQuery).then(keyIDs => {
-        // Send back query results.
-        res.send(JSON.parse(JSON.stringify(keyIDs)));
-    }).catch(err => {
-        // If an error happens. send back an error.
-        createTicket(err, "Could not retrieve Keyword IDs:");
-        res.send(JSON.parse(JSON.stringify(err)));
+app.post('/keyName', jsonParser, (req, res) => { // MA BOI LEFT OFF HERE
+    pool.query("SELECT * FROM ProjectKeywords WHERE project_id = " + req.body.project, (err, data) => {
+        if(err) {
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            res.send(JSON.stringify(data));
+        }
     });
 });
 
@@ -1127,7 +1119,7 @@ app.post('/billMe', jsonParser, (req, res) => {
  */
 
 app.post('/mgrs', jsonParser, (req, res) => {
-    pool.query("SELECT first, last FROM Staff WHERE Staff.ID = " + req.body.id, (err, data) => {
+    pool.query("SELECT member_id FROM ProjectTeam WHERE project_id = " + req.body.id, (err, data) => {
         if(err) {
             console.error(err);
             res.send(JSON.stringify(err));
