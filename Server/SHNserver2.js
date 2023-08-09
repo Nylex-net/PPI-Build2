@@ -1,6 +1,6 @@
 // npm libraries.
 'use strict';
-const ADODB = require('node-adodb');
+const msnodesqlv8 = require('msnodesqlv8');
 const express = require('express');
 // const cluster = require('cluster');
 const cors = require('cors');
@@ -13,27 +13,30 @@ const PDFDocument = require('pdfkit-table');
 const { fontSize } = require('pdfkit');
 const { dirname } = require('path');
 const https = require('https');
+const { create } = require('domain');
 app.use(cors());
 var jsonParser = bodyParser.json();
 const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\PPI\\Database\\SHN_Project_Backup.mdb;";
-const jsonData = require('./config.json');
 
-// Run program under projects directory.
+// Directory for production environment.
+// process.chdir("P:\\");
+
+// Directory for testing environment.
 process.chdir("P:\\");
-
+const PATH = "P:";
 // Certificates
 const options = {
     key: fs.readFileSync('C:\\xampp\\apache\\conf\\ssl.key\\key.pem'),
     cert: fs.readFileSync('C:\\xampp\\apache\\conf\\ssl.crt\\cert.pem')
-}
+};
 
 // Zoho configuration
-const CODE = jsonData.ZohoAPI.code; // Create code from self client in Zoho API console.
-const CLIENT_ID = jsonData.ZohoAPI.client_id;
-const CLIENT_SECRET = jsonData.ZohoAPI.client_secret;
-const REFRESH_TOKEN = jsonData.ZohoAPI.refresh_token; // Replace with refresh token if available. Otherwise, set to null.
-const SCOPE = jsonData.ZohoAPI.scope;
-const ORG_ID = jsonData.ZohoAPI.org_id;
+const CODE = '1000.74ac8598be2ddda0847d4d316a3974ab.ffc1708ead5f638b4fba52cce801a802'; // Create code from self client in Zoho API console.
+const CLIENT_ID = '1000.BMWLJD6EZ3F422X5L2WGRSGCNUBTKH';
+const CLIENT_SECRET = '9b75b877a09cba213c7b7c00910e13e6822d2a042e';
+const REFRESH_TOKEN = '1000.cc5330476c8f51620721394af2f1193d.1c8fba0d22fbcf52f10e23383a8135e9'; // Replace with refresh token if available. Otherwise, set to null.
+const SCOPE = 'desk.tickets.CREATE';
+const ORG_ID = "749689656";
 let ZOHO = {};
 oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
     ZOHO = data;
@@ -41,6 +44,19 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
         console.log("refresh_token: " + data.refresh_token);
     }
 });
+
+// String to connect to MSSQL.
+const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=Yes;Driver={ODBC Driver 17 for SQL Server}`;
+
+const pool = new msnodesqlv8.Pool({
+    connectionString: connectionString
+});
+pool.on('open', (options) => {
+    console.log(`ready options = ${JSON.stringify(options, null, 4)}`)
+  });
+  pool.on('error', e => {
+    console.log(e)
+  });
 
 // projects API returns the project info in projects, plus the first and last name of the Project Manager.
 
@@ -105,51 +121,66 @@ app.post('/closeMe', jsonParser, (req, res) => {
  * General Default search of database.
  */
 app.post('/search', jsonParser, (req, res) => {
-    let myResponse = 'Null response';
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-     // console.log('Project Number is ' + req.body.ProjectNumber + ', Description is ' + req.body.Description + ', Project title is ' + req.body.ProjectTitle);
-     // INNER JOIN Contacts ON Contacts.ID = Cint(Projects.ProjectMgr)
-     connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE Projects.Projectid LIKE \'%'+ req.body.entry +
-    '%\' OR Projects.PromoId LIKE \'%'+ req.body.entry +'%\' OR Projects.ProjectMgr = (SELECT TOP 1 Contacts.ID FROM Contacts WHERE Contacts.Last LIKE \'%'+ req.body.entry +'%\' OR Contacts.First LIKE \'%'+ req.body.entry +'%\') OR Projects.ProjectLoation LIKE \'%'+ req.body.entry +
-    '%\' OR Projects.ProjectKeywords LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientCompany1 LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientContact1 LIKE \'%'+ req.body.entry +
-    '%\' OR Projects.ClientContactFirstName1 LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientContactLastName1 LIKE \'%'+ req.body.entry +
-    '%\' OR Projects.ProfileCode LIKE \'%'+ req.body.entry +'%\' OR Projects.DescriptionService LIKE \'%'+ req.body.entry +
-    '%\' ORDER BY Projects.Projectid IS NOT NULL, Projects.PromoId IS NULL, Projects.Projectid, Projects.PromoId, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService')
-    .then(data => {
-        data = JSON.stringify(data);
-        myResponse = data;
-        res.send(data);
-    })
-    .catch(error => { // Previous query doesn't always work and returns a datatype mismatch error, so we run the alternative method.
-         console.log(error);
-        connection.query('SELECT ID, First, Last From Contacts').then(contacts => { // Gets all employee names and their IDs.
-            let contactMap = new Map();
-            for(let contact of contacts) { // Store employees in map object for ease of access.
-                contactMap.set(contact.ID.toString(), contact.First.trim() + ';' + contact.Last.trim());
-            }
-            // Now search the projects database.
-            connection.query('SELECT * FROM Projects WHERE Projectid LIKE \'%'+ req.body.entry +'%\' OR ProjectLoation LIKE \'%'+ req.body.entry+
-            '%\' OR PromoId LIKE \'%'+ req.body.entry +'%\' OR ProjectKeywords LIKE \'%'+ req.body.entry +
-            '%\' OR ClientCompany1 LIKE \'%'+ req.body.entry +'%\' OR ClientContact1 LIKE \'%'+ req.body.entry + '%\' OR ClientContactFirstName1 LIKE \'%'+ req.body.entry +
-            '%\' OR ClientContactLastName1 LIKE \'%'+ req.body.entry +'%\' OR ProfileCode LIKE \'%'+ req.body.entry +'%\' OR DescriptionService LIKE \'%'+ req.body.entry +
-            '%\' ORDER BY Projectid IS NOT NULL, PromoId IS NULL, Projectid, PromoId, BillGrp, ClientCompany1, DescriptionService').then(projData => {
-                // Associate each project manager to the cooresponding project they're managing.
-                for(let entry of projData) {
-                    let temp = (contactMap.get(entry.ProjectMgr) == undefined) ? undefined:contactMap.get(entry.ProjectMgr).split(';');
-                    if(temp != undefined && temp != null) {
-                        entry["First"] = temp[0];
-                        entry["Last"] = temp[1];
-                    }
-                    else {
-                        entry["First"] = "Unknown";
-                        entry["Last"] = "Unknown";
-                    }
+    let result =[];
+    pool.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.client_company, Projects.closed, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID INNER JOIN ProfileCodes ON Projects.profile_code_id = ProfileCodes.ID INNER JOIN ProjectKeywords ON Projects.ID = ProjectKeywords.project_id WHERE Projects.project_id LIKE '%"+req.body.entry+"%' OR Projects.project_title LIKE '%"+req.body.entry+"%' OR Projects.first_name LIKE '%"+req.body.entry+"%' OR Projects.last_name LIKE '%"+req.body.entry+"%' OR Projects.client_company LIKE '%"+req.body.entry+"%' OR Projects.description_service LIKE '%"+req.body.entry+"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR ProjectKeywords.keyword_id = (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%');", (err, data) => {
+        if(err) {
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            result.push(data);
+            pool.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.client_company, Promos.closed, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_ID = Staff.ID INNER JOIN ProfileCodes ON Promos.profile_code_id = ProfileCodes.ID INNER JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id WHERE Promos.promo_id LIKE '%"+req.body.entry+"%' OR Promos.promo_title LIKE '%"+req.body.entry+"%' OR Promos.first_name LIKE '%"+req.body.entry+"%' OR Promos.last_name LIKE '%"+req.body.entry+"%' OR Promos.client_company LIKE '%"+req.body.entry+"%' OR Promos.description_service LIKE '%"+req.body.entry+"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR PromoKeywords.keyword_id = (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%');", (err, promos) => {
+                if(err) {
+                    console.error(err);
+                    res.send(JSON.stringify(err));
                 }
-                res.send(JSON.stringify(projData));
-            })
-            // If all fails, send back error.
-        }).catch(err => res.send(JSON.stringify(err)));
+                else {
+                    result.push(promos);
+                    res.send(JSON.stringify(result));
+                }
+            });
+        }
     });
+    //  connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE Projects.Projectid LIKE \'%'+ req.body.entry +
+    // '%\' OR Projects.PromoId LIKE \'%'+ req.body.entry +'%\' OR Projects.ProjectMgr = (SELECT TOP 1 Contacts.ID FROM Contacts WHERE Contacts.Last LIKE \'%'+ req.body.entry +'%\' OR Contacts.First LIKE \'%'+ req.body.entry +'%\') OR Projects.ProjectLoation LIKE \'%'+ req.body.entry +
+    // '%\' OR Projects.ProjectKeywords LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientCompany1 LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientContact1 LIKE \'%'+ req.body.entry +
+    // '%\' OR Projects.ClientContactFirstName1 LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientContactLastName1 LIKE \'%'+ req.body.entry +
+    // '%\' OR Projects.ProfileCode LIKE \'%'+ req.body.entry +'%\' OR Projects.DescriptionService LIKE \'%'+ req.body.entry +
+    // '%\' ORDER BY Projects.Projectid IS NOT NULL, Projects.PromoId IS NULL, Projects.Projectid, Projects.PromoId, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService')
+    // .then(data => {
+    //     data = JSON.stringify(data);
+    //     res.send(data);
+    // })
+    // .catch(error => { // Previous query doesn't always work and returns a datatype mismatch error, so we run the alternative method.
+    //      console.log(error);
+    //     connection.query('SELECT ID, First, Last From Contacts').then(contacts => { // Gets all employee names and their IDs.
+    //         let contactMap = new Map();
+    //         for(let contact of contacts) { // Store employees in map object for ease of access.
+    //             contactMap.set(contact.ID.toString(), contact.First.trim() + ';' + contact.Last.trim());
+    //         }
+    //         // Now search the projects database.
+    //         connection.query('SELECT * FROM Projects WHERE Projectid LIKE \'%'+ req.body.entry +'%\' OR ProjectLoation LIKE \'%'+ req.body.entry+
+    //         '%\' OR PromoId LIKE \'%'+ req.body.entry +'%\' OR ProjectKeywords LIKE \'%'+ req.body.entry +
+    //         '%\' OR ClientCompany1 LIKE \'%'+ req.body.entry +'%\' OR ClientContact1 LIKE \'%'+ req.body.entry + '%\' OR ClientContactFirstName1 LIKE \'%'+ req.body.entry +
+    //         '%\' OR ClientContactLastName1 LIKE \'%'+ req.body.entry +'%\' OR ProfileCode LIKE \'%'+ req.body.entry +'%\' OR DescriptionService LIKE \'%'+ req.body.entry +
+    //         '%\' ORDER BY Projectid IS NOT NULL, PromoId IS NULL, Projectid, PromoId, BillGrp, ClientCompany1, DescriptionService').then(projData => {
+    //             // Associate each project manager to the cooresponding project they're managing.
+    //             for(let entry of projData) {
+    //                 let temp = (contactMap.get(entry.ProjectMgr) == undefined) ? undefined:contactMap.get(entry.ProjectMgr).split(';');
+    //                 if(temp != undefined && temp != null) {
+    //                     entry["First"] = temp[0];
+    //                     entry["Last"] = temp[1];
+    //                 }
+    //                 else {
+    //                     entry["First"] = "Unknown";
+    //                     entry["Last"] = "Unknown";
+    //                 }
+    //             }
+    //             res.send(JSON.stringify(projData));
+    //         })
+    //         // If all fails, send back error.
+    //     }).catch(err => res.send(JSON.stringify(err)));
+    // });
 });
 
 /**
@@ -316,7 +347,7 @@ app.post('/qaqc', jsonParser, (req, res) => {
 // This may not work for older project initiations, as the database entries don't always conform to the expected format.
 app.post('/keyName', jsonParser, (req, res) => {
     const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    let keyArray = req.body.keyText.split(' || ');
+    let keyArray = req.body.keyText.split(/,| \|\| /g);
     let keyQuery = '';
     for(let word of keyArray) {
         keyQuery += 'Keyword = \'' + word + '\' OR ';
@@ -325,6 +356,7 @@ app.post('/keyName', jsonParser, (req, res) => {
     connection.query('SELECT ID FROM Keywords WHERE ' + keyQuery).then(keyIDs => {
         res.send(JSON.parse(JSON.stringify(keyIDs)));
     }).catch(err => {
+        console.log(err);
         res.send(JSON.parse(JSON.stringify(err)));
     });
 });
@@ -336,7 +368,7 @@ app.post('/updater', jsonParser, (req, res) => {
     // let dir = 'P:';
     let isProject = (req.body.Projectid != undefined && req.body.Projectid != null && req.body.Projectid != '')?true:false;
     const num = (req.body.Projectid != undefined && req.body.Projectid != null && req.body.Projectid != '')?req.body.Projectid:req.body.PromoId;
-    let dir = (isProject)?getDir(req.body.Projectid[0]):getDir(req.body.PromoId[0]);
+    let dir = PATH + ((isProject)?getDir(req.body.Projectid[0]):getDir(req.body.PromoId[0]));
     dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
     dir += (isProject)?'':'/Promos';
     if(!fs.exists(dir)) {
@@ -367,11 +399,14 @@ app.post('/updater', jsonParser, (req, res) => {
     }
 
     // Build the SQL statement.
+
     const query = 'UPDATE Projects SET ProjectTitle = \''+ req.body.ProjectTitle.replace(/'/gi, "''") + '\', ProjectMgr = \'' + req.body.ProjectMgr.replace(/'/gi, "''") + '\', AlternateTitle = \''+ req.body.AlternateTitle +'\', QA_QCPerson = \'' + req.body.QA_QCPerson.replace(/'/gi, "''") + '\', TeamMembers = \''+ req.body.TeamMembers.replace(/'/gi, "''") +'\', StartDate = \'' + req.body.StartDate.replace(/'/gi, "''") + '\', CloseDate = \''+ req.body.CloseDate.replace(/'/gi, "''") +'\', ProjectLoation = \''+ req.body.ProjectLoation.replace(/'/gi, "''") +'\', ' + ((!isNaN(req.body.Lattitude) && !isNaN(req.body.Longitude))?'Lattitude = '+ req.body.Lattitude + ', Longitude = '+ req.body.Longitude + ', ':'')+
     'ProjectKeywords = \''+ req.body.ProjectKeywords.replace(/'/gi, "''") +'\', SHNOffice = \'' + req.body.SHNOffice.replace(/'/gi, "''") + '\', ToatlContract = \'' + req.body.ToatlContract.replace(/'/gi, "''") + '\', RetainerPaid = \'' + req.body.RetainerPaid.replace(/'/gi, "''") + '\', ProfileCode = \'' + req.body.ProfileCode.replace(/'/gi, "''") + '\', ServiceArea = \''+ req.body.ServiceArea.replace(/'/gi, "''") + '\', ContractType = \'' + req.body.ContractType.replace(/'/gi, "''") + '\', InvoiceFormat = \'' + req.body.InvoiceFormat.replace(/'/gi, "''") + '\', PREVAILING_WAGE = \''+ req.body.PREVAILING_WAGE.replace(/'/gi, "''") +'\', OutsideMarkup = \'' + req.body.OutsideMarkup + '\', SpecialBillingInstructins = \'' + req.body.SpecialBillingInstructins.replace(/'/gi, "''") + '\', SEEALSO = \'' + req.body.SEEALSO.replace(/'/gi, "''") + '\', Project_Specifications = ' + req.body.Project_Specifications +
     ', AutoCAD_Project = ' + req.body.AutoCAD_Project + ', GIS_Project = ' + req.body.GIS_Project + ', ClientCompany1 = \'' + req.body.ClientCompany1.replace(/'/gi, "''") + '\', OfficeMailingLists1 = \'' + req.body.OfficeMailingLists1.replace(/'/gi, "''") + '\','+
     'ClientAbbrev1 = \'' + req.body.ClientAbbrev1.replace(/'/gi, "''") + '\', ClientContactFirstName1 = \'' + req.body.ClientContactFirstName1.replace(/'/gi, "''") + '\', ClientContactLastName1 = \'' + req.body.ClientContactLastName1.replace(/'/gi, "''") + '\', Title1 = \'' + req.body.Title1.replace(/'/gi, "''") + '\', Address1_1 = \'' + req.body.Address1_1.replace(/'/gi, "''") + '\', Address2_1 = \'' + req.body.Address2_1.replace(/'/gi, "''") + '\', City1 = \'' + req.body.City1.replace(/'/gi, "''") + '\', State1 = \'' + req.body.State1.replace(/'/gi, "''") + '\', Zip1 = \'' + req.body.Zip1.replace(/'/gi, "''") + '\', PhoneW1 = \''+ req.body.PhoneW1.replace(/'/gi, "''") + '\', PhoneH1 = \'' + req.body.PhoneH1.replace(/'/gi, "''") + '\', Cell1 = \'' + req.body.Cell1.replace(/'/gi, "''") + '\', Fax1 = \'' + req.body.Fax1.replace(/'/gi, "''") + '\', Email1 = \'' + req.body.Email1.replace(/'/gi, "''") + '\', '+
     'BinderSize = \'' + req.body.BinderSize.replace(/'/gi, "''") + '\', BinderLocation = \'' + req.body.BinderLocation.replace(/'/gi, "''") + '\', DescriptionService = \''+  req.body.DescriptionService.replace(/'/gi, "''") + '\', DTStamp = \'' + req.body.CreatedOn + '\' WHERE Projectid ' +  ((req.body.Projectid == null)?'IS NULL':'= \''+req.body.Projectid + '\'') + ' AND PromoId ' + ((req.body.PromoId == null)?'IS NULL':'= \''+req.body.PromoId + '\'');
+    // If latitude and/or longitude aren't numbers, don't bother inserting them into the database.
+
     // query += (req.body.Projectid != null && req.body.Projectid != undefined && req.body.Projectid.length >=6 && !isNaN(req.body.Projectid))?' WHERE Projectid = \'' + req.body.Projectid + '\'':' WHERE PromoId = \'' + req.body.PromoId + '\'';
     // console.log(query);
     // Connect to database.
@@ -499,7 +534,7 @@ app.post('/updater', jsonParser, (req, res) => {
  */
 
 app.post('/getPath', jsonParser, (req, res) => {
-    let dir = (req.body.isClosed == "true")?closedJobDir(req.body.ProjectID[0]):getDir(req.body.ProjectID[0]);
+    let dir = (req.body.isClosed == "true")?closedJobDirDemo(req.body.ProjectID[0]):getDir(req.body.ProjectID[0]);
     // if(req.body.isClosed == "true") {
     //     dir += '/ClosedJobs';
     // }
@@ -509,24 +544,24 @@ app.post('/getPath', jsonParser, (req, res) => {
     if(req.body.ProjectID[6] == '.' && req.body.ProjectID.length > 6) { // If it's a promo, goto Promos folder.
         dir += "/Promos";
     }
-    if(fs.existsSync(dir)) {
-        let dirFiles = fs.readdirSync(dir);
-        // If it's Arcata Project, remove "A".
-        let arcata = (req.body.ProjectID[req.body.ProjectID.length-1] == 'A')?req.body.ProjectID.substring(0,req.body.ProjectID.length-1):req.body.ProjectID;
+    if(fs.existsSync(PATH + dir)) {
+        let dirFiles = fs.readdirSync(PATH + dir);
+        // If it's an Arcata Project, remove "A".
+        let arcata = (req.body.ProjectID[req.body.ProjectID.length-1] == 'A')?req.body.ProjectID.substring(0,req.body.ProjectID.trim().length-1):req.body.ProjectID;
         let found = false;
         for(let file of dirFiles) {
-            if(file.substring(0, 11).includes(arcata)) {
+            if(file.includes(arcata)) {
                 dir += '/' + file;
                 found = true;
                 break;
             }
         }
         if(!found) {
-            console.log("Didn't find "+ req.body.ProjectID +" in " + dir);
+            console.log("Didn't find "+ req.body.ProjectID +" in " +PATH+ dir);
             res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
         }
         else {
-            dirFiles = fs.readdirSync(dir);
+            dirFiles = fs.readdirSync(PATH + dir);
             found = false;
             let tempdir = '';
             let namelength = undefined;
@@ -547,8 +582,8 @@ app.post('/getPath', jsonParser, (req, res) => {
             }
             if(!found && tempdir == '') {
                 dir += '/Setup';
-                if(fs.existsSync(dir)) {
-                    dirFiles = fs.readdirSync(dir);
+                if(fs.existsSync(PATH+ dir)) {
+                    dirFiles = fs.readdirSync(PATH+ dir);
                     found = false;
                     tempdir = '';
                     namelength = undefined;
@@ -568,37 +603,67 @@ app.post('/getPath', jsonParser, (req, res) => {
                         }
                     }
                     if(!found && tempdir == '') {
-                        console.log("Didn't find "+ req.body.ProjectID +" in " + dir);
+                        console.log("Didn't find "+ req.body.ProjectID +" in " + PATH + dir);
                         res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                     }
                     else {
                         dir += '/' + tempdir;
-                        res.download("P://" + dir);
+                        res.download(PATH+dir);
                         // res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                     }
                 }
                 else {
-                    console.log("Didn't find "+ req.body.ProjectID +" in " + dir);
+                    console.log("Didn't find "+ req.body.ProjectID +" in " + PATH + dir);
                     res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                 }
             }
             else {
                 dir += '/' + tempdir;
-                res.download("P://" + dir);
+                res.download(PATH + dir);
                 //res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
             }
         }
     }
     else {
-        console.log("Didn't find in " + dir);
+        console.log("Didn't find in " + PATH+ dir);
         res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
     }
+});
+
+app.post('/delete', jsonParser, (req, res) => {
+    let dir = PATH;
+    if(!req.body.hasOwnProperty('ID') || !req.body.hasOwnProperty('Project')){
+        res.status(401);
+        res.send(JSON.parse(JSON.stringify('{"message":"Bad Request"}')));
+    }
+    else if(req.body.Project && isNaN(req.body.ID.substring(0,6))) {
+        res.status(403);
+        res.send(JSON.parse(JSON.stringify('{"message":"Bad Project/Promo"}')));
+    }
+    else if(!req.body.Project && isNaN(req.body.ID.substring(0,9))) {
+        res.status(403);
+        res.send(JSON.parse(JSON.stringify('{"message":"Bad Promo"}')));
+    }
+    else {
+        const query = 'DELETE * FROM Projects WHERE ' + (req.body.Project?'Projectid':'PromoId') + ' = \''+ req.body.ID +'\'';
+        // Connect to database.
+        const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
+        // Executes the query.
+        connection.execute(query).then(() => {
+            res.status(200);
+            res.send(JSON.parse(JSON.stringify('{"message":"ok"}')));
+        }).catch(err=>{
+            console.log(err);
+            res.status(500);
+            res.send(JSON.parse(JSON.stringify('{"message":"Server Error: '+err+'"}')));
+        });
+    }    
 });
 
 // Used by the close API to move contents into the cooresponding office's closed jobs folder.
 function moveProject(ID, closer) {
     // let dir = 'P:';
-    let dir = (!isNaN(ID[0]))? getDir(Number(ID[0])):getDir(0); // Get office directory.
+    let dir = PATH + ((!isNaN(ID[0]))? getDir(Number(ID[0])):getDir(0)); // Get office directory.
     dir += (!isNaN(ID[1] + ID[2]) && Number(ID[1] + ID[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + ID[1] + ID[2]:'/20' + ID[1] + ID[2]; // Get project year.
     const projYear = (!isNaN(ID[1] + ID[2]) && Number(ID[1] + ID[2]) > new Date().getFullYear().toString().slice(-2))?Number('19' + ID[1] + ID[2]):Number("20" + ID[1] + ID[2]);
     const isPromo = (ID.length > 7)?true:false;
@@ -621,7 +686,7 @@ function moveProject(ID, closer) {
         }
         // Move file only if a file was found.
         if(filer != null) {
-            let dest = closedJobDir(Number(ID[0])) + '/' + projYear + (isPromo?'/Promos':'');
+            let dest = PATH + closedJobDirDemo(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'');
             if(!fs.existsSync(dest)) {
                 fs.mkdir((dest), err => {
                     if(err){
@@ -629,6 +694,7 @@ function moveProject(ID, closer) {
                     }
                 });
             }
+            console.log("Moving to " + dest + filer)
             fs.moveSync(dir, dest + filer, { overwrite: true }, (err) => {
                 if(err) {
                     console.log(err);
@@ -736,18 +802,18 @@ function closedJobDir(officeNum) {
 // Returns directories of each office's closed job folder by office number (DEMO VERSION).
 function closedJobDirDemo(officeNum) {
     if(officeNum == 2) {
-        return 'U:/Eureka/Nylex/test/Mock_Drive/KFalls/ClosedJobs/';
+        return '/KFalls/ClosedJobs';
     }
     else if(officeNum == 4) {
-        return 'U:/Eureka/Nylex/test/Mock_Drive/Willits/ClosedJobFiles/';
+        return '/Willits/ClosedJobs';
     }
     else if(officeNum == 5) {
-        return 'U:/Eureka/Nylex/test/Mock_Drive/Redding/CLOSED-PROJECT FILES/';
+        return '/Redding/ClosedJobs';
     }
     else if(officeNum == 6) {
-        return 'U:/Eureka/Nylex/test/Mock_Drive/Coosbay/ClosedJobs/';
+        return '/Coosbay/ClosedJobs';
     }
-    return 'U:/Eureka/Nylex/test/Mock_Drive/Eureka/ClosedJobs/';
+    return '/Eureka/ClosedJobs';
 }
 
 /**
@@ -785,6 +851,16 @@ function getDir(id) {
     return '/Eureka';
 }
 
+/**
+ * Grants access to Zoho APIs with the use of Zoho's API console at https://api-console.zoho.com/.
+ * See documentation for more info: https://desk.zoho.com/DeskAPIDocument#OauthTokens
+ * @param {String} code 
+ * @param {String} client_id 
+ * @param {String} client_secret 
+ * @param {String} refresh_token 
+ * @param {String} scope 
+ * @returns JSON access information.
+ */
 async function oauthgrant(code, client_id, client_secret, refresh_token, scope) {
     if(refresh_token === null) {
         const response = await fetch("https://accounts.zoho.com/oauth/v2/token?code="+ code + "&grant_type=authorization_code&client_id=" + client_id + "&client_secret=" + client_secret + "&redirect_uri=https://www.zylker.com/oauthgrant", {
@@ -802,6 +878,14 @@ async function oauthgrant(code, client_id, client_secret, refresh_token, scope) 
     }
 }
 
+/**
+ * Returns authenticated and valid info to perform Zoho Desk operations.
+ * @param {String} client_id 
+ * @param {String} client_secret 
+ * @param {String} refresh_token 
+ * @param {String} scope 
+ * @returns JSON containing a new access token.
+ */
 async function refresh(client_id, client_secret, refresh_token, scope) {
     const response = await fetch("https://accounts.zoho.com/oauth/v2/token?refresh_token="+refresh_token+"&client_id="+client_id+"&client_secret="+client_secret+"&scope="+scope+"&redirect_uri=https://www.zylker.com/oauthgrant&grant_type=refresh_token", {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -809,6 +893,8 @@ async function refresh(client_id, client_secret, refresh_token, scope) {
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
         credentials: "same-origin", // include, *same-origin, omit
         headers: {
+        // "orgId": "749689656",
+        // "Authorization": "Zoho-oauthtoken 1000.a8bb31bcbee40b64afe002a17e5d0a6f.7c3885f16eda2b152bbf79f8171012d7",
         "Content-Type": "application/json"
         },
         redirect: "follow", // manual, *follow, error
@@ -817,6 +903,11 @@ async function refresh(client_id, client_secret, refresh_token, scope) {
     return response.json();
 }
 
+/**
+ * Calls the refresh function for a valid access token and creates a Zoho ticket containing the error message.
+ * @param {String} error 
+ * @param {String} msg 
+ */
 async function createTicket(error, msg) {
     refresh(CLIENT_ID, CLIENT_SECRET, ((ZOHO.refresh_token === undefined)?REFRESH_TOKEN:ZOHO.refresh_token), SCOPE).access_token.then(token => {
         if(token.hasOwnProperty("access_token")) {
@@ -832,7 +923,7 @@ async function createTicket(error, msg) {
             },
             redirect: "follow", // manual, *follow, error
             referrerPolicy: "no-referrer",// no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            body: JSON.stringify({"subject":"[TEST] PPI Error Report", "departmentId":jsonData.ZohoAPI.departmentId,"description":msg + "\n" + error, "contactId":jsonData.ZohoAPI.contactId, "assigneeId":jsonData.ZohoAPI.assigneeId})
+            body: JSON.stringify({"subject":"[TEST] PPI Error Report", "departmentId":"601361000000006907","description":msg + "\n" + error, "contactId":"601361000030806189", "assigneeId":"601361000016556001"})
             });
         }
         else {
@@ -842,6 +933,7 @@ async function createTicket(error, msg) {
         console.error("Could not refresh\n"+err);
     });
 }
+
 
 /**
  * ) removes the two single quotes ('') for proper display in the PDF document.
@@ -869,6 +961,7 @@ async function createTicket(error, msg) {
 // const port = Number(process.env.PORT) || 3001;
 // app.listen(port, () => console.log(`Listening to port ${port}...`));
 
+pool.open();
 https.createServer(options, app, function (req, res) {
     res.statusCode = 200;
   }).listen(3001);

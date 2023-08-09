@@ -23,7 +23,8 @@ function search() {
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
             var json = JSON.parse(xhr.responseText);
-            if(json.hasOwnProperty('process')) {
+            if(json.hasOwnProperty('sqlstate') || json.length <= 0) {
+                console.log(json);
                 document.getElementById('results').innerHTML = '<button type="button" onclick="search()">Search</button><br>Server error.';
             }
             else{
@@ -84,23 +85,52 @@ function formatMultiline(myString) {
 
 function resultString(jsonRes) {
     currResults.clear();
+    let filteredData = (jsonRes[0].reduce((accumulator, currentValue) => {
+        if (!accumulator[currentValue.project_id]) {
+          accumulator[currentValue.project_id] = true;
+          accumulator.result.push(currentValue);
+        }
+        return accumulator;
+      }, { result: [] }).result).sort((a, b) => a.project_id - b.project_id);
+    // console.log(filteredData);
     if(jsonRes.length == 0) {
         document.getElementById('columnResults').innerHTML = 'None';
         return 0;
     }
     document.getElementById('columnResults').innerHTML = '';
-    let result = '<table id="Rolo"><tr><th><strong>Project ID</strong></th><th><strong>Billing Group</strong></th><th><strong>Promo ID</strong></th><th><strong>Sub #</strong></th><th><strong>Project Manager</strong></th><th><strong>Project Title</strong></th><th><strong>Client Company</strong></th><th>Display</th><th>Edit</th></tr>';
-    console.log(jsonRes);
-    jsonRes.forEach(num => {
-        var id = (num.Projectid == null || num.Projectid == undefined || num.Projectid.trim() == '')?num.PromoId:num.Projectid;
+    let result = '<table id="Rolo"><tr><th><strong>Project ID</strong></th><th><strong>Billing Group</strong></th><th><strong>Promo ID</strong></th><th><strong>Project Manager</strong></th><th><strong>Project Title</strong></th><th><strong>Client Company</strong></th><th>Display</th><th>Edit</th></tr>';
+    // console.log(jsonRes);
+
+    filteredData.forEach(num => {
+        var id = num.ID;
         if(!currResults.has(id)) {
             currResults.set(id, num);
         }
-        result += '<tr><td>' + ((num.Closed_by_PM == -1)?'<strong>X</strong> ':'')+((num.Projectid == null || num.Projectid == undefined)?'':num.Projectid) + '</td><td>' + ((num.BillGrp == null || num.BillGrp == undefined)?'':num.BillGrp) + '</td><td>' +
-        ((num.PromoId == null || num.PromoId == undefined)?'':num.PromoId) + '</td><td>' + ((num.SubGroup2 == null || num.SubGroup2 == undefined)?'':num.SubGroup2) + '</td><td>' + ((num.Last == null || num.Last == undefined)?'':num.Last) + ", " + ((num.First == null || num.First == undefined)?'':num.First) + '</td><td>' +
-        ((num.ProjectTitle == null || num.ProjectTitle == undefined)?'':num.ProjectTitle) + '</td><td>' + ((num.ClientCompany1 == null || num.ClientCompany1 == undefined)?'':num.ClientCompany1) + '</td><td>' + 
-        '<button type="button" onclick="openPDF(\''+ ((num.Projectid == null || num.Projectid == undefined || num.Projectid == '')?num.PromoId:num.Projectid) +'\', '+ ((num.Closed_by_PM == -1)?true:false) +')">Display</button>'+ '</td><td>'+ 
-        '<button type="button" onclick="edit(\''+ id +'\');">Edit</>'+'</td></tr>';
+        result += '<tr><td>' + ((num.closed == 1)?'<strong>X</strong> ':'')+num.project_id + '</td><td>' + ((num.BillGrp == null || num.BillGrp == undefined)?'':num.BillGrp) + '</td><td>' +
+        ((num.promo_id == null || num.promo_id == undefined)?'':num.promo_id) + '</td><td>' + num.last + ", " + num.first + '</td><td>' +
+        num.project_title + '</td><td>' + num.client_company + '</td><td>' + 
+        '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
+        '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
+    });
+
+    filteredData = (jsonRes[1].reduce((accumulator, currentValue) => {
+        if (!accumulator[currentValue.promo_id]) {
+          accumulator[currentValue.promo_id] = true;
+          accumulator.result.push(currentValue);
+        }
+        return accumulator;
+      }, { result: [] }).result).sort((a, b) => a.promo_id - b.promo_id);
+
+      filteredData.forEach(num => {
+        var id = num.ID;
+        if(!currResults.has(id)) {
+            currResults.set(id, num);
+        }
+        result += '<tr><td>' + ((num.closed == 1)?'<strong>X</strong> ':'')+ '</td><td>' + ((num.BillGrp == null || num.BillGrp == undefined)?'':num.BillGrp) + '</td><td>' +
+        ((num.promo_id == null || num.promo_id == undefined)?'':num.promo_id) + '</td><td>' + num.last + ", " + num.first + '</td><td>' +
+        num.promo_title + '</td><td>' + num.client_company + '</td><td>' + 
+        '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
+        '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
     });
     // result = (jsonRes.length >= 500) ? '<p>Some results may have been filtered due to too large of search results.</p><br>' + result:result;
     document.getElementById('columnResults').innerHTML = result + '</table>';

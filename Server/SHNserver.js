@@ -50,9 +50,6 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
  * @returns {Promise<void>} 
  */
 
-// Directory for production environment.
-process.chdir("P:\\");
-
 // Directory for testing environment.
 process.chdir("P:\\");
 const PATH = "P:";
