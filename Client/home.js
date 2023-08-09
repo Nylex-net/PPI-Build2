@@ -1188,8 +1188,7 @@ function submitBilling() {
     }
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var json = JSON.parse(xhr.responseText);
-            console.log(json);
+            const json = JSON.parse(xhr.response);
             if(json.hasOwnProperty('Status')) {
                 document.getElementById('submitter').innerHTML = 'Success! <button type="button" onclick="submit();">Start Over</button> or <a href="Project_initiation_home.html">Back to Home</a>';
             }

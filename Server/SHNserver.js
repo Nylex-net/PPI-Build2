@@ -1220,7 +1220,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
                             ["Billing Instructions", removeEscapeQuote(req.body.SpecialBillingInstructins),'-','-'],
                             ["AutoCAD Project", (req.body.AutoCAD_Project == 1)?'Yes':'No','-','-'],
                             ["GIS Project", (req.body.GIS_Project == 1)?'Yes':'No','-','-'],
-                            ["Binder Size", req.body.BinderSize,'Created On',mydate.toString()],
+                            ["Binder Size", (req.body.BinderSize == "NULL"?"None":req.body.BinderSize + " inch"),'Created On',mydate.toString()],
                             ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
                         ]
                     };
@@ -1290,7 +1290,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
                         // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Billing Group ' + req.body.BillingNum + ' has been initialized for Project ' + projFolder +'!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     });
                 })();
-                res.send(JSON.stringify('{"Status":"Success"}'));
+                res.send(JSON.parse('{"Status":"Success"}'));
             }
         }
     });
@@ -1317,7 +1317,6 @@ app.post('/searchPromos', jsonParser, (req, res) => {
  */
 
 app.post('/rolodex', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
     // Starting of query.
     let query = 'SELECT Projectid, PromoId, ClientCompany1, ClientContactFirstName1, ClientContactLastName1, Title1, OfficeMailingLists1, Address1_1, Address2_1, City1, State1, Zip1, PhoneW1, PhoneH1, Cell1, Email1, Fax1, DTStamp FROM Projects WHERE ';
     if(req.body.by == 'Job') {
@@ -1335,12 +1334,15 @@ app.post('/rolodex', jsonParser, (req, res) => {
     else { // Default "All."
         query += 'ClientCompany1 LIKE \'%'+ req.body.search +'%\' OR ClientContactFirstName1 LIKE \'%'+ req.body.search +'%\' OR ClientContactLastName1 LIKE \'%'+ req.body.search +'%\' OR Title1 LIKE \'%'+ req.body.search +'%\'';
     }
-    connection.query(query + ' ORDER BY ClientContactLastName1, ClientContactFirstName1, ClientCompany1, Projectid, PromoId').then(data => {
-        res.send(JSON.parse(JSON.stringify(data)));
-    }).catch(error => {
-        res.send(JSON.parse(JSON.stringify(error)));
+    pool.query(query + ' ORDER BY ClientContactLastName1, ClientContactFirstName1, ClientCompany1, Projectid, PromoId', (error, data) => {
+        if(error) {
+            res.send(JSON.parse(JSON.stringify(error)));
+        }
+        else {
+            res.send(JSON.parse(JSON.stringify(data)));
+        }
     });
-})
+});
 
 /**
  * Updates client info based on user input on the Rolodex page.
