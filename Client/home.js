@@ -35,7 +35,7 @@ let contactType = 0; // required
 let contactTypeName;
 let retainer = 0;
 let senior = '';
-let retainAmnt = 'None';
+let retainAmnt = 'NULL';
 let serviceArea = 0;
 let servName = '';
 let totalContract = '';
@@ -476,7 +476,7 @@ function nextPage(num) {
         '<div class="grid-item">GIS Job' + '</div>'
         + '<div class="grid-item">' + gisName + '</div>'+
         '<div class="grid-item">Binder Size' + '</div>'
-        + '<div class="grid-item">' + binderSize + '</div>'+
+        + '<div class="grid-item">' + (binderSize == "NULL"?"N/A":binderSize) + '</div>'+
         '<div class="grid-item">Description of Services' + '</div>'
         + '<div class="grid-item">' + breakedDesc + '</div>'+
         '</div><div id="submitter"><button type="button" onclick="goBack(3)">Back</button><button type="button" onclick="submitBilling()">Submit</button></div>';
@@ -1136,7 +1136,8 @@ function submitBilling() {
 
     let waiver = (retainer == 'Waived by X') ? senior:"NULL";
 
-    let sql = '{"ProjectId":"'+ ProjectNumberGlobal +
+    let sql = '{"ProjectId":"'+ jsonMap[0].project_id +
+        '","ProjectID":"'+ ProjectNumberGlobal+
         '","ProjectName":"'+ format(projName) +
         '","BillingNum":"'+ BillingNum +
         '","BillingName":"'+ format(projTitle) +
@@ -1156,7 +1157,8 @@ function submitBilling() {
         '"ProfileCode":"'+ profCode + '",' +
         '"ContractType":"'+ contactType + '",' +
         '"contactTypeName":"'+ contactTypeName + '",'+
-        '"InvoiceFormat":"'+ invoiceName + '",' +
+        '"InvoiceFormat":"'+ invoiceFormat + '",' +
+        '"InvoiceFormatName":"'+ invoiceName + '",' +
         '"ServiceArea":"'+ servName + '",' +
         '"TotalContract":"'+ totalContract + '",' +
         '"Retainer":"'+ format(retainer) + '",' +

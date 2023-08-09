@@ -55,7 +55,7 @@ process.chdir("P:\\");
 
 // Directory for testing environment.
 process.chdir("P:\\");
-const PATH = "P:\\";
+const PATH = "P:";
 
 // create application/json parser
 var jsonParser = bodyParser.json();
@@ -352,15 +352,15 @@ app.post('/result', jsonParser, (req, res) => {
                         ["If yes, why?", req.body.Explanation, "Email", removeEscapeQuote(req.body.Email1)],
                         ["Retainer", removeEscapeQuote((req.body.Retainer == 'enterAmnt'?req.body.RetainerPaid:(req.body.Retainer == 'Waived by X'?req.body.WaivedBy:req.body.Retainer))), "Binder Size", req.body.BinderSize],
                         ["Profile Code", req.body.ProfileCode, "Binder Location", req.body.BinderLocation],
-                        ["Contract Type", req.body.contactTypeName,'',''],
-                        ["Invoice Format", req.body.InvoiceFormat,'',''],
-                        ["Client Contract/PO#", req.body.ClientContractPONumber,'',''],
-                        ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'',''],
+                        ["Contract Type", req.body.contactTypeName,'-','-'],
+                        ["Invoice Format", req.body.InvoiceFormat,'-','-'],
+                        ["Client Contract/PO#", req.body.ClientContractPONumber,'-','-'],
+                        ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'-','-'],
                         ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE)],
-                        ["Billing Instructions", removeEscapeQuote(req.body.SpecialBillingInstructins),'',''],
+                        ["Billing Instructions", removeEscapeQuote(req.body.SpecialBillingInstructins),'-','-'],
                         ["See Also", req.body.SEEALSO],
-                        ["AutoCAD", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
-                        ["GIS Job", (req.body.GIS_Project == -1)?'Yes':'No','',''],
+                        ["AutoCAD", (req.body.AutoCAD_Project == -1)?'Yes':'No','-','-'],
+                        ["GIS Job", (req.body.GIS_Project == -1)?'Yes':'No','-','-'],
                         ["Project Specifications", (req.body.Project_Specifications == -1)?'Yes':'No','Created on',mydate.toString()],
                         ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
                     ]
@@ -906,15 +906,15 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                         ["If yes, why?", (req.body.Explanation == "NULL"?"-":removeEscapeQuote(req.body.Explanation)), "Email", removeEscapeQuote(req.body.Email1)],
                         ["Retainer", removeEscapeQuote(retainMe), "Binder Size", (req.body.BinderSize == "NULL" || req.body.BinderSize == "" || req.body.BinderSize == null)?"-":req.body.BinderSize],
                         ["Profile Code", req.body.ProfileCodeName, "Binder Location", (req.body.BinderLocation == "NULL" || req.body.BinderLocation == "" || req.body.BinderLocation == null)?"-":req.body.BinderLocation],
-                        ["Contract Type", req.body.contactTypeName,'',''],
-                        ["Invoice Format", req.body.InvoiceFormat,'',''],
-                        ["Client Contract/PO#", req.body.ClientContractPONumber,'',''],
-                        ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'',''],
+                        ["Contract Type", req.body.contactTypeName,'-','-'],
+                        ["Invoice Format", req.body.InvoiceFormat,'-','-'],
+                        ["Client Contract/PO#", req.body.ClientContractPONumber,'-','-'],
+                        ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'-','-'],
                         ["Prevailing Wage", (req.body.PREVAILING_WAGE == 1)?"Yes":"No"],
-                        ["Billing Instructions", removeEscapeQuote((req.body.SpecialBillingInstructins == "NULL"?"-":req.body.SpecialBillingInstructins)),'',''],
+                        ["Billing Instructions", removeEscapeQuote((req.body.SpecialBillingInstructins == "NULL"?"-":req.body.SpecialBillingInstructins)),'-','-'],
                         ["See Also", removeEscapeQuote((req.body.SEEALSO == "NULL"?"-":req.body.SEEALSO))],
-                        ["AutoCAD", (req.body.AutoCAD_Project == 1)?'Yes':'No','',''],
-                        ["GIS Job", (req.body.GIS_Project == 1)?'Yes':'No','',''],
+                        ["AutoCAD", (req.body.AutoCAD_Project == 1)?'Yes':'No','-','-'],
+                        ["GIS Job", (req.body.GIS_Project == 1)?'Yes':'No','-','-'],
                         ["Project Specifications", (req.body.Project_Specifications == 1)?'Yes':'No','Created on', mydate.toString()],
                         ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
                       ]
@@ -1166,15 +1166,15 @@ app.post('/submitBill', jsonParser, (req, res) => {
     const query = "INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, group_location, "+
     "latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, "+
     "prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service)"+
-    " VALUES ("+req.body.ProjectId+", '"+req.body.BillingNum+"', '"+req.body.BillingName+"', "+req.body.AutoCAD_Project+", "+ req.body.GIS_Project+", "+req.body.NewMgr+", "+req.body.QAQC+", '"+myDate+
+    " VALUES ("+req.body.ProjectID+", '"+req.body.BillingNum+"', '"+req.body.BillingName+"', "+req.body.AutoCAD_Project+", "+ req.body.GIS_Project+", "+req.body.NewMgr+", "+req.body.QAQC+", '"+myDate+
     "', '"+ req.body.StartDate +"', '"+ req.body.CloseDate +"', '"+ req.body.ProjectLocation +"', "+ req.body.Latitude +", "+ req.body.Longitude +", "+ (req.body.ServiceArea == "NULL"?"NULL":"'"+req.body.ServiceArea+"'") +", "+ req.body.TotalContract +", '"+
-    req.body.Retainer +"', "+req.body.RetainerPaid+", "+(req.body.waiver == "NULL"?req.body.waiver:"'"+req.body.waiver+"'")+", "+req.body.ProfileCode+", "+req.body.ContractType+", "+
-    req.body.InvoiceFormat+", '"+req.body.ClientContractPONumber+"', "+ req.body.OutsideMarkup +", "+req.body.PREVAILING_WAGE+", "+(req.body.agency == "NULL"?"NULL":"'"+req.body.agency+"'")+", "+
-    (req.body.SpecialBillingInstructins == "NULL"?"NULL":"'"+req.body.SpecialBillingInstructins+"'")+", '"+req.body.DescriptionService+"');SELECT ID FROM BillingGroups WHERE project_ID = " + req.body.ProjectId + " AND group_number = '" + req.body.BillingNum + "';";
-    console.log(query);
+    req.body.Retainer +"', "+(req.body.RetainerPaid == "NULL" || isNaN(req.body.RetainerPaid) ?"NULL":req.body.RetainerPaid)+", "+(req.body.waiver == "NULL"?req.body.waiver:"'"+req.body.waiver+"'")+", "+req.body.ProfileCode+", "+req.body.ContractType+", '"+
+    req.body.InvoiceFormat+"', '"+req.body.ClientContractPONumber+"', "+ req.body.OutsideMarkup +", "+req.body.PREVAILING_WAGE+", "+(req.body.agency == "NULL"?"NULL":"'"+req.body.agency+"'")+", "+
+    (req.body.SpecialBillingInstructins == "NULL"?"NULL":"'"+req.body.SpecialBillingInstructins+"'") + ", "+ (req.body.BinderSize == "NULL"?"NULL":req.body.BinderSize) +", '"+req.body.DescriptionService+"');";
     pool.query(query, (error, foo) => {
         if(error) {
             console.error(error);
+            res.send(JSON.stringify(error));
         }
         else {
             if(fs.existsSync(dir)) {
@@ -1186,484 +1186,114 @@ app.post('/submitBill', jsonParser, (req, res) => {
                         }
                     });
                 }
-                console.log("Directory is " + dir);
+                // console.log("Directory is " + dir);
                 createDirectories(dir, false);
                 const doc = new PDFDocument();
-                        doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
-                        // Content of PDF.
-                        (async function(){
-                            // table 
-                            const table = {
-                            title: req.body.ProjectId,
-                            subtitle: 'Billing group ' + req.body.BillingNum + ' created for ' + req.body.ProjectId,
-                            headers: ["Billing", "Input", "Project", "Info"],
-                            rows: [
-                                [ "Billing Group #", req.body.BillingNum, "Project ID", req.body.ProjectId],
-                                [ "Billing Title", req.body.BillingName, "Project Title", removeEscapeQuote(req.body.ProjectName)],
-                                ['Group Manager', req.body.NewMgrName, "Project Manager", manager[0].Last + ", " + manager[0].First],
-                                ["Start Date", formatDate(req.body.StartDate),'',''],
-                                ["Close Date", formatDate(req.body.CloseDate),'',''],
-                                ["QAQC Person", req.body.QAQCName,'',''],
-                                ["Team Members", req.body.TeamMemberNames,'',''],
-                                ["Location", removeEscapeQuote(req.body.ProjectLocation),'',''],
-                                ["Latitude", removeEscapeQuote(req.body.Latitude),'',''],
-                                ["Longitude", removeEscapeQuote(req.body.Longitude),'',''],
-                                ["Keywords", req.body.ProjectKeywords,'',''],
-                                ["Service Area", removeEscapeQuote(req.body.ServiceArea),'',''],
-                                ["Profile Code", req.body.ProfileCode,'',''],
-                                ["Total Contract", removeEscapeQuote(req.body.TotalContract),'',''],
-                                ["Retainer", removeEscapeQuote(retainMe),'',''],
-                                ["Contract Type",req.body.contactTypeName,'',''],
-                                ["Client Contract/PO #", req.body.ClientContractPONumber,'',''],
-                                ["Outside Markup", req.body.OutsideMarkup,'',''],
-                                ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE),'',''],
-                                ["Billing Instructions", req.body.SpecialBillingInstructins,'',''],
-                                ["AutoCAD Project", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
-                                ["GIS Project", (req.body.GIS_Project == -1)?'Yes':'No','',''],
-                                ["Binder Size", req.body.BinderSize,'Created On',new Date().toString()],
-                                ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
-                            ]
-                            };
-                            // A4 595.28 x 841.89 (portrait) (about width sizes)
-                            // width
-                            // await doc.table(table, { 
-                            //   width: 400
-                            // });
-                            // or columnsSize
-                            await doc.table(table, {
-                                columnsSize: [ 120, 130, 100, 130],
-                                padding: 2,
-                                prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-                                    (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                                    const {x, y, width, height} = rectCell;
-                                    // first line 
-                                    // if(indexColumn === 0){
-                                    //     doc
-                                    //     .lineWidth(.5)
-                                    //     .moveTo(x, y)
-                                    //     .lineTo(x, y + height)
-                                    //     .stroke();  
-                                    // }
-                                    // else
-                                    if(indexColumn === 1) {
-                                        doc
-                                        .lineWidth(.5)
-                                        .moveTo(x + width, y)
-                                        .lineTo(x + width, y + height)
-                                        .stroke();
-                                    }
+                doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
+                // Content of PDF.
+                (async function(){
+                    // table 
+                    const table = {
+                    title: req.body.ProjectId,
+                    subtitle: 'Billing group ' + req.body.BillingNum + ' created for ' + req.body.ProjectId,
+                    headers: ["Billing", "Input", "Project", "Info"],
+                    rows: [
+                            [ "Billing Group #", req.body.BillingNum, "Project ID", req.body.ProjectId],
+                            [ "Billing Title", req.body.BillingName, "Project Title", removeEscapeQuote(req.body.ProjectName)],
+                            ['Group Manager', req.body.NewMgrName, "Project Manager", removeEscapeQuote(req.body.Manager)],
+                            ["Start Date", formatDate(req.body.StartDate),'-','-'],
+                            ["Close Date", formatDate(req.body.CloseDate),'-','-'],
+                            ["QAQC Person", removeEscapeQuote(req.body.QAQCName),'-','-'],
+                            ["Team Members", removeEscapeQuote(req.body.TeamMemberNames),'-','-'],
+                            ["Location", removeEscapeQuote(req.body.ProjectLocation),'-','-'],
+                            ["Latitude", removeEscapeQuote(req.body.Latitude),'-','-'],
+                            ["Longitude", removeEscapeQuote(req.body.Longitude),'-','-'],
+                            ["Keywords", removeEscapeQuote(req.body.ProjectKeywords),'-','-'],
+                            ["Service Area", removeEscapeQuote(req.body.ServiceArea),'-','-'],
+                            ["Profile Code", req.body.ProfileCode,'-','-'],
+                            ["Total Contract", removeEscapeQuote(req.body.TotalContract),'-','-'],
+                            ["Retainer", removeEscapeQuote((req.body.Retainer == "Waived by X"?"Waived by " + req.body.WaivedBy:(req.body.Retainer == "Enter Amount"?req.body.RetainerPaid:req.body.Retainer))),'-','-'],
+                            ["Contract Type",req.body.contactTypeName,'-','-'],
+                            ["Client Contract/PO #", req.body.ClientContractPONumber,'-','-'],
+                            ["Outside Markup", req.body.OutsideMarkup,'-','-'],
+                            ["Prevailing Wage", (req.body.PREVAILING_WAGE == 1?"Yes":"No"),'-','-'],
+                            ["Billing Instructions", removeEscapeQuote(req.body.SpecialBillingInstructins),'-','-'],
+                            ["AutoCAD Project", (req.body.AutoCAD_Project == 1)?'Yes':'No','-','-'],
+                            ["GIS Project", (req.body.GIS_Project == 1)?'Yes':'No','-','-'],
+                            ["Binder Size", req.body.BinderSize,'Created On',mydate.toString()],
+                            ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
+                        ]
+                    };
+                    // A4 595.28 x 841.89 (portrait) (about width sizes)
+                    // width
+                    // await doc.table(table, { 
+                    //   width: 400
+                    // });
+                    // or columnsSize
+                    await doc.table(table, {
+                        columnsSize: [ 120, 130, 100, 130],
+                        padding: 2,
+                        prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
+                            (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
+                            const {x, y, width, height} = rectCell;
+                            // first line 
+                            // if(indexColumn === 0){
+                            //     doc
+                            //     .lineWidth(.5)
+                            //     .moveTo(x, y)
+                            //     .lineTo(x, y + height)
+                            //     .stroke();  
+                            // }
+                            // else
+                            if(indexColumn === 1) {
+                                doc
+                                .lineWidth(.5)
+                                .moveTo(x + width, y)
+                                .lineTo(x + width, y + height)
+                                .stroke();
+                            }
 
-                                    doc.fontSize(10).fillColor('#000000');
+                            doc.fontSize(10).fillColor('#000000');
+                        }
+                    });
+                    // done!
+                    doc.end();
+
+                    // Array admin contacts for who to notify.
+                    const admins = jsonData.email.admins;
+
+                    // Get office of the associated project.
+                    let officeAdmins = [];
+                    if(req.body.ProjectId[0].length > 6) {
+                        officeAdmins = getAdmin(req.body.ProjectId[0], req.body.ProjectId[6]);
+                    }
+                    else {
+                        officeAdmins = getAdmin(req.body.ProjectId[0], 'Z');
+                    }
+                    // Push office email group into admins.
+                    for(let admin of officeAdmins) {
+                        admins.push(admin);
+                    }
+                    // Query for the Project manager's contact email.
+                    pool.query('SELECT email FROM Staff WHERE ID = '+ req.body.NewMgr +' AND email IS NOT NULL', (awNo, emails) => {
+                        if(awNo) {
+                            console.log('Could not send email.  The following error occurred instead:\n' + awNo);
+                        }
+                        else {
+                            Object.entries(emails).forEach(email => {
+                                if(!admins.includes(email[1].email + '@shn-engr.com') && email[1].email != undefined && email[1].email != 'undefined' && email[1].email != null && email[1].email != 'NULL') {
+                                    admins.push(email[1].email + '@shn-engr.com');
                                 }
                             });
-                            // done!
-                            doc.end();
-
-                            // Array admin contacts for who to notify.
-                            const admins = jsonData.email.admins;
-
-                            // Get office of the associated project.
-                            let officeAdmins = [];
-                            if(req.body.ProjectId[0].length > 6) {
-                                officeAdmins = getAdmin(req.body.ProjectId[0], req.body.ProjectId[6]);
-                            }
-                            else {
-                                officeAdmins = getAdmin(req.body.ProjectId[0], 'Z');
-                            }
-                            // Push office email group into admins.
-                            for(let admin of officeAdmins) {
-                                admins.push(admin);
-                            }
-                            // Query for the Project manager's contact email.
-                            pool.query('SELECT email FROM Staff WHERE ID = '+ req.body.NewMgr +' AND email IS NOT NULL', (awNo, emails) => {
-                                if(awNo) {
-                                    console.log('Could not send email.  The following error occurred instead:\n' + awNo);
-                                }
-                                else {
-                                    Object.entries(emails).forEach(email => {
-                                        if(!admins.includes(email[1].email + '@shn-engr.com') && email[1].email != undefined && email[1].email != 'undefined' && email[1].email != null && email[1].email != 'NULL') {
-                                            admins.push(email[1].email + '@shn-engr.com');
-                                        }
-                                    });
-                                }
-                                // Finally, send out email notice.
-                                // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Billing Group ' + req.body.BillingNum + ' has been initialized for Project ' + projFolder +'!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
-                            });
-                        })();
+                        }
+                        // Finally, send out email notice.
+                        // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Billing Group ' + req.body.BillingNum + ' has been initialized for Project ' + projFolder +'!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
+                    });
+                })();
+                res.send(JSON.stringify('{"Status":"Success"}'));
             }
         }
     });
-    /*
-    connection.query('SELECT TOP 1 * FROM Projects WHERE Projectid = \'' + req.body.ProjectId + '\'')
-    .then(data => {
-        // Update the returned JSON's data with the user's new data.
-        let retainMe = (req.body.RetainerPaid == 'None') ? req.body.Retainer:'$'+req.body.RetainerPaid;
-        connection.query('SELECT TOP 1 MAX(Id) AS Id FROM Projects').then(bigNum => {
-            data[0].Id = Number(bigNum[0].Id + 1);
-            data[0].BillGrp = req.body.BillingNum;
-            data[0].BillingTitle = req.body.BillingName;
-            data[0].ProjectMgr = req.body.NewMgr;
-            data[0].QA_QCPerson = req.body.QAQC;
-            data[0].TeamMembers = req.body.TeamMembers;
-            data[0].StartDate = req.body.StartDate;
-            data[0].CloseDate = req.body.CloseDate;
-            data[0].ProjectLoation = req.body.ProjectLocation;
-            data[0].ContractType = req.body.ContractType;
-            // data[0].Lattitude = req.body.Latitude;
-            // data[0].Longitude = req.body.Longitude;
-            data[0].ProjectKeywords = req.body.ProjectKeywords;
-            data[0].ServiceArea = req.body.ServiceArea;
-            data[0].ToatlContract = req.body.TotalContract;
-            data[0].RetainerPaid = retainMe;
-            data[0].InvoiceFormat = req.body.InvoiceFormat;
-            // data[0].ClientContractPONumber = req.body.ClientContractPONumber;
-            data[0].PREVAILING_WAGE = req.body.PREVAILING_WAGE;
-            data[0].SpecialBillingInstructins = req.body.SpecialBillingInstructins;
-            data[0].AutoCAD_Project = req.body.AutoCAD_Project;
-            data[0].GIS_Project = req.body.GIS_Project;
-            data[0].BinderSize = req.body.BinderSize;
-            data[0].DescriptionService = req.body.DescriptionService;
-            data[0].DTStamp = req.body.CreatedOn;
-
-            // If latitude and longitude are valid database numbers, insert them.
-            if(!isNaN(req.body.Latitude) && !isNaN(req.body.Longitude)) {
-                data[0].Lattitude = req.body.Latitude;
-                data[0].Longitude = req.body.Longitude;
-            }
-            // Build and format query for values section of the SQL.
-            let dataquery = '';
-            for(var value of Object.values(data[0])) {
-                if(typeof value == "string") {
-                    dataquery += '\'' + format(value) + '\', ';
-                }
-                else {
-                    dataquery += value + ', ';
-                }
-            }
-            // Redact ", " from end of query string.
-            dataquery = dataquery.substring(0, dataquery.length - 2);
-            // Execute query.
-            connection.execute('INSERT INTO Projects VALUES (' + dataquery + ')').then(none => {
-                // Build directory path.
-                let dir = PATH + getDir(req.body.ProjectId[0]) + '/20' + req.body.ProjectId[1] + req.body.ProjectId[2]; // + '/' + req.body.ProjectId + '-' + removeSpace(data[0].ProjectTitle) + '/';
-                let ArcataOffice = false;
-                let ArcDir = '';
-                let projFolder = req.body.ProjectId;
-                // if(!fs.existsSync(dir)) { // If it's a project before the year 2000.
-                //     dir = getDir(req.body.ProjectId[0]) + '/19' + req.body.ProjectId[1] + req.body.ProjectId[2];
-                // }
-                // < 23 because beginning of 2023 is when this new system started.
-                // In which case, we should also find the project under the Arcata folder.
-                if(Number(req.body.ProjectId[1] + req.body.ProjectId[2]) < 23 && Number(req.body.ProjectId[1] + req.body.ProjectId[2]) >= 16 && req.body.ProjectId[0] == 0) {
-                    ArcDir = '/Arcata/20' + req.body.ProjectId[1] + req.body.ProjectId[2];
-                    let dirFiles = fs.readdirSync(ArcDir);
-                    dirFiles.forEach(file => {
-                        if(file.substring(0,6).includes(projFolder)) {
-                            ArcataOffice = true;
-                            ArcDir += '/' + file;
-                        }
-                    });
-                    if(fs.existsSync(ArcDir)) {
-                        ArcDir += '/' + req.body.BillingNum + '-' + removeSpace(removeEscapeQuote(req.body.BillingName));
-                        if(!fs.existsSync(ArcDir)) {
-                            fs.mkdir((ArcDir), err => {
-                                if(err){
-                                    throw err;
-                                }
-                            });
-                        }
-                    }
-                }
-                // Redact A for matching a project file.
-                let dirFiles = fs.readdirSync(dir);
-                if(req.body.ProjectId.length > 6 && req.body.ProjectId[6] == 'A') {
-                    projFolder = req.body.ProjectId.substring(0, req.body.ProjectId.length - 1);
-                }
-                // Append filename to the directory if found.
-                let found = false;
-                dirFiles.forEach(file => {
-                    if(file.substring(0,6).includes(projFolder) && !found) {
-                        dir += '/' + file;
-                        found = true;
-                    }
-                });
-                // Create the billing group folder.
-                if(fs.existsSync(dir)) {
-                    dir += '/' + req.body.BillingNum + '-' + removeSpace(removeEscapeQuote(req.body.BillingName));
-                    if(!fs.existsSync(dir)) {
-                        fs.mkdir((dir), err => {
-                            if(err){
-                                throw err;
-                            }
-                        });
-                    }
-                    
-                    // Insert into Arcata version of directory if needed.
-                    if(ArcataOffice && ArcDir.trim() != '') {
-                        console.log("Arcata is " + ArcDir);
-                        createDirectories(ArcDir, false);
-                    }
-                    else {
-                        // Insert the needed directories in the folder.
-                        console.log("Directory is " + dir);
-                        createDirectories(dir, false);
-                    }
-                    // Get The project manager name.
-                    connection.query('SELECT First, Last FROM Contacts WHERE ID = ' + data[0].ProjectMgr).then(manager => {
-
-                        // Begin creating the new PDF.
-                        const doc = new PDFDocument();
-                        doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
-                        // Content of PDF.
-                        (async function(){
-                            // table 
-                            const table = {
-                            title: req.body.ProjectId,
-                            subtitle: 'Billing group ' + req.body.BillingNum + ' created for ' + req.body.ProjectId,
-                            headers: ["Billing", "Input", "Project", "Info"],
-                            rows: [
-                                [ "Billing Group #", req.body.BillingNum, "Project ID", req.body.ProjectId],
-                                [ "Billing Title", req.body.BillingName, "Project Title", removeEscapeQuote(req.body.ProjectName)],
-                                ['Group Manager', req.body.NewMgrName, "Project Manager", manager[0].Last + ", " + manager[0].First],
-                                ["Start Date", formatDate(req.body.StartDate),'',''],
-                                ["Close Date", formatDate(req.body.CloseDate),'',''],
-                                ["QAQC Person", req.body.QAQCName,'',''],
-                                ["Team Members", req.body.TeamMemberNames,'',''],
-                                ["Location", removeEscapeQuote(req.body.ProjectLocation),'',''],
-                                ["Latitude", removeEscapeQuote(req.body.Latitude),'',''],
-                                ["Longitude", removeEscapeQuote(req.body.Longitude),'',''],
-                                ["Keywords", req.body.ProjectKeywords,'',''],
-                                ["Service Area", removeEscapeQuote(req.body.ServiceArea),'',''],
-                                ["Profile Code", req.body.ProfileCode,'',''],
-                                ["Total Contract", removeEscapeQuote(req.body.TotalContract),'',''],
-                                ["Retainer", removeEscapeQuote(retainMe),'',''],
-                                ["Contract Type",req.body.contactTypeName,'',''],
-                                ["Client Contract/PO #", req.body.ClientContractPONumber,'',''],
-                                ["Outside Markup", req.body.OutsideMarkup,'',''],
-                                ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE),'',''],
-                                ["Billing Instructions", req.body.SpecialBillingInstructins,'',''],
-                                ["AutoCAD Project", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
-                                ["GIS Project", (req.body.GIS_Project == -1)?'Yes':'No','',''],
-                                ["Binder Size", req.body.BinderSize,'Created On',new Date().toString()],
-                                ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
-                            ]
-                            };
-                            // A4 595.28 x 841.89 (portrait) (about width sizes)
-                            // width
-                            // await doc.table(table, { 
-                            //   width: 400
-                            // });
-                            // or columnsSize
-                            await doc.table(table, {
-                                columnsSize: [ 120, 130, 100, 130],
-                                padding: 2,
-                                prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-                                    (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                                    const {x, y, width, height} = rectCell;
-                                    // first line 
-                                    // if(indexColumn === 0){
-                                    //     doc
-                                    //     .lineWidth(.5)
-                                    //     .moveTo(x, y)
-                                    //     .lineTo(x, y + height)
-                                    //     .stroke();  
-                                    // }
-                                    // else
-                                    if(indexColumn === 1) {
-                                        doc
-                                        .lineWidth(.5)
-                                        .moveTo(x + width, y)
-                                        .lineTo(x + width, y + height)
-                                        .stroke();
-                                    }
-
-                                    doc.fontSize(10).fillColor('#000000');
-                                }
-                            });
-                            // done!
-                            doc.end();
-                            // Add same PDF to Arcata version of project if needed.
-                            if(ArcataOffice && ArcDir.trim() != '') {
-                                doc.pipe(fs.createWriteStream(ArcDir + '/'+ req.body.BillingNum +'.pdf'));
-                                await doc.table(table, {
-                                    columnsSize: [ 100, 150, 90, 150]
-                                });
-                                // done!
-                                doc.end();
-                            }
-                            
-                            // reateDirectories(dir, true);
-
-                            // Array admin contacts for who to notify.
-                            const admins = jsonData.email.admins;
-
-                            // Get office of the associated project.
-                            let officeAdmins = [];
-                            if(req.body.ProjectId[0].length > 6) {
-                                officeAdmins = getAdmin(req.body.ProjectId[0], req.body.ProjectId[6]);
-                            }
-                            else {
-                                officeAdmins = getAdmin(req.body.ProjectId[0], 'Z');
-                            }
-                            // Push office email group into admins.
-                            for(let admin of officeAdmins) {
-                                admins.push(admin);
-                            }
-                            // Query for the Project manager's contact email.
-                            connection.query('SELECT Contacts.Email AS Email FROM Projects, Contacts WHERE Projects.Projectid = \''+ req.body.ProjectId +'\' AND Projects.BillGrp IS NULL AND Contacts.ID = Cint(Projects.ProjectMgr) AND Contacts.Email IS NOT NULL').then(emails => {
-                                Object.entries(emails).forEach(email => {
-                                    if(!admins.includes(email[1].Email + '@shn-engr.com') || email[1].Email != undefined) {
-                                        admins.push(email[1].Email + '@shn-engr.com');
-                                    }
-                                });
-                                
-                                // Finally, send email.
-                                // emailPersonel(req.body.BillingNum +'.pdf', dir + '/'+ req.body.BillingNum +'.pdf', 'Billing Group ID ' + req.body.BillingNum + ' called '+ req.body.BillingName +' was added to Project ID ' + req.body.ProjectId + '!<br>See PDF for more.', admins, 'Billing group ' + req.body.BillingNum + ' added to project ' + req.body.ProjectId);
-                            }).catch(awNo => { // Print error if email cannot send.
-                                console.log('Could not send email.  The following error occurred instead:\n' + awNo);
-                            });
-                        })();
-                    });
-                    // .catch(poop => { // Might error due to not finding a manager with the cooresponding ID.
-                    //     console.log("Could not find manager with ID " + data[0].ProjectMgr);
-                    //     console.log(poop); // Print error.
-                    //     // Attempt to create the PDF again, but this time the Project Manager part says "See Project for more info."
-                    //     const doc = new PDFDocument();
-                    //     doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
-                    //     (async function(){
-                    //         // table 
-                    //         const table = {
-                    //         title: req.body.ProjectId,
-                    //         subtitle: 'Billing group ' + req.body.BillingNum + ' created for ' + req.body.ProjectId,
-                    //         headers: ["Billing", "Input", "Project", "Info"],
-                    //         rows: [
-                    //             [ "Billing Group #", req.body.BillingNum, "Project ID", req.body.ProjectId],
-                    //             [ "Billing Title", req.body.BillingName, "Project Title", removeEscapeQuote(req.body.ProjectName)],
-                    //             ['Group Manager', req.body.NewMgrName, "Project Manager", "See project initiation for more info."],
-                    //             ["Start Date", formatDate(req.body.StartDate),'',''],
-                    //             ["Close Date", formatDate(req.body.CloseDate),'',''],
-                    //             ["QAQC Person", req.body.QAQCName,'',''],
-                    //             ["Team Members", req.body.TeamMemberNames,'',''],
-                    //             ["Location", removeEscapeQuote(req.body.ProjectLocation),'',''],
-                    //             ["Latitude", removeEscapeQuote(req.body.Latitude),'',''],
-                    //             ["Longitude", removeEscapeQuote(req.body.Longitude),'',''],
-                    //             ["Keywords", req.body.ProjectKeywords,'',''],
-                    //             ["Service Area", removeEscapeQuote(req.body.ServiceArea),'',''],
-                    //             ["Profile Code", req.body.ProfileCode,'',''],
-                    //             ["Total Contract", removeEscapeQuote(req.body.TotalContract),'',''],
-                    //             ["Retainer", removeEscapeQuote(retainMe),'',''],
-                    //             ["Contract Type",req.body.contactTypeName,'',''],
-                    //             ["Client Contract/PO #", req.body.ClientContractPONumber,'',''],
-                    //             ["Outside Markup", req.body.OutsideMarkup,'',''],
-                    //             ["Prevailing Wage", removeEscapeQuote(req.body.PREVAILING_WAGE),'',''],
-                    //             ["Billing Instructions", req.body.SpecialBillingInstructins,'',''],
-                    //             ["AutoCAD Project", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
-                    //             ["GIS Project", (req.body.GIS_Project == -1)?'Yes':'No','',''],
-                    //             ["Binder Size", req.body.BinderSize,'Created On',new Date().toString()],
-                    //             ["Description of Services", removeEscapeQuote(req.body.DescriptionService),'Created By',removeEscapeQuote(req.body.CreatedBy)]
-                    //         ]
-                    //         };
-                    //         // A4 595.28 x 841.89 (portrait) (about width sizes)
-                    //         // width
-                    //         // await doc.table(table, { 
-                    //         //   width: 400
-                    //         // });
-                    //         // or columnsSize
-                    //         await doc.table(table, {
-                    //             columnsSize: [ 100, 150, 90, 150],
-                    //             padding: 2,
-                    //             prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-                    //                 (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                    //                 const {x, y, width, height} = rectCell;
-                    //                 // first line 
-                    //                 // if(indexColumn === 0){
-                    //                 //     doc
-                    //                 //     .lineWidth(.5)
-                    //                 //     .moveTo(x, y)
-                    //                 //     .lineTo(x, y + height)
-                    //                 //     .stroke();  
-                    //                 // }
-                    //                 // else
-                    //                 if(indexColumn === 1) {
-                    //                     doc
-                    //                     .lineWidth(.5)
-                    //                     .moveTo(x + width, y)
-                    //                     .lineTo(x + width, y + height)
-                    //                     .stroke();
-                    //                 }
-
-                    //                 doc.fontSize(10).fillColor('#000000');
-                    //             }
-                    //         });
-                    //         // done!
-                    //         doc.end();
-                    //         if(ArcataOffice && ArcDir.trim() != '') {
-                    //             doc.pipe(fs.createWriteStream(ArcDir + '/'+ req.body.BillingNum +'.pdf'));
-                    //             await doc.table(table, {
-                    //                 columnsSize: [ 100, 150, 90, 150],
-                    //                 padding: 2,
-                    //                 prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-                    //                     (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                    //                     doc.addBackground(rectRow, (indexRow % 2 ? '#555555' : '#60A13F'), 0.15);
-                    //                     const {x, y, width, height} = rectCell;
-                    //                     // first line 
-                    //                     // if(indexColumn === 0){
-                    //                     //     doc
-                    //                     //     .lineWidth(.5)
-                    //                     //     .moveTo(x, y)
-                    //                     //     .lineTo(x, y + height)
-                    //                     //     .stroke();  
-                    //                     // }
-                    //                     // else
-                    //                     if(indexColumn === 1) {
-                    //                         doc
-                    //                         .lineWidth(.5)
-                    //                         .moveTo(x + width, y)
-                    //                         .lineTo(x + width, y + height)
-                    //                         .stroke();
-                    //                     }
-
-                    //                     doc.fontSize(10).fillColor('#000000');
-                    //                 }
-                    //             });
-                    //             // done!
-                    //             doc.end();
-                    //         }
-                            
-                    //         // createDirectories(dir, true);
-
-                    //         const admins = jsonData.email.admins;
-
-                    //         let officeAdmins = [];
-                    //         if(req.body.ProjectId[0].length > 6) {
-                    //             officeAdmins = getAdmin(req.body.ProjectId[0], req.body.ProjectId[6]);
-                    //         }
-                    //         else {
-                    //             officeAdmins = getAdmin(req.body.ProjectId[0], 'Z');
-                    //         }
-                    //         for(let admin of officeAdmins) {
-                    //             admins.push(admin);
-                    //         }
-                    //         connection.query('SELECT Contacts.Email AS Email FROM Projects, Contacts WHERE Projects.Projectid = \''+ req.body.ProjectId +'\' AND Projects.BillGrp IS NULL AND Contacts.ID = Cint(Projects.ProjectMgr) AND Contacts.Email IS NOT NULL').then(emails => {
-                    //             Object.entries(emails).forEach(email => {
-                    //                 if(!admins.includes(email[1].email + '@shn-engr.com') || email[1].email != undefined) {
-                    //                     admins.push(email[1].email + '@shn-engr.com');
-                    //                 }
-                    //             });
-                    //             // console.log(admins);
-                    //             // emailPersonel(req.body.BillingNum +'.pdf', dir + '/'+ req.body.BillingNum +'.pdf', 'Billing Group ID ' + req.body.BillingNum + ' called '+ req.body.BillingName +' was added to Project ID ' + req.body.ProjectId + '!<br>See PDF for more.', admins, 'Billing group ' + req.body.BillingNum + ' added to project ' + req.body.ProjectId);
-                    //         });
-                    //     })();
-                    // });
-                }
-                else {
-                    console.log('Failed to find directory.');
-                    createTicket(error, "Cannot find directory " + dir + ":");
-                }
-                res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));
-            });
-        });
-    });*/
 });
 
 /**
