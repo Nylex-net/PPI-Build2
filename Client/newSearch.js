@@ -84,6 +84,7 @@ function formatMultiline(myString) {
 }
 
 function resultString(jsonRes) {
+    let numRes = 0;
     currResults.clear();
     let filteredData = (jsonRes[0].reduce((accumulator, currentValue) => {
         if (!accumulator[currentValue.project_id]) {
@@ -112,7 +113,7 @@ function resultString(jsonRes) {
         '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
         '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
     });
-
+    numRes = filteredData.length;
     filteredData = (jsonRes[1].reduce((accumulator, currentValue) => {
         if (!accumulator[currentValue.promo_id]) {
           accumulator[currentValue.promo_id] = true;
@@ -132,7 +133,7 @@ function resultString(jsonRes) {
         '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
         '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
     });
-
+    numRes += filteredData.length;
     filteredData = (jsonRes[2].reduce((accumulator, currentValue) => {
         if (!accumulator[[currentValue.project_id, currentValue.group_number]]) {
           accumulator[[currentValue.project_id, currentValue.group_number]] = true;
@@ -151,9 +152,10 @@ function resultString(jsonRes) {
         '<button type="button" onclick="openPDF(\''+ num.project_id +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
         '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
     });
+    numRes += filteredData.length;
     // result = (jsonRes.length >= 500) ? '<p>Some results may have been filtered due to too large of search results.</p><br>' + result:result;
     document.getElementById('columnResults').innerHTML = result + '</table>';
-    return jsonRes.length;
+    return numRes;
 }
 
 /**

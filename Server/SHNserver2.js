@@ -197,36 +197,28 @@ app.post('/search', jsonParser, (req, res) => {
  */
 
 app.post('/searchProject', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE Projects.Projectid LIKE \'%'+ req.body.entry +
-    '%\' ORDER BY Projects.Projectid IS NOT NULL, ISNULL(Projects.PromoId), Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService')
-    .then(data => {
-        res.send(JSON.stringify(data));
-    }).catch(error => {
-        console.log(error);
-        connection.query('SELECT ID, First, Last From Contacts').then(contacts => { // Gets all employee names and their IDs.
-            let contactMap = new Map();
-            for(let contact of contacts) { // Store employees in map object for ease of access.
-                contactMap.set(contact.ID.toString(), contact.First.trim() + ';' + contact.Last.trim());
-            }
-            // Now search the projects database.
-            connection.query('SELECT * FROM Projects WHERE Projectid LIKE \'%'+ req.body.entry +'%\' ORDER BY Projectid IS NOT NULL, PromoId IS NULL, Projectid, PromoId, BillGrp, ClientCompany1, DescriptionService').then(projData => {
-                // Associate each project manager to the cooresponding project they're managing.
-                for(let entry of projData) {
-                    let temp = (contactMap.get(entry.ProjectMgr) == undefined) ? undefined:contactMap.get(entry.ProjectMgr).split(';');
-                    if(temp != undefined && temp != null) {
-                        entry["First"] = temp[0];
-                        entry["Last"] = temp[1];
-                    }
-                    else {
-                        entry["First"] = "Unknown";
-                        entry["Last"] = "Unknown";
-                    }
+    let result =[];
+    pool.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.closed, Projects.client_company, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id LIKE '%"+ req.body.entry +"%';", (err, data) => {
+        if(err) {
+            console.log("project fail");
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            result.push(data);
+            result.push([]); // No Promos to return.
+            pool.query("SELECT BillingGroups.ID, BillingGroups.group_number, BillingGroups.group_name, Projects.closed, Projects.project_id, Staff.first, Staff.last, Projects.client_company FROM BillingGroups INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID INNER JOIN Staff ON BillingGroups.manager_id = Staff.ID WHERE Projects.project_id LIKE '%"+ req.body.entry +"%';", (err, proup) => {
+                if(err) {
+                    console.log("billing fail");
+                    console.error(err);
+                    res.send(JSON.stringify(err));
                 }
-                res.send(JSON.stringify(projData));
-            })
-            // If all fails, send back error.
-        }).catch(err => res.send(JSON.stringify(err)));
+                else {
+                    result.push(proup);
+                    res.send(JSON.stringify(result));
+                }
+            }); 
+        }
     });
 });
 
@@ -235,36 +227,19 @@ app.post('/searchProject', jsonParser, (req, res) => {
  */
 
 app.post('/searchPromo', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE Projects.ProjectMgr IS NOT NULL AND Projects.PromoId LIKE \'%'+ req.body.entry +
-    '%\' ORDER BY ISNULL(Projects.Projectid), Projects.PromoId, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService')
-    .then(data => {
-        res.send(JSON.stringify(data));
-    }).catch(error => {
-        console.log(error);
-        connection.query('SELECT ID, First, Last From Contacts').then(contacts => { // Gets all employee names and their IDs.
-            let contactMap = new Map();
-            for(let contact of contacts) { // Store employees in map object for ease of access.
-                contactMap.set(contact.ID.toString(), contact.First.trim() + ';' + contact.Last.trim());
-            }
-            // Now search the projects database.
-            connection.query('SELECT * FROM Projects WHERE Projects.ProjectMgr IS NOT NULL AND Projects.PromoId LIKE \'%'+ req.body.entry +'%\' ORDER BY ISNULL(Projects.Projectid), Projects.PromoId, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService').then(projData => {
-                // Associate each project manager to the cooresponding project they're managing.
-                for(let entry of projData) {
-                    let temp = (contactMap.get(entry.ProjectMgr) == undefined) ? undefined:contactMap.get(entry.ProjectMgr).split(';');
-                    if(temp != undefined && temp != null) {
-                        entry["First"] = temp[0];
-                        entry["Last"] = temp[1];
-                    }
-                    else {
-                        entry["First"] = "Unknown";
-                        entry["Last"] = "Unknown";
-                    }
-                }
-                res.send(JSON.stringify(projData));
-            })
-            // If all fails, send back error.
-        }).catch(err => res.send(JSON.stringify(err)));
+    let result =[];
+    pool.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.closed, Promos.client_company, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_id = Staff.ID WHERE Promos.promo_id LIKE '%"+ req.body.entry +"%';", (err, data) => {
+        if(err) {
+            console.log("project fail");
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            result.push([]); // No Projects to return.
+            result.push(data);
+            result.push([]); // No Billing Groups to return.
+            res.send(JSON.stringify(result));
+        }
     });
 });
 
@@ -273,14 +248,34 @@ app.post('/searchPromo', jsonParser, (req, res) => {
  */
 
 app.post('/searchKeyword', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE Projects.ProjectKeywords LIKE \'%'+ req.body.entry +
-    '%\' ORDER BY Projects.Projectid IS NOT NULL, Projects.PromoId IS NULL, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService')
-    .then(data => {
-        res.send(JSON.stringify(data));
-    }).catch(error => {
-        console.log(error);
-        res.send(JSON.stringify(error));
+    let result =[];
+    pool.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.client_company, Projects.closed, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID INNER JOIN ProfileCodes ON Projects.profile_code_id = ProfileCodes.ID INNER JOIN ProjectKeywords ON Projects.ID = ProjectKeywords.project_id WHERE ProjectKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%');", (err, data) => {
+        if(err) {
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            result.push(data);
+            pool.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.client_company, Promos.closed, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_ID = Staff.ID INNER JOIN ProfileCodes ON Promos.profile_code_id = ProfileCodes.ID INNER JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id WHERE PromoKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%');", (err, promos) => {
+                if(err) {
+                    console.error(err);
+                    res.send(JSON.stringify(err));
+                }
+                else {
+                    result.push(promos);
+                    pool.query("SELECT BillingGroups.ID, Projects.project_id, BillingGroups.group_number, BillingGroups.group_name, Projects.closed, Staff.first, Staff.last, Projects.client_company FROM BillingGroups INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID INNER JOIN Staff ON BillingGroups.manager_id = Staff.ID INNER JOIN ProfileCodes ON BillingGroups.profile_code_id = profileCodes.ID INNER JOIN BillingGroupKeywords ON BillingGroups.ID = BillingGroupKeywords.group_id WHERE BillingGroupKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%');", (bruh, bill) => {
+                        if(bruh) {
+                            console.error(bruh);
+                            res.send(JSON.stringify(bruh));
+                        }
+                        else {
+                            result.push(bill);
+                            res.send(JSON.stringify(result));
+                        }
+                    });
+                }
+            });
+        }
     });
 });
 
@@ -289,36 +284,34 @@ app.post('/searchKeyword', jsonParser, (req, res) => {
  */
 
 app.post('/searchTitle', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE Projects.ProjectTitle LIKE \'%'+ req.body.entry +
-    '%\' ORDER BY Projects.Projectid IS NOT NULL, Projects.PromoId IS NULL, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService')
-    .then(data => {
-        res.send(JSON.stringify(data));
-    }).catch(error => {
-        console.log(error);
-        connection.query('SELECT ID, First, Last From Contacts').then(contacts => { // Gets all employee names and their IDs.
-            let contactMap = new Map();
-            for(let contact of contacts) { // Store employees in map object for ease of access.
-                contactMap.set(contact.ID.toString(), contact.First.trim() + ';' + contact.Last.trim());
-            }
-            // Now search the projects database.
-            connection.query('SELECT * FROM Projects WHERE Projects.ProjectTitle LIKE \'%'+ req.body.entry +'%\' ORDER BY ISNULL(Projects.Projectid), Projects.PromoId, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService').then(projData => {
-                // Associate each project manager to the cooresponding project they're managing.
-                for(let entry of projData) {
-                    let temp = (contactMap.get(entry.ProjectMgr) == undefined) ? undefined:contactMap.get(entry.ProjectMgr).split(';');
-                    if(temp != undefined && temp != null) {
-                        entry["First"] = temp[0];
-                        entry["Last"] = temp[1];
-                    }
-                    else {
-                        entry["First"] = "Unknown";
-                        entry["Last"] = "Unknown";
-                    }
+    let result =[];
+    pool.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.client_company, Projects.closed, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID INNER JOIN ProfileCodes ON Projects.profile_code_id = ProfileCodes.ID INNER JOIN ProjectKeywords ON Projects.ID = ProjectKeywords.project_id WHERE Projects.project_title LIKE '%"+req.body.entry+"%';", (err, data) => {
+        if(err) {
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            result.push(data);
+            pool.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.client_company, Promos.closed, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_ID = Staff.ID INNER JOIN ProfileCodes ON Promos.profile_code_id = ProfileCodes.ID INNER JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id WHERE Promos.promo_title LIKE '%"+req.body.entry+"%';", (err, promos) => {
+                if(err) {
+                    console.error(err);
+                    res.send(JSON.stringify(err));
                 }
-                res.send(JSON.stringify(projData));
-            })
-            // If all fails, send back error.
-        }).catch(err => res.send(JSON.stringify(err)));
+                else {
+                    result.push(promos);
+                    pool.query("SELECT BillingGroups.ID, Projects.project_id, BillingGroups.group_number, BillingGroups.group_name, Projects.closed, Staff.first, Staff.last, Projects.client_company FROM BillingGroups INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID INNER JOIN Staff ON BillingGroups.manager_id = Staff.ID INNER JOIN ProfileCodes ON BillingGroups.profile_code_id = profileCodes.ID INNER JOIN BillingGroupKeywords ON BillingGroups.ID = BillingGroupKeywords.group_id WHERE BillingGroups.group_name LIKE '%"+req.body.entry+"%';", (bruh, bill) => {
+                        if(bruh) {
+                            console.error(bruh);
+                            res.send(JSON.stringify(bruh));
+                        }
+                        else {
+                            result.push(bill);
+                            res.send(JSON.stringify(result));
+                        }
+                    });
+                }
+            });
+        }
     });
 });
 
@@ -327,14 +320,34 @@ app.post('/searchTitle', jsonParser, (req, res) => {
  */
 
 app.post('/searchDesc', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE Projects.DescriptionService LIKE \'%'+ req.body.entry +
-    '%\' ORDER BY Projects.Projectid IS NOT NULL, Projects.PromoId IS NULL, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService')
-    .then(data => {
-        res.send(JSON.stringify(data));
-    }).catch(error => {
-        console.log(error);
-        res.send(JSON.stringify(error));
+    let result =[];
+    pool.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.client_company, Projects.closed, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID INNER JOIN ProfileCodes ON Projects.profile_code_id = ProfileCodes.ID INNER JOIN ProjectKeywords ON Projects.ID = ProjectKeywords.project_id WHERE Projects.description_service LIKE '%"+req.body.entry+"%';", (err, data) => {
+        if(err) {
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            result.push(data);
+            pool.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.client_company, Promos.closed, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_ID = Staff.ID INNER JOIN ProfileCodes ON Promos.profile_code_id = ProfileCodes.ID INNER JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id WHERE Promos.description_service LIKE '%"+req.body.entry+"%';", (err, promos) => {
+                if(err) {
+                    console.error(err);
+                    res.send(JSON.stringify(err));
+                }
+                else {
+                    result.push(promos);
+                    pool.query("SELECT BillingGroups.ID, Projects.project_id, BillingGroups.group_number, BillingGroups.group_name, Projects.closed, Staff.first, Staff.last, Projects.client_company FROM BillingGroups INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID INNER JOIN Staff ON BillingGroups.manager_id = Staff.ID INNER JOIN ProfileCodes ON BillingGroups.profile_code_id = profileCodes.ID INNER JOIN BillingGroupKeywords ON BillingGroups.ID = BillingGroupKeywords.group_id WHERE BillingGroups.description_service LIKE '%"+req.body.entry+"%';", (bruh, bill) => {
+                        if(bruh) {
+                            console.error(bruh);
+                            res.send(JSON.stringify(bruh));
+                        }
+                        else {
+                            result.push(bill);
+                            res.send(JSON.stringify(result));
+                        }
+                    });
+                }
+            });
+        }
     });
 });
 
