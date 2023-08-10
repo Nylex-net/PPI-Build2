@@ -99,7 +99,7 @@ function resultString(jsonRes) {
     }
     document.getElementById('columnResults').innerHTML = '';
     let result = '<table id="Rolo"><tr><th><strong>Project ID</strong></th><th><strong>Billing Group</strong></th><th><strong>Promo ID</strong></th><th><strong>Project Manager</strong></th><th><strong>Project Title</strong></th><th><strong>Client Company</strong></th><th>Display</th><th>Edit</th></tr>';
-    // console.log(jsonRes);
+    console.log(jsonRes);
 
     filteredData.forEach(num => {
         var id = num.ID;
@@ -130,6 +130,25 @@ function resultString(jsonRes) {
         ((num.promo_id == null || num.promo_id == undefined)?'':num.promo_id) + '</td><td>' + num.last + ", " + num.first + '</td><td>' +
         num.promo_title + '</td><td>' + num.client_company + '</td><td>' + 
         '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
+        '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
+    });
+
+    filteredData = (jsonRes[2].reduce((accumulator, currentValue) => {
+        if (!accumulator[[currentValue.project_id, currentValue.group_number]]) {
+          accumulator[[currentValue.project_id, currentValue.group_number]] = true;
+          accumulator.result.push(currentValue);
+        }
+        return accumulator;
+      }, { result: [] }).result).sort((a, b) => a.project_id - b.project_id);
+
+      filteredData.forEach(num => {
+        var id = num.ID;
+        if(!currResults.has(id)) {
+            currResults.set(id, num);
+        }
+        result += '<tr><td>' + ((num.closed == 1)?'<strong>X</strong> ':'')+ num.project_id +'</td><td>' + num.group_number + '</td><td></td><td>' + num.last + ", " + num.first + '</td><td>' +
+        num.group_name + '</td><td>' + num.client_company + '</td><td>' + 
+        '<button type="button" onclick="openPDF(\''+ num.project_id +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
         '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
     });
     // result = (jsonRes.length >= 500) ? '<p>Some results may have been filtered due to too large of search results.</p><br>' + result:result;
