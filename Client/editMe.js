@@ -1,7 +1,7 @@
-const fromSession = JSON.parse(window.sessionStorage.getItem('userObject'));
+const fromSession = window.sessionStorage.getItem('userObject');
 let userData; // JSON of original entry
-const isProject = (fromSession.Identifier == 0 || fromSession.Identifier == -1) ? true:false;
-const isBillingGroup = fromSession.Identifier == -1 ? true:false;
+const isProject = (JSON.parse(fromSession).Identifier == 0 || JSON.parse(fromSession).Identifier == -1) ? true:false;
+const isBillingGroup = JSON.parse(fromSession).Identifier == -1 ? true:false;
 let mgrName = '';
 let memNames = new Array();
 let keyNames = new Array();
@@ -27,11 +27,10 @@ let activeUser = '';
  * Loads the first page.
  */
 
-function starter(res) {
+async function starter(res) {
     activeUser = res.account.name;
-    userData = fetchInfo()[0];
-    document.getElementsByTagName("h1")[0].innerHTML = (isProject)?((isBillingGroup)?userData.group_number + ' in ' + userData.project_id:userData.project_id):userData.promo_id;
-    getKeysByName();
+    userData = await fetchInfo();
+    document.getElementsByTagName("h1")[0].innerHTML = (isProject)?((isBillingGroup)?userData[0].group_number + ' in ' + userData[0].project_id:userData[0].project_id):userData[0].promo_id;
     manager(1);
 }
 
@@ -43,7 +42,7 @@ async function fetchInfo() {
         },
         body: fromSession
     });
-    return response;
+    return await response.json();
 }
 /**
  * Runs all the necessary functions and commands in order based on what page it needs to load.
@@ -246,52 +245,6 @@ function agency() {
     }
     else {
         document.getElementById('agent').innerHTML = '';
-    }
-}
-
-/**
- * Get all key IDs by name.
- */
-
-function getKeysByName() {
-    const jsonString = JSON.stringify({"keyText":userData.ProjectKeywords});
-    var xhr = new XMLHttpRequest();
-    var url = "https://e-hv-ppi.shn-engr.com:3001/keyName";
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function () {
-        xhr.onerror = function(e) {
-            document.getElementById('inserter').innerHTML = '<p id="submitStat">Could not connect.</p>';
-            console.log(e);
-            return false;
-        }
-        if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
-            var json = JSON.parse(xhr.responseText);
-            console.log(json);
-            if(json.length > 0 && json[0].hasOwnProperty('ID')) {
-                for(let id of json) {
-                    Projkeywords.push(id.ID);
-                }
-            }
-        }
-        else if(xhr.status >= 400 && xhr.status < 500) {
-            console.log(json);
-        }
-        else if(xhr.status >= 500) {
-            console.log(json);
-        }
-        // else {
-        //     var json = JSON.parse(xhr.responseText);
-        //     console.log(json);
-        //     document.getElementById('sending').innerHTML = '<p id="submitStat">Something went wrong. Try again or contact help.<br/><button type="button" onclick="goBack(6)">Back</button><button type="button" onclick="preparePost()">Submit</button></p>';
-        // }
-    };
-    console.log(jsonString);
-    try{
-        xhr.send(jsonString);  // an error message typically looks like "{process: {…}, exitCode: 0}" in the console.
-    }
-    catch(bruh) {
-        document.getElementById('inserter').innerHTML = '<p id="submitStat">Could not connect.</p>';
     }
 }
 

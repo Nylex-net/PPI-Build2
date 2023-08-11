@@ -382,7 +382,10 @@ async function viewer(num) {
 }
 
 function edit(ID, init) {
-    window.sessionStorage.setItem('userObject', JSON.stringify('{"ID":"'+ID+'","Identifier":"'+init+'"}'));
+    window.sessionStorage.setItem('userObject', JSON.stringify({
+        ID: ID,
+        Identifier: init
+    }));
     window.location.replace("editMe.html");
 }
 
