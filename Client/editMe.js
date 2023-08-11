@@ -1,6 +1,7 @@
 const fromSession = JSON.parse(window.sessionStorage.getItem('userObject'));
 let userData; // JSON of original entry
-const isProject = (fromSession.Projectid != null && fromSession.Projectid != undefined && fromSession.Projectid != '') ? true:false;
+const isProject = (fromSession.Identifier == 0 || fromSession.Identifier == -1) ? true:false;
+const isBillingGroup = fromSession.Identifier == -1 ? true:false;
 let mgrName = '';
 let memNames = new Array();
 let keyNames = new Array();
@@ -20,7 +21,7 @@ let outsideMarkup = 0;
 let clientRelation = '';
 let openHouse = false;
 let xmas = false;
-let activeUser;
+let activeUser = '';
 
 /**
  * Loads the first page.
@@ -28,12 +29,22 @@ let activeUser;
 
 function starter(res) {
     activeUser = res.account.name;
-    userData = fromSession;
-    document.getElementsByTagName("h1")[0].innerHTML = (isProject)?userData.Projectid:userData.PromoId;
+    userData = fetchInfo()[0];
+    document.getElementsByTagName("h1")[0].innerHTML = (isProject)?((isBillingGroup)?userData.group_number + ' in ' + userData.project_id:userData.project_id):userData.promo_id;
     getKeysByName();
     manager(1);
 }
 
+async function fetchInfo() {
+    const response = await fetch('https://e-hv-ppi.shn-engr.com:3001/getMe', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: fromSession
+    });
+    return response;
+}
 /**
  * Runs all the necessary functions and commands in order based on what page it needs to load.
  * @param {Number} currPage 
@@ -54,8 +65,8 @@ function manager(currPage) {
     }
     else if(currPage === 2) {
         document.getElementById('LocDesc').value = (userData.ProjectLoation == undefined || userData.ProjectLoation == null)?'':userData.ProjectLoation;
-        document.getElementById('lat').value = (userData.Lattitude == null || userData.Lattitude == undefined)?40.748531:userData.Lattitude;
-        document.getElementById('long').value = (userData.Longitude == null || userData.Longitude == undefined)?-124.147073:userData.Longitude;
+        document.getElementById('lat').value = (userData.Lattitude == null || userData.Lattitude == undefined || isNaN(userData.Lattitude))?40.748531:userData.Lattitude;
+        document.getElementById('long').value = (userData.Longitude == null || userData.Longitude == undefined || isNaN(userData.Longitude))?-124.147073:userData.Longitude;
         // Now see if the user had inputted anything into the Other fields for keywords.
         // we do so by getting the number of custom keywords in the otherKeys array.
 

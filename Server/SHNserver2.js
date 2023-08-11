@@ -365,6 +365,25 @@ app.post('/qaqc', jsonParser, (req, res) => {
     });
 });
 
+/**
+ * Gets Projects. promos, or billing groups based on IDs passed to API.
+ */
+
+app.post('/getMe', jsonParser, (req, res) => {
+    console.log(req.body);
+    const database = (req.body.Identifier == 0?"Projects":(req.body.Identifier == 1?"Promos":"BillingGroups"));
+    console.log(database);
+    pool.query('SELECT '+(database == "BillingGroups"?database + '.*, Projects.project_id':'*')+' FROM ' + database + ' INNER JOIN '+ (req.body.Identifier == 0?"ProjectTeam":(req.body.Identifier == 1?"PromoTeam":"BillingGroupTeam")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectTeam.project_id":(req.body.Identifier == 1?"PromoTeam.promo_id":"BillingGroupTeam.billing_id"))+' INNER JOIN '+(req.body.Identifier == 0?"ProjectKeywords":(req.body.Identifier == 1?"PromoKeywords":"BillingGroupKeywords")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectKeywords.project_id":(req.body.Identifier == 1?"PromoKeywords.promo_id":"BillingGroupKeywords.group_id")) + (req.body.Identifier != 1 && req.body.Identifier != 0?' INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID ':'') +' WHERE '+database+'.ID =' + req.body.ID, (err, data) => {
+        if(err) {
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            res.send(JSON.stringify(data));
+        }
+    });
+});
+
 // Returns IDs from recognizable keywords, assuming the keywords are split using " || ".
 // This may not work for older project initiations, as the database entries don't always conform to the expected format.
 app.post('/keyName', jsonParser, (req, res) => {

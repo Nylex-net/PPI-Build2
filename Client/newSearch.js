@@ -86,6 +86,8 @@ function formatMultiline(myString) {
 function resultString(jsonRes) {
     let numRes = 0;
     currResults.clear();
+
+    // For Projects.
     let filteredData = (jsonRes[0].reduce((accumulator, currentValue) => {
         if (!accumulator[currentValue.project_id]) {
           accumulator[currentValue.project_id] = true;
@@ -111,9 +113,11 @@ function resultString(jsonRes) {
         ((num.promo_id == null || num.promo_id == undefined)?'':num.promo_id) + '</td><td>' + num.last + ", " + num.first + '</td><td>' +
         num.project_title + '</td><td>' + num.client_company + '</td><td>' + 
         '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
-        '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
+        '<button type="button" onclick="edit(\''+ num.ID +'\', 0);">Edit</>'+'</td></tr>';
     });
     numRes = filteredData.length;
+
+    // For Promos.
     filteredData = (jsonRes[1].reduce((accumulator, currentValue) => {
         if (!accumulator[currentValue.promo_id]) {
           accumulator[currentValue.promo_id] = true;
@@ -131,9 +135,11 @@ function resultString(jsonRes) {
         ((num.promo_id == null || num.promo_id == undefined)?'':num.promo_id) + '</td><td>' + num.last + ", " + num.first + '</td><td>' +
         num.promo_title + '</td><td>' + num.client_company + '</td><td>' + 
         '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
-        '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
+        '<button type="button" onclick="edit(\''+ num.ID +'\', 1);">Edit</>'+'</td></tr>';
     });
     numRes += filteredData.length;
+
+    // For Billing groups.
     filteredData = (jsonRes[2].reduce((accumulator, currentValue) => {
         if (!accumulator[[currentValue.project_id, currentValue.group_number]]) {
           accumulator[[currentValue.project_id, currentValue.group_number]] = true;
@@ -141,7 +147,7 @@ function resultString(jsonRes) {
         }
         return accumulator;
       }, { result: [] }).result).sort((a, b) => a.project_id - b.project_id);
-
+      
       filteredData.forEach(num => {
         var id = num.ID;
         if(!currResults.has(id)) {
@@ -150,7 +156,7 @@ function resultString(jsonRes) {
         result += '<tr><td>' + ((num.closed == 1)?'<strong>X</strong> ':'')+ num.project_id +'</td><td>' + num.group_number + '</td><td></td><td>' + num.last + ", " + num.first + '</td><td>' +
         num.group_name + '</td><td>' + num.client_company + '</td><td>' + 
         '<button type="button" onclick="openPDF(\''+ num.project_id +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
-        '<button type="button" onclick="edit(\''+ num.ID +'\');">Edit</>'+'</td></tr>';
+        '<button type="button" onclick="edit(\''+ num.ID +'\', -1);">Edit</>'+'</td></tr>';
     });
     numRes += filteredData.length;
     // result = (jsonRes.length >= 500) ? '<p>Some results may have been filtered due to too large of search results.</p><br>' + result:result;
@@ -375,8 +381,8 @@ async function viewer(num) {
     scroll(0,0);
 }
 
-function edit(ID) {
-    window.sessionStorage.setItem('userObject', JSON.stringify(currResults.get(ID)));
+function edit(ID, init) {
+    window.sessionStorage.setItem('userObject', JSON.stringify('{"ID":"'+ID+'","Identifier":"'+init+'"}'));
     window.location.replace("editMe.html");
 }
 
