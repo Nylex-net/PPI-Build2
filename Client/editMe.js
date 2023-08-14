@@ -63,9 +63,15 @@ async function fetchInfo() {
 
 function manager(currPage) {
     document.getElementById('projForm').innerHTML = getPage(currPage);
-    document.getElementById('projForm').innerHTML += ((!isProject && currPage == 6) || (isProject && currPage == 7))?'<div id="sending"><div class="buttons"><button type="button" onclick="goBack('+ currPage +')">Back</button><button type="button" onclick="preparePost()">Submit</button></div></div>':'<div class="buttons"><button type="button" onclick="goBack('+ currPage +')">Back</button><button type="button" onclick="reqField('+currPage+')">Next</button></div>';
+    document.getElementById('projForm').innerHTML += ((!isProject && currPage == 6) || (isProject && currPage == 7) || (isBillingGroup && currPage == 4))?'<div id="sending"><div class="buttons"><button type="button" onclick="goBack('+ currPage +')">Back</button><button type="button" onclick="preparePost()">Submit</button></div></div>':'<div class="buttons"><button type="button" onclick="goBack('+ currPage +')">Back</button><button type="button" onclick="reqField('+currPage+')">Next</button></div>';
     if(currPage === 1) {
-        document.getElementById('promo').value = userData[0].project_title;
+        if(!isBillingGroup) {
+            document.getElementById('promo').value = (isProject?userData[0].project_title:userData[0].promo_title);
+        }
+        else {
+            document.getElementById('newBillName').value = userData[0].group_name;
+            document.getElementById('newBillNum').value = userData[0].group_number;
+        }
         document.getElementById('start').setAttribute("value", userData[0].start_date.substring(0, userData[0].start_date.indexOf('T')));
         document.getElementById('end').setAttribute("value", userData[0].close_date.substring(0, userData[0].close_date.indexOf('T')));
         if(!isProject) {
@@ -94,9 +100,9 @@ function manager(currPage) {
     }
     else if(currPage === 3) {
         document.getElementById("office").selectedIndex = userData[0].SHNOffice_ID;
-        document.getElementById('service').value = userData[0].ServiceArea;
+        document.getElementById('service').value = userData[0].service_area;
         
-        if(isProject) {
+        if(isProject && !isBillingGroup) {
             document.getElementById('contract').value = userData[0].total_contract;
             document.getElementById('yesAgreement').checked = (userData[0].exempt_agreement == 1)?true:false;
             if(document.getElementById('yesAgreement').checked) {
@@ -109,7 +115,7 @@ function manager(currPage) {
                 customAmount();
                 document.getElementById('newAmount').value = userData[0].retainer_paid;
             }
-            else if(userData[0].RetainerPaid.includes("Waived by")) {
+            else if(userData[0].retainer_paid.includes("Waived by")) {
                 document.getElementById('retainer').value = "Waived by X";
                 customAmount();
                 document.getElementById('personnel').value = userData[0].waived_by;
@@ -118,9 +124,35 @@ function manager(currPage) {
                 document.getElementById('retainer').value = userData[0].retainer;
             }
         }
+        else if (isBillingGroup) {
+            document.getElementById('contract').value = userData[0].total_contract;
+            if(!isNaN(userData[0].retainer_paid)) {
+                document.getElementById('retainer').value = "Enter Amount";
+                customAmount();
+                document.getElementById('newAmount').value = userData[0].retainer_paid;
+            }
+            else if(userData[0].retainer_paid.includes("Waived by")) {
+                document.getElementById('retainer').value = "Waived by X";
+                customAmount();
+                document.getElementById('personnel').value = userData[0].waived_by;
+            }
+            else {
+                document.getElementById('retainer').value = userData[0].retainer;
+            }
+            document.getElementById('contactType').value = userData[0].contract_ID;
+            document.getElementById('invoiceFormat').value = userData[0].invoice_format;
+            document.getElementById('PO').value = userData[0].client_contract_PO;
+            document.getElementById('OutMark').value = userData[0].outside_markup;
+            if(userData[0].prevailing_wage != 0) {
+                document.getElementById('wage').value = 'Yes';
+                agency();
+                document.getElementById('agency').value = userData[0].prevailing_wage;
+            }
+            document.getElementById('billInst').value = userData[0].special_billing_instructions;
+        }
         getUsers(3);
     }
-    else if(currPage === 4) {
+    else if(currPage === 4 && !isBillingGroup) {
         if(isProject) {
             document.getElementById('contactType').value = userData[0].contract_ID;
             document.getElementById('invoiceFormat').value = userData[0].invoice_format;
@@ -155,7 +187,7 @@ function manager(currPage) {
             document.getElementById('email').value = userData[0].email;
         }
     }
-    else if(currPage === 5) {
+    else if(currPage === 5 && !isBillingGroup) {
         if(isProject) {
             document.getElementById('clientComp').value = userData[0].client_company;
             document.getElementById('openHouse').checked = openHouse;
@@ -180,7 +212,7 @@ function manager(currPage) {
             document.getElementById('describe').value = (userData[0].description_service == undefined || userData[0].description_service == null)?'':userData[0].description_service;
         }
     }
-    else if(currPage === 6 && isProject) {
+    else if(currPage === 6 && isProject && !isBillingGroup) {
         document.getElementById('binder').value = (userData[0].binder_size == undefined || userData[0].binder_size == null)? 'NA':userData[0].binder_size;
         document.getElementById('bindLoc').value = (userData[0].binder_location == undefined || userData[0].binder_location == null)? '':userData[0].binder_location;
         document.getElementById('describe').value = (userData[0].description_service == undefined || userData[0].description_service == null)?'':userData[0].description_service;
@@ -360,7 +392,7 @@ function fillCheck() {
 function getPage(num) {
     if(num === 1) {
         if(!isProject) {
-            return '<div class="grid-container">' + getTextField('Promo Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', userData[0].ProjectTitle, true) +
+            return '<div class="grid-container">' + getTextField('Promo Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', userData[0].promo_title, true) +
             '<div class="grid-item"><label for="promo-type">Type of Promo<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="promo-type" id="promo-type" title="Promo" required><option value="" selected>-Select-</option><option value="on-going">On-going</option><option value="letter">Letter</option><option value="soq">SOQ</option><option value="ProPri">Proposal-Prime</option><option value="ProSub">Proposal-Sub</option></select></div>'+
             '<div class="grid-item"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
@@ -375,7 +407,27 @@ function getPage(num) {
             '<div class="grid-item"><input type="date" id="end" value="end" required></div>'
             +'</div>';
         }
-        return '<div class="grid-container">' + getTextField('Project Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', userData[0].ProjectTitle, true) +
+        else if(isBillingGroup) {
+            return '<div class="grid-container">'+
+            '<div class="grid-item"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
+            '<div class="grid-item"><input type="text" id="newBillName" maxlength="255" required/></div>'+
+            '<div class="grid-item"><label for="groupNumb">Billing Group Number<br>(Only enter the 3 digits)<span class="astrick">*</span></label></div>'+
+            '<div class="grid-item"><input type="text" id="newBillNum" maxlength="3" required/></div>'+
+            '<div class="grid-item"><label for="autocad">AutoCAD Job</label></div><div class="grid-item"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
+            '<div class="grid-item"><label for="gis">GIS Job</label></div><div class="grid-item"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div>'+
+            '<div class="grid-item"><label for="projMgr">Group Manager<span class="astrick">*</span></label></div>'+
+            '<div class="grid-item" id="projFiller">Loading managers...</div>'+
+            '<div class="grid-item"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
+            '<div class="grid-item" id="qaqcFill">Loading QA QC people...</div>'+
+            '<div class="grid-item"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
+            '<div class="grid-item" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
+            '<div class="grid-item"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
+            '<div class="grid-item"><input type="date" id="start" value="start" required></div>'+
+            '<div class="grid-item"><label for="end">End Date<span class="astrick">*</span></label></div>'+
+            '<div class="grid-item"><input type="date" id="end" value="end" required></div>'+
+            '</div>';
+        }
+        return '<div class="grid-container">' + getTextField((isBillingGroup?"Billing Group":"Project")+' Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', ((isBillingGroup)?userData[0].group_name:userData[0].project_title), true) +
             '<div class="grid-item"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
             '<div class="grid-item" id="projFiller">Loading managers...</div>'+
             '<div class="grid-item"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
@@ -397,7 +449,7 @@ function getPage(num) {
         +'</div>';
     }
     else if(num === 3) {
-        if(isProject) {
+        if(isProject && !isBillingGroup) {
             return '<div class="grid-container">'+
             '<div class="grid-item"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="grid-item"><select name="office" id="office" title="Office Location" required><option value="">-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
             '<div class="grid-item"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
@@ -409,6 +461,26 @@ function getPage(num) {
             '<div class="grid-item"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="grid-item" id="codeFill">Loading profile codes...</div>'
             +'</div>';
         }
+        else if(isBillingGroup) {
+            return '<div class="grid-container">' +
+            '<div class="grid-item"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="grid-item" id="codeFill">Loading profile codes...</div>'+
+            '<div class="grid-item"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
+            '<div class="grid-item"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
+            '<div class="grid-item"><label for="service">Service Area</label></div>'+
+            '<div class="grid-item"><select name="service" id="service" title="Service Area"><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
+            '<div class="grid-item"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
+            '<div class="grid-item"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
+            getNumberField('Total Contract', 'contract', 'contract', 1, 0, -1, false) +
+            '<div class="grid-item"><label for="invoiceFormat">Invoice Format</label></div><div class="grid-item"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
+            getTextField('Client Contract/PO #', 'PO', userData[0].client_contract_PO, false) +
+            '<div class="grid-item"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
+            '<div class="grid-item"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
+            '<div class="grid-item"><label for="wage">Prevailing Wage</label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
+            '<div class="grid-item"><label for="billInst">Special Billing Instructions</label></div><div class="grid-item"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
+            '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+            '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search_demo.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>' +
+            '</div>';
+        }
         return '<div class="grid-container">'+
         '<div class="grid-item"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="grid-item"><select name="office" id="office" title="Office Location" required><option value="-1" selected>-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
         '<div class="grid-item"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
@@ -417,7 +489,7 @@ function getPage(num) {
         +'</div>';
     }
     else if(num === 4) {
-        if(isProject) {
+        if(isProject && !isBillingGroup) {
             return '<div class="grid-container">' +
             '<div class="grid-item"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
@@ -433,7 +505,8 @@ function getPage(num) {
             '<div class="grid-item"><label for="gis">GIS Job</label></div><div class="grid-item"><input type="radio" id="gis" name="gis" value="1" title="gis"> Yes<input type="radio" name="gis" value="0" title="gis" checked> No</div><div class="grid-item"><label for="ProjSpecs">Project Specifications</label></div><div class="grid-item"><input type="radio" id="ProjSpecs" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications"> Yes <input type="radio" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications" checked> No</div>'
             + '</div>';
         }
-        return '<div class="grid-container">' + getTextField('Client Company', 'clientComp', userData[0].client_company, true) + getTextField('Client Abbreviation', 'clientAbbr', userData[0].client_abbreviation, false) + 
+        else if(!isProject) {
+            return '<div class="grid-container">' + getTextField('Client Company', 'clientComp', userData[0].client_company, true) + getTextField('Client Abbreviation', 'clientAbbr', userData[0].client_abbreviation, false) + 
             getTextField('Client First Name', 'cFirst', userData[0].first_name, true) + getTextField('Client Last Name', 'cLast', userData[0].last_name, true) + 
             '<div class="grid-item"><label for="relation">Client Relationship</label></div><div class="grid-item"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
             getTextField('Title', 'title', userData[0].job_title, false) + getTextField("Address 1", 'ad1', userData[0].address1, true) + getTextField('Address 2', 'ad2', userData[0].address2, false) + 
@@ -446,6 +519,99 @@ function getPage(num) {
             '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="20"></div>'+
             '<div class="grid-item"><label for="email">Email<span class="astrick">*</span></label></div><div class="grid-item"><input type="email" id="email" name="email" maxlength="75" required></div>'
             + '</div>';
+        }
+        else {
+            let formatStartDate = new Date(userData[0].start_date)
+            formatStartDate = ((formatStartDate.getMonth() + 1) + '-' + formatStartDate.getDate() + '-' + formatStartDate.getFullYear()).toString();
+            let formatCloseDate = new Date(userData[0].close_date)
+            formatCloseDate = ((formatCloseDate.getMonth() + 1) + '-' + formatCloseDate.getDate() + '-' + formatCloseDate.getFullYear()).toString();
+
+            let autoCadName = 'no';
+            if(userData[0].autoCAD == 1) {
+                autoCadName = 'yes';
+            }
+            let gisName = 'no';
+            if(userData[0].GIS == 1) {
+                gisName = 'yes';
+            }
+
+            let formatMem = '';
+            let formatKeys = '';
+            for(let names of memNames) {
+                formatMem += names + '<br>';
+            }
+            for(let keys of keyNames) {
+                formatKeys += keys + '<br>';
+            }
+
+            let breakedDesc = userData[0].description_service.replaceAll('\n', '<br>');
+            let myAmount = retainAmnt;
+            if(userData[0].retainer != 'Enter Amount') {
+                myAmount = 'None';
+            }
+            let waiver = (userData[0].retainer == 'Waived by X') ? 'Waived by ' + senior:retainer;
+
+            return '<div class="grid-container">' +
+            '<div class="grid-item">Billing Name' + '</div>'
+            + '<div class="grid-item">' + userData[0].group_name + '</div>'+
+            '<div class="grid-item">Billing Number' + '</div>'
+            + '<div class="grid-item">' + userData[0].group_number + '</div>'+
+            '<div class="grid-item">Project Manager' + '</div>'
+            + '<div class="grid-item">' + userData[0].staff_last + ', ' + userData[0].staff_first + '</div>'+
+            '<div class="grid-item">Billing Group Manager' + '</div>'
+            + '<div class="grid-item">' + mgrName + '</div>'+
+            '<div class="grid-item">QAQC Person' + '</div>'
+            + '<div class="grid-item">' + qaqcName + '</div>'+
+            '<div class="grid-item">Team Members' + '</div>'
+            + '<div class="grid-item">' + formatMem + '</div>'+
+            '<div class="grid-item">Start Date' + '</div>'
+            + '<div class="grid-item">' + formatStartDate + '</div>'+
+            '<div class="grid-item">End Date' + '</div>'
+            + '<div class="grid-item">' + formatCloseDate + '</div>'+
+            '<div class="grid-item">Project Location Descriptor' + '</div>'
+            + '<div class="grid-item">' + userData[0].group_location + '</div>'+
+            '<div class="grid-item">Project Latitude' + '</div>'
+            + '<div class="grid-item">' + userData[0].latitude + '</div>'+
+            '<div class="grid-item">Project Longitude' + '</div>'
+            + '<div class="grid-item">' + userData[0].longitude + '</div>'+
+            '<div class="grid-item">Project Keywords' + '</div>'
+            + '<div class="grid-item">' + formatKeys + '</div>'+
+            '<div class="grid-item">Other Keywords' + '</div>'
+            + '<div class="grid-item">' + otherKeys + '</div>'+
+            '<div class="grid-item">Profile Code' + '</div>'
+            + '<div class="grid-item">' + profCodeName + '</div>'+
+            '<div class="grid-item">Contract Type' + '</div>'
+            + '<div class="grid-item">' + contactTypeName + '</div>'+
+            '<div class="grid-item">Service Area' + '</div>'
+            + '<div class="grid-item">' + userData[0].service_area + '</div>'+
+            '<div class="grid-item">Total Contract' + '</div>'
+            + '<div class="grid-item">' + userData[0].total_contract + '</div>'+
+            '<div class="grid-item">Invoice Format' + '</div>'
+            + '<div class="grid-item">' + invoiceName + '</div>'+ // FIX VARIABLE
+            '<div class="grid-item">Retainer' + '</div>'
+            + '<div class="grid-item">' + waiver + '</div>'+
+            '<div class="grid-item">Retainer amount' + '</div>'
+            + '<div class="grid-item">' + myAmount + '</div>'+
+            '<div class="grid-item">Client Contract/PO #' + '</div>'
+            + '<div class="grid-item">' + userData[0].client_contract_PO + '</div>'+
+            '<div class="grid-item">Outside Markup' + '</div>'
+            + '<div class="grid-item">' + userData[0].outside_markup + '</div>'+
+            '<div class="grid-item">Prevailige Wage' + '</div>'
+            + '<div class="grid-item">' + (prevWage == 1?"Yes":"No") + '</div>'+
+            '<div class="grid-item">Agency' + '</div>'
+            + '<div class="grid-item">' + (prevWage == 1?agency_name:"N/A") + '</div>'+
+            '<div class="grid-item">Special Billing Instructions' + '</div>'
+            + '<div class="grid-item">' + userData[0].special_billing_instructions + '</div>'+
+            '<div class="grid-item">AutoCAD Job' + '</div>'
+            + '<div class="grid-item">' + autoCadName + '</div>'+
+            '<div class="grid-item">GIS Job' + '</div>'
+            + '<div class="grid-item">' + gisName + '</div>'+
+            '<div class="grid-item">Binder Size' + '</div>'
+            + '<div class="grid-item">' + (binderSize == "NULL"?"N/A":binderSize) + '</div>'+
+            '<div class="grid-item">Description of Services' + '</div>'
+            + '<div class="grid-item">' + breakedDesc + '</div>'+
+            '</div>';
+        }
     }
     else if(num === 5) {
         if(isProject) {
@@ -1015,7 +1181,7 @@ function fillAfterLoad(currPage) {
 
     // Set previous or default values to fields.
     document.getElementById("qaqc").value = userData[0].qaqc_person_ID;
-    document.getElementById("projMgr").value = (isProject?userData[0].project_manager_ID:userData[0].manager_id);
+    document.getElementById("projMgr").value = (isProject && !isBillingGroup?userData[0].project_manager_ID:userData[0].manager_id);
 
         // Select all checkbox inputs to test which ones need to be checked.
 
@@ -1087,23 +1253,34 @@ function saveChoices(currPage) {
     else if(currPage == 3) {
 
         // Saves values into global variables.
-
-        userData[0].SHNOffice_ID = document.getElementById("office").value;
-        userData[0].ServiceArea = document.getElementById('service').value;
+        userData[0].service_area = document.getElementById('service').value;
         servName = (document.getElementById('service').value != '' && document.getElementById('service').value != -1 && document.querySelector('#service').options[document.getElementById("service").selectedIndex] != undefined)?document.querySelector('#service').options[document.getElementById("service").selectedIndex].text:'';
         userData[0].profile_code_id = document.getElementById('code').value;
         profCodeName = document.getElementById('code').options[document.getElementById("code").selectedIndex].text;
 
         if(isProject) {
             userData[0].total_contract = document.getElementById('contract').value;
-            ServAgree = document.getElementById('yesAgreement').checked;
-            userData[0].exempt_agreement = (document.getElementById('yesAgreement').checked?1:0);
-            userData[0].retainer = (document.getElementById('retainer').value == "Enter Amount")?document.getElementById('newAmount').value:(document.getElementById('retainer').value.includes("Waived by"))?"Waived by " + document.getElementById('personnel').value:document.getElementById('retainer').value;
+            userData[0].retainer = (document.getElementById('retainer').value == "Enter Amount")?document.getElementById('newAmount').value:(document.getElementById('retainer').value.includes("Waived by"))?"Waived by X":document.getElementById('retainer').value;
             userData[0].retainer_paid = (document.getElementById('retainer').value == "Enter Amount")?document.getElementById('newAmount').value:null;
             userData[0].waived_by = (document.getElementById('retainer').value.includes("Waived by"))?document.getElementById('personnel').value:null;
-            if(ServAgree) {
-                Explanation = document.getElementById('bruh').value.trim();
-                userData[0].why = document.getElementById('bruh').value.trim();
+            if(!isBillingGroup) {
+                userData[0].SHNOffice_ID = document.getElementById("office").value;
+                userData[0].exempt_agreement = (document.getElementById('yesAgreement').checked?1:0);
+                ServAgree = document.getElementById('yesAgreement').checked;
+                if(ServAgree) {
+                    Explanation = document.getElementById('bruh').value.trim();
+                    userData[0].why = document.getElementById('bruh').value.trim();
+                }
+            }
+            else {
+                userData[0].contract_ID = document.getElementById('contactType').value;
+                contactTypeName = document.getElementById('contactType').options[document.getElementById("contactType").selectedIndex].text;
+                userData[0].invoice_format = document.getElementById('invoiceFormat').options[document.getElementById("invoiceFormat").selectedIndex].text;
+                userData[0].client_contract_PO = document.getElementById('PO').value.trim();
+                userData[0].outside_markup = document.getElementById('OutMark').value;
+                userData[0].prevailing_wage = document.getElementById('wage').value;
+                userData[0].agency = (document.getElementById('wage').value == '1')?document.getElementById('agency').value:"NULL";
+                userData[0].special_billing_instructions = (document.getElementById('billInst').value.trim() == ''?"NULL":document.getElementById('billInst').value.trim());
             }
             // if(document.getElementById('retainer').value == 'Enter Amount') {
             //     userData[0].retainer_paid = document.getElementById('newAmount').value;
@@ -1117,21 +1294,22 @@ function saveChoices(currPage) {
     else if(currPage == 4) {
         
         // Saves values into global variables.
-        if(isProject) {
+        if(isProject && !isBillingGroup) {
             userData[0].contract_ID = document.getElementById('contactType').value;
             contactTypeName = document.getElementById('contactType').options[document.getElementById("contactType").selectedIndex].text;
             userData[0].invoice_format = document.getElementById('invoiceFormat').options[document.getElementById("invoiceFormat").selectedIndex].text;
             userData[0].client_contract_PO = document.getElementById('PO').value.trim();
             userData[0].outside_markup = document.getElementById('OutMark').value;
             // outsideMarkupName = document.getElementById('OutMark').options[document.getElementById("OutMark").selectedIndex].text;
-            userData[0].prevailing_wage = (document.getElementById('wage').value == 'Yes')?document.getElementById('agency').value:"No";
+            userData[0].prevailing_wage = document.getElementById('wage').value;
+            userData[0].agency = (document.getElementById('wage').value == '1')?document.getElementById('agency').value:"NULL";
             userData[0].special_billing_instructions = document.getElementById('billInst').value.trim();
             userData[0].see_also = document.getElementById('seeAlso').value.trim();
             userData[0].autoCAD = (document.getElementById('yesAuto').checked)?1:0;
             userData[0].GIS = (document.getElementById('gis').checked)?1:0;
             userData[0].project_specifications = (document.getElementById('ProjSpecs').checked)?1:0;
         }
-        else {
+        else if (!isBillingGroup) {
             userData[0].client_company = document.getElementById('clientComp').value.trim();
         // mailList = document.getElementById('mail').value;
             // openHouse = document.getElementById('openHouse').checked;
@@ -1152,7 +1330,6 @@ function saveChoices(currPage) {
             userData[0].fax = document.getElementById('fax').value.trim();
             userData[0].email = document.getElementById('email').value.trim();
         }
-        
         // See if AutoCAD Job is selected to "Yes."  If so, save the value of the selected office.
 
         // if(autoCad) {
@@ -1203,6 +1380,10 @@ function saveChoices(currPage) {
     }
 }
 
+function isNum(num) {
+    return (num == 0 || num == 1 || num == 2 || num == 3 || num == 4 || num == 5 || num == 6 || num == 7 || num == 8 || num == 9) ? true:false;
+}
+
 /**
  * Saves and validates user input.
  * On validation failure, an alert will be prompted to the user and the program exits.
@@ -1217,9 +1398,14 @@ function reqField(currPage) {
 
         // Saves values into global variables.
 
-        userData[0].project_title = document.getElementById('promo').value.trim();
         if(isProject && !isBillingGroup) {
             userData[0].project_manager_ID = document.getElementById("projMgr").value;
+            userData[0].project_title = document.getElementById('promo').value.trim();
+        }
+        else if(isBillingGroup) {
+            userData[0].group_name = document.getElementById("newBillName").value;
+            userData[0].group_number = document.getElementById("newBillNum").value;
+            userData[0].manager_id = document.getElementById("projMgr").value;
         }
         else {
             userData[0].manager_id = document.getElementById("projMgr").value;
@@ -1236,19 +1422,28 @@ function reqField(currPage) {
         let mySelects = document.querySelectorAll('input[name="Team"]:checked');
 
         // Test variables for illegal inputs.
+        if(isBillingGroup && (!isNum(userData[0].group_number[0]) || !isNum(userData[0].group_number[1]) || !isNum(userData[0].group_number[2]))) {
+            alert("Invalid Billing Group number.");
+            return false;
+        }
+        if(isBillingGroup && userData[0].group_name.trim() == '') {
+            alert("Invalid Billing group name.");
+            return false;
+        }
 
         if(userData[0].manager_id == 0 || userData[0].project_manager_ID == 0 || userData[0].qaqc_person_ID == 0 || userData[0].project_title == '' || mySelects.length <= 0 || userData[0].start_date == '' || userData[0].start_date == undefined || userData[0].close_date == '' || userData[0].close_date == undefined || userData[0].start_date > userData[0].close_date) {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
         
-        if(userData[0].project_title.includes("#") || userData[0].project_title.includes("<") || userData[0].project_title.includes("$") || userData[0].project_title.includes("+") || userData[0].project_title.includes("%") || userData[0].project_title.includes(">") ||userData[0].project_title.includes("!") || userData[0].project_title.includes("`") || userData[0].project_title.includes("*") || userData[0].project_title.includes("'") || userData[0].project_title.includes("|") || userData[0].project_title.includes("{") || userData[0].project_title.includes("?") || userData[0].project_title.includes("\"") || userData[0].project_title.includes("=") || userData[0].project_title.includes("}") || userData[0].project_title.includes("/") || userData[0].project_title.includes(":") || userData[0].project_title.includes("\\") || userData[0].project_title.includes("@")) {
+        let title = (userData[0].hasOwnProperty("project_title")?userData[0].project_title:(userData[0].hasOwnProperty("promo_title")?userData[0].promo_title:userData[0].group_name));
+        if(title.includes("#") || title.includes("<") || title.includes("$") || title.includes("+") || title.includes("%") || title.includes(">") || title.includes("!") || title.includes("`") || title.includes("*") || title.includes("'") || title.includes("|") || title.includes("{") || title.includes("?") || title.includes("\"") || title.includes("=") || title.includes("}") || title.includes("/") || title.includes(":") || title.includes("\\") || title.includes("@")) {
             alert("No special characters.  Please rename your project title.");
             return false;
         }
 
-        if(userData[0].project_title[userData[0].project_title.length - 1] == '.') {
-            alert("Please remove the period at the end of project title.");
+        if(title[title.length - 1] == '.') {
+            alert("Please remove the period at the end of title.");
             return false;
         }
 
@@ -1386,7 +1581,7 @@ function reqField(currPage) {
         else {
             // Test against required user selections and fields to determine if values are valid.
 
-            if(userData[0].ClientCompany1 == '' || userData[0].ClientContactFirstName1 == '' || userData[0].ClientContactLastName1 == '' || userData[0].Address1_1 == '' || userData[0].City1 == '' || userData[0].PhoneW1 == '' || userData[0].Email1 == '' || userData[0].Zip1 == '') {
+            if(userData[0].client_company == '' || userData[0].first_name == '' || userData[0].last_name == '' || userData[0].address1 == '' || userData[0].city == '' || userData[0].work_phone == '' || userData[0].email == '' || userData[0].zip == '') {
                 alert("Please fill all required fields, and/or fix invalid fields.");
                 return false;
             }
@@ -1394,9 +1589,9 @@ function reqField(currPage) {
             let i = 0;
             let isDash = false;
 
-            while(i < userData[0].Zip1.length) {
-                if(isNaN(userData[0].Zip1[i])) {
-                    if(userData[0].Zip1[i] == '-' && !isDash) {
+            while(i < userData[0].zip.length) {
+                if(isNaN(userData[0].zip[i])) {
+                    if(userData[0].zip[i] == '-' && !isDash) {
                         isDash = true;
                     }
                     else {
@@ -1423,7 +1618,7 @@ function reqField(currPage) {
 
         // Test against required user selections and fields to determine if values are valid.
 
-        if(userData[0].ClientCompany1 == '' || userData[0].ClientContactFirstName1 == '' || userData[0].ClientContactLastName1 == '' || userData[0].Address1_1 == '' || userData[0].City1 == '' || userData[0].PhoneW1 == '' || userData[0].Email1 == '' || userData[0].Zip1 == '') {
+        if(userData[0].client_company == '' || userData[0].first_name == '' || userData[0].last_name == '' || userData[0].address1 == '' || userData[0].city == '' || userData[0].work_phone == '' || userData[0].email == '' || userData[0].zip == '') {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
@@ -1431,9 +1626,9 @@ function reqField(currPage) {
         let i = 0;
         let isDash = false;
 
-        while(i < userData[0].Zip1.length) {
-            if(isNaN(userData[0].Zip1[i])) {
-                if(userData[0].Zip1[i] == '-' && !isDash) {
+        while(i < userData[0].zip.length) {
+            if(isNaN(userData[0].zip[i])) {
+                if(userData[0].zip[i] == '-' && !isDash) {
                     isDash = true;
                 }
                 else {
@@ -1453,7 +1648,7 @@ function reqField(currPage) {
 
         // Test against required user selections and fields to determine if values are valid.
 
-        if(userData[0].DescriptionService == '') {
+        if(userData[0].description_service == '') {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
@@ -1547,63 +1742,64 @@ function teamString(memberArray) {
  * On success, thanks.html will load.
  */
 function preparePost() {
-    if(userData[0].SpecialBillingInstructins == '') {
-        userData[0].SpecialBillingInstructins = 'None';
+    if(userData[0].special_billing_instructions == '') {
+        userData[0].special_billing_instructions = 'NULL';
     }
 
-    if(userData[0].SEEALSO == '') {
-        userData[0].SEEALSO = 'None';
+    if(userData[0].see_also == '') {
+        userData[0].see_also = 'NULL';
     }
 
-    if(userData[0].ClientAbbrev1 == '') {
-        userData[0].ClientAbbrev1 = 'None';
+    if(userData[0].client_abbreviation == '') {
+        userData[0].client_abbreviation = 'NULL';
     }
 
-    if(userData[0].Title1 == '') {
-        userData[0].Title1 = 'None';
+    if(userData[0].job_title == '') {
+        userData[0].job_title = 'NULL';
     }
 
-    if(userData[0].Address2_1 == '') {
-        userData[0].Address2_1 = 'None';
+    if(userData[0].address2 == '') {
+        userData[0].address2 = 'NULL';
     }
 
-    if(userData[0].PhoneH1 == '') {
-        userData[0].PhoneH1 = 'None';
+    if(userData[0].home_phone == '') {
+        userData[0].home_phone = 'NULL';
     }
 
-    if(userData[0].Cell1 == '') {
-        userData[0].Cell1 = 'None';
+    if(userData[0].cell == '') {
+        userData[0].cell = 'NULL';
     }
 
-    if(userData[0].Fax1 == '') {
-        userData[0].Fax1 = 'None';
+    if(userData[0].fax == '') {
+        userData[0].fax = 'NULL';
     }
 
-    if(userData[0].BinderLocation == '') {
-        userData[0].BinderLocation = 'None';
+    if(userData[0].binder_location == '') {
+        userData[0].binder_location = 'NULL';
     }
 
     userData[0].ProjectKeywords = teamString(keyNames) + " || " + teamString(otherKeys);
 
-    let Service_Agreement = 'No';
+    let Service_Agreement = '0';
     if(ServAgree) {
-        Service_Agreement = 'Yes';
+        Service_Agreement = '1';
     }
     else {
-        Explanation = 'NA';
+        userData[0].why = "NULL";
     }
-    userData[0].ServiceAgreement = Service_Agreement;
+    userData[0].exempt_agreement = Service_Agreement;
     userData[0].CreatedBy = activeUser;
-    userData[0].CreatedOn = new Date().toString();
-    userData[0].Explanation = Explanation;
+    // userData[0].CreatedOn = new Date().toString();
+    // userData[0].why = Explanation;
     userData[0].ProjectMgrName = mgrName;
     userData[0].QAQCPersonName = qaqcName;
-    userData[0].ClientRelation = clientRelation;
-    userData[0].ClientContractPONumber = contractPONum;
-    userData[0].OutsideMarkup = outsideMarkup;
+    userData[0].relationship = clientRelation;
+    // userData[0].client_contract_PO = contractPONum;
+    // userData[0].outside_markup = outsideMarkup;
     userData[0].Project_Specifications = (userData[0].Project_Specifications == -1)?-1:0;
     userData[0].AutoCAD_Project = (userData[0].AutoCAD_Project == -1)?-1:0;
     userData[0].GIS_Project = (userData[0].GIS_Project == -1)?-1:0;
+    userData[0].isWhat = (isProject && isBillingGroup)?-1:(isProject?0:1);
     // let original = userData; // userData before we add extra single quotes for database processing.
     // for(let key of Object.keys(original)) {
     //     if(typeof original[key] === 'string') {
@@ -1646,9 +1842,9 @@ function preparePost() {
         //     document.getElementById('sending').innerHTML = '<p id="submitStat">Something went wrong. Try again or contact help.<br/><button type="button" onclick="goBack('+buttonboi+')">Back</button><button type="button" onclick="preparePost()">Submit</button></p>';
         // }
     };
-    console.log(userData);
+    console.log(userData[0]);
     try{
-        xhr.send(JSON.stringify(userData));  // an error message typically looks like "{process: {…}, exitCode: 0}" in the console.
+        xhr.send(JSON.stringify(userData[0]));  // an error message typically looks like "{process: {…}, exitCode: 0}" in the console.
     }
     catch(bruh) {
         document.getElementById('sending').innerHTML = '<p id="submitStat">Could not connect.<br/><button type="button" onclick="goBack(6)">Back</button><button type="button" onclick="preparePost()">Submit</button></p>';
