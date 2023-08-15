@@ -106,7 +106,7 @@ function manager(currPage) {
         document.getElementById('service').value = userData[0].service_area;
         
         if(isProject && !isBillingGroup) {
-            document.getElementById("office").selectedIndex = userData[0].SHNOffice_ID;
+            document.getElementById("office").value = userData[0].SHNOffice_ID;
             document.getElementById('contract').value = userData[0].total_contract;
             document.getElementById('yesAgreement').checked = (userData[0].exempt_agreement == 1)?true:false;
             if(document.getElementById('yesAgreement').checked) {
@@ -114,15 +114,18 @@ function manager(currPage) {
                 document.getElementById('bruh').value = userData[0].why;
             }
             
-            if(!isNaN(userData[0].retainer_paid)) {
+            if(userData[0].retainer.includes("Enter Amount")) {
                 document.getElementById('retainer').value = "Enter Amount";
                 customAmount();
                 document.getElementById('newAmount').value = userData[0].retainer_paid;
             }
-            else if(userData[0].retainer_paid.includes("Waived by")) {
+            else if(userData[0].retainer.includes("Waived by")) {
                 document.getElementById('retainer').value = "Waived by X";
                 customAmount();
                 document.getElementById('personnel').value = userData[0].waived_by;
+            }
+            else if(userData[0].retainer == "None") {
+                document.getElementById('retainer').value = 0;
             }
             else {
                 document.getElementById('retainer').value = userData[0].retainer;
@@ -130,12 +133,12 @@ function manager(currPage) {
         }
         else if (isBillingGroup) {
             document.getElementById('contract').value = userData[0].total_contract;
-            if(!isNaN(userData[0].retainer_paid)) {
+            if(userData[0].retainer.includes("Enter Amount")) {
                 document.getElementById('retainer').value = "Enter Amount";
                 customAmount();
                 document.getElementById('newAmount').value = userData[0].retainer_paid;
             }
-            else if(userData[0].retainer_paid.includes("Waived by")) {
+            else if(userData[0].retainer.includes("Waived by")) {
                 document.getElementById('retainer').value = "Waived by X";
                 customAmount();
                 document.getElementById('personnel').value = userData[0].waived_by;
@@ -153,23 +156,24 @@ function manager(currPage) {
                 document.getElementById('agency').value = userData[0].agency_name;
             }
             document.getElementById('billInst').value = userData[0].special_billing_instructions;
+            document.getElementById('binder').value = (userData[0].binder_size == null || userData[0].binder_size == "NULL"?"NULL":userData[0].binder_size);
             document.getElementById('describe').value = userData[0].description_service;
         }
         else {
-            document.getElementById("office").selectedIndex = userData[0].SHNOffice_ID;
+            document.getElementById("office").value = userData[0].SHNOffice_ID;
         }
         getUsers(3);
     }
     else if(currPage === 4 && !isBillingGroup) {
         if(isProject) {
             document.getElementById('contactType').value = userData[0].contract_ID;
-            document.getElementById('invoiceFormat').value = userData[0].invoice_format;
+            document.getElementById('invoiceFormat').value = (userData[0].invoice_format == null?"B":userData[0].invoice_format);
             document.getElementById('PO').value = userData[0].client_contract_PO;
             document.getElementById('OutMark').value = userData[0].outside_markup;
             if(userData[0].prevailing_wage != 0) {
-                document.getElementById('wage').value = 'Yes';
+                document.getElementById('wage').value = '1';
                 agentBruh();
-                document.getElementById('agency').value = userData[0].prevailing_wage;
+                document.getElementById('agency').value = userData[0].agency_name;
             }
             document.getElementById('billInst').value = userData[0].special_billing_instructions;
             document.getElementById('seeAlso').value = userData[0].see_also;
@@ -183,8 +187,8 @@ function manager(currPage) {
             document.getElementById('cFirst').value = userData[0].first_name;
             document.getElementById('cLast').value = userData[0].last_name;
             document.getElementById('title').value = (userData[0].job_title == undefined || userData[0].job_title == null)?'':userData[0].job_title;
-            document.getElementById('ad1').value = userData[0].address1;
-            document.getElementById('ad2').value = (userData[0].address2 == undefined || userData[0].address2 == null)?'':userData[0].address2;
+            document.getElementById('addy1').value = userData[0].address1;
+            document.getElementById('addy2').value = (userData[0].address2 == undefined || userData[0].address2 == null)?'':userData[0].address2;
             document.getElementById('city').value = userData[0].city;
             document.getElementById('state').value = userData[0].state;
             document.getElementById('zip').value = userData[0].zip_code;
@@ -204,8 +208,8 @@ function manager(currPage) {
             document.getElementById('cFirst').value = userData[0].first_name;
             document.getElementById('cLast').value = userData[0].last_name;
             document.getElementById('title').value = (userData[0].job_title == undefined || userData[0].job_title == null)?'':userData[0].job_title;
-            document.getElementById('ad1').value = userData[0].address1;
-            document.getElementById('ad2').value = (userData[0].address2 == undefined || userData[0].address2 == null)?'':userData[0].address2;
+            document.getElementById('addy1').value = userData[0].address1;
+            document.getElementById('addy2').value = (userData[0].address2 == undefined || userData[0].address2 == null)?'':userData[0].address2;
             document.getElementById('city').value = userData[0].city;
             document.getElementById('state').value = userData[0].state;
             document.getElementById('zip').value = userData[0].zip_code;
@@ -216,7 +220,7 @@ function manager(currPage) {
             document.getElementById('email').value = userData[0].email;
         }
         else {
-            document.getElementById('binder').value = (userData[0].binder_size == undefined || userData[0].binder_size == null)? 'NA':userData[0].binder_size;
+            document.getElementById('binder').value = (userData[0].binder_size == undefined || userData[0].binder_size == null || userData[0].binder_size == 'NULL')? 'NULL':userData[0].binder_size;
             document.getElementById('describe').value = (userData[0].description_service == undefined || userData[0].description_service == null)?'':userData[0].description_service;
         }
     }
@@ -517,7 +521,7 @@ function getPage(num) {
             return '<div class="grid-container">' + getTextField('Client Company', 'clientComp', userData[0].client_company, true) + getTextField('Client Abbreviation', 'clientAbbr', userData[0].client_abbreviation, false) + 
             getTextField('Client First Name', 'cFirst', userData[0].first_name, true) + getTextField('Client Last Name', 'cLast', userData[0].last_name, true) + 
             '<div class="grid-item"><label for="relation">Client Relationship</label></div><div class="grid-item"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
-            getTextField('Title', 'title', userData[0].job_title, false) + getTextField("Address 1", 'ad1', userData[0].address1, true) + getTextField('Address 2', 'ad2', userData[0].address2, false) + 
+            getTextField('Title', 'title', userData[0].job_title, false) + getTextField("Address 1", 'addy1', userData[0].address1, true) + getTextField('Address 2', 'addy2', userData[0].address2, false) + 
             getTextField('City', 'city', userData[0].city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
             '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
@@ -622,7 +626,7 @@ function getPage(num) {
             getTextField('Client Abbreviation', 'clientAbbr', userData[0].client_abbreviation, false) + 
             getTextField('Client First Name', 'cFirst', userData[0].first_name, true) + getTextField('Client Last Name', 'cLast', userData[0].last_name, true) + 
             '<div class="grid-item"><label for="relation">Client Relationship</label></div><div class="grid-item"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
-            getTextField('Title', 'title', userData[0].job_title, false) + getTextField("Address 1", 'ad1', userData[0].address1, true) + getTextField('Address 2', 'ad2', userData[0].address2, false) + 
+            getTextField('Title', 'title', userData[0].job_title, false) + getTextField("Address 1", 'addy1', userData[0].address1, true) + getTextField('Address 2', 'addy2', userData[0].address2, false) + 
             getTextField('City', 'city', userData[0].city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
             '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
@@ -634,14 +638,14 @@ function getPage(num) {
             + '</div>';
         }
         return '<div class="grid-container">' +
-        '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NA" selected>N/A</option><option value="1/2">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+        '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
         '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search_demo.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'
         +'</div>';
     }
     else if(num === 6) {
         if(isProject) {
             return '<div class="grid-container">' +
-            '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NA" selected>N/A</option><option value="1/2">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+            '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
             '<div class="grid-item"><label for="bindLoc">Binder Location</label></div><div class="grid-item"><input type="text" id="bindLoc" name="bindLoc"></div>' +
             '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search_demo.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div></div>';
         }
@@ -660,7 +664,7 @@ function getPage(num) {
         let formatCloseDate = new Date(userData[0].close_date)
         formatCloseDate = ((formatCloseDate.getMonth() + 1) + '-' + formatCloseDate.getDate() + '-' + formatCloseDate.getFullYear()).toString();
 
-        var shnOffice = (async () => {
+        var shnOffice = (() => {
             if(userData[0].SHNOffice_ID == 2) {
                 return "Klamath Falls";
             }
@@ -751,7 +755,7 @@ function getPage(num) {
         let formatCloseDate = new Date(userData[0].close_date)
         formatCloseDate = ((formatCloseDate.getMonth() + 1) + '-' + formatCloseDate.getDate() + '-' + formatCloseDate.getFullYear()).toString();
 
-        var shnOffice = (async () => {
+        var shnOffice = (() => {
             if(userData[0].SHNOffice_ID == 2) {
                 return "Klamath Falls";
             }
@@ -1313,7 +1317,8 @@ function saveChoices(currPage) {
         if(isProject && !isBillingGroup) {
             userData[0].contract_ID = document.getElementById('contactType').value;
             contactTypeName = document.getElementById('contactType').options[document.getElementById("contactType").selectedIndex].text;
-            userData[0].invoice_format = document.getElementById('invoiceFormat').options[document.getElementById("invoiceFormat").selectedIndex].text;
+            userData[0].invoice_format = document.getElementById("invoiceFormat").value;
+            invoiceName = document.getElementById('invoiceFormat').options[document.getElementById("invoiceFormat").selectedIndex].text;
             userData[0].client_contract_PO = document.getElementById('PO').value.trim();
             userData[0].outside_markup = document.getElementById('OutMark').value;
             // outsideMarkupName = document.getElementById('OutMark').options[document.getElementById("OutMark").selectedIndex].text;
@@ -1335,8 +1340,8 @@ function saveChoices(currPage) {
             userData[0].last_name = document.getElementById('cLast').value.trim();
             userData[0].relationship = document.getElementById('relation').value;
             userData[0].title = document.getElementById('title').value.trim();
-            userData[0].address1 = document.getElementById('ad1').value.trim();
-            userData[0].address2 = document.getElementById('ad2').value.trim();
+            userData[0].address1 = document.getElementById('addy1').value.trim();
+            userData[0].address2 = document.getElementById('addy2').value.trim();
             userData[0].city = document.getElementById('city').value.trim();
             userData[0].state = document.getElementById('state').value;
             userData[0].zip = document.getElementById('zip').value.trim();
@@ -1371,8 +1376,8 @@ function saveChoices(currPage) {
             userData[0].last_name = document.getElementById('cLast').value.trim();
             userData[0].relationship = document.getElementById('relation').value;
             userData[0].title = document.getElementById('title').value.trim();
-            userData[0].address1 = document.getElementById('ad1').value.trim();
-            userData[0].address2 = document.getElementById('ad2').value.trim();
+            userData[0].address1 = document.getElementById('addy1').value.trim();
+            userData[0].address2 = document.getElementById('addy2').value.trim();
             userData[0].city = document.getElementById('city').value.trim();
             userData[0].state = document.getElementById('state').value;
             userData[0].zip = document.getElementById('zip').value.trim();
