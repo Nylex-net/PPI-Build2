@@ -31,8 +31,10 @@ let activeUser = '';
 async function starter(res) {
     activeUser = res.account.name;
     userData = await fetchInfo();
-    openHouse = userData[0].mailing_list != null?(userData[0].mailing_list.includes("Open")?true:false):false;
-    xmas = userData[0].mailing_list != null?(userData[0].mailing_list.includes("mas")?true:false):false;
+    if(isProject && !isBillingGroup) {
+        openHouse = userData[0].mailing_list != null?(userData[0].mailing_list.includes("Open")?true:false):false;
+        xmas = userData[0].mailing_list != null?(userData[0].mailing_list.includes("mas")?true:false):false;
+    }
     document.getElementsByTagName("h1")[0].innerHTML = (isProject)?((isBillingGroup)?userData[0].group_number + ' in ' + userData[0].project_id:userData[0].project_id):userData[0].promo_id;
     for(let id of userData) {
         if(!Projkeywords.includes(id.keyword_id)) {
@@ -42,6 +44,8 @@ async function starter(res) {
             teamMem.push(id.member_id);
         }
     }
+    userData[0].start_date = userData[0].start_date.substring(0, userData[0].start_date.indexOf('T'));
+    userData[0].close_date = userData[0].close_date.substring(0, userData[0].close_date.indexOf('T'))
     manager(1);
 }
 
@@ -72,8 +76,8 @@ function manager(currPage) {
             document.getElementById('newBillName').value = userData[0].group_name;
             document.getElementById('newBillNum').value = userData[0].group_number;
         }
-        document.getElementById('start').setAttribute("value", userData[0].start_date.substring(0, userData[0].start_date.indexOf('T')));
-        document.getElementById('end').setAttribute("value", userData[0].close_date.substring(0, userData[0].close_date.indexOf('T')));
+        document.getElementById('start').setAttribute("value", userData[0].start_date);
+        document.getElementById('end').setAttribute("value", userData[0].close_date);
         if(!isProject) {
             document.getElementById('promo-type').value = (userData[0].promo_type == null || userData[0].promo_type == undefined)?'':userData[0].promo_type;
         }
@@ -99,10 +103,10 @@ function manager(currPage) {
         getUsers(2);
     }
     else if(currPage === 3) {
-        document.getElementById("office").selectedIndex = userData[0].SHNOffice_ID;
         document.getElementById('service').value = userData[0].service_area;
         
         if(isProject && !isBillingGroup) {
+            document.getElementById("office").selectedIndex = userData[0].SHNOffice_ID;
             document.getElementById('contract').value = userData[0].total_contract;
             document.getElementById('yesAgreement').checked = (userData[0].exempt_agreement == 1)?true:false;
             if(document.getElementById('yesAgreement').checked) {
@@ -140,15 +144,19 @@ function manager(currPage) {
                 document.getElementById('retainer').value = userData[0].retainer;
             }
             document.getElementById('contactType').value = userData[0].contract_ID;
-            document.getElementById('invoiceFormat').value = userData[0].invoice_format;
+            document.getElementById('invoiceFormat').value = (userData[0].invoice_format == null?"B":userData[0].invoice_format);
             document.getElementById('PO').value = userData[0].client_contract_PO;
             document.getElementById('OutMark').value = userData[0].outside_markup;
             if(userData[0].prevailing_wage != 0) {
-                document.getElementById('wage').value = 'Yes';
-                agency();
-                document.getElementById('agency').value = userData[0].prevailing_wage;
+                document.getElementById('wage').value = '1';
+                agentBruh();
+                document.getElementById('agency').value = userData[0].agency_name;
             }
             document.getElementById('billInst').value = userData[0].special_billing_instructions;
+            document.getElementById('describe').value = userData[0].description_service;
+        }
+        else {
+            document.getElementById("office").selectedIndex = userData[0].SHNOffice_ID;
         }
         getUsers(3);
     }
@@ -160,7 +168,7 @@ function manager(currPage) {
             document.getElementById('OutMark').value = userData[0].outside_markup;
             if(userData[0].prevailing_wage != 0) {
                 document.getElementById('wage').value = 'Yes';
-                agency();
+                agentBruh();
                 document.getElementById('agency').value = userData[0].prevailing_wage;
             }
             document.getElementById('billInst').value = userData[0].special_billing_instructions;
@@ -258,8 +266,8 @@ function expandWhy() {
  * @returns nothing.
  */
 
-function agency() {
-    if(document.getElementById('wage').value == "Yes") {
+function agentBruh() {
+    if(document.getElementById('wage').value == 1) {
         document.getElementById('agent').innerHTML = '<br><label for="agentcy">Name of Agency:<span class="astrick">*</span></label><br><input type="text" id="agency" name="agency" title="Agency">';
     }
     else {
@@ -475,7 +483,7 @@ function getPage(num) {
             getTextField('Client Contract/PO #', 'PO', userData[0].client_contract_PO, false) +
             '<div class="grid-item"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-            '<div class="grid-item"><label for="wage">Prevailing Wage</label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
+            '<div class="grid-item"><label for="wage">Prevailing Wage</label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agentBruh();" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
             '<div class="grid-item"><label for="billInst">Special Billing Instructions</label></div><div class="grid-item"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
             '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
             '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search_demo.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>' +
@@ -498,7 +506,7 @@ function getPage(num) {
             getTextField('Client Contract/PO #', 'PO', userData[0].client_contract_PO, true) +
             '<div class="grid-item"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-            '<div class="grid-item"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onclick="agency();" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
+            '<div class="grid-item"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onclick="agentBruh();" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
             '<div class="grid-item"><label for="billInst">Special Billing Instructions</label></div><div class="grid-item"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
             '<div class="grid-item"><label for="seeAlso">See Also</label></div><div class="grid-item"><textarea id="seeAlso" name="seeAlso" rows="5" cols="50" maxlength="200"></textarea></div>'+
             '<div class="grid-item"><label for="autocad">AutoCAD Job</label></div><div class="grid-item"><input type="radio" name="autocad" id="yesAuto" value="1" title="autocad"> Yes<input type="radio" name="autocad" value="0" title="autocad" checked> No </div>'+
@@ -545,11 +553,7 @@ function getPage(num) {
             }
 
             let breakedDesc = userData[0].description_service.replaceAll('\n', '<br>');
-            let myAmount = retainAmnt;
-            if(userData[0].retainer != 'Enter Amount') {
-                myAmount = 'None';
-            }
-            let waiver = (userData[0].retainer == 'Waived by X') ? 'Waived by ' + senior:retainer;
+            let waiver = ((userData[0].retainer == 'Waived by X') ? 'Waived by ' + userData[0].waived_by:(userData[0].retainer == 'Enter Amount'?"$"+userData[0].retainer_paid:userData[0].retainer));
 
             return '<div class="grid-container">' +
             '<div class="grid-item">Billing Name' + '</div>'
@@ -557,7 +561,7 @@ function getPage(num) {
             '<div class="grid-item">Billing Number' + '</div>'
             + '<div class="grid-item">' + userData[0].group_number + '</div>'+
             '<div class="grid-item">Project Manager' + '</div>'
-            + '<div class="grid-item">' + userData[0].staff_last + ', ' + userData[0].staff_first + '</div>'+
+            + '<div class="grid-item">' + userData[0].last + ', ' + userData[0].first + '</div>'+
             '<div class="grid-item">Billing Group Manager' + '</div>'
             + '<div class="grid-item">' + mgrName + '</div>'+
             '<div class="grid-item">QAQC Person' + '</div>'
@@ -590,16 +594,14 @@ function getPage(num) {
             + '<div class="grid-item">' + invoiceName + '</div>'+ // FIX VARIABLE
             '<div class="grid-item">Retainer' + '</div>'
             + '<div class="grid-item">' + waiver + '</div>'+
-            '<div class="grid-item">Retainer amount' + '</div>'
-            + '<div class="grid-item">' + myAmount + '</div>'+
             '<div class="grid-item">Client Contract/PO #' + '</div>'
             + '<div class="grid-item">' + userData[0].client_contract_PO + '</div>'+
             '<div class="grid-item">Outside Markup' + '</div>'
             + '<div class="grid-item">' + userData[0].outside_markup + '</div>'+
             '<div class="grid-item">Prevailige Wage' + '</div>'
-            + '<div class="grid-item">' + (prevWage == 1?"Yes":"No") + '</div>'+
+            + '<div class="grid-item">' + (userData[0].prevailing_wage == 1?"Yes":"No") + '</div>'+
             '<div class="grid-item">Agency' + '</div>'
-            + '<div class="grid-item">' + (prevWage == 1?agency_name:"N/A") + '</div>'+
+            + '<div class="grid-item">' + (userData[0].prevailing_wage == 1?userData[0].agency_name:"N/A") + '</div>'+
             '<div class="grid-item">Special Billing Instructions' + '</div>'
             + '<div class="grid-item">' + userData[0].special_billing_instructions + '</div>'+
             '<div class="grid-item">AutoCAD Job' + '</div>'
@@ -607,7 +609,7 @@ function getPage(num) {
             '<div class="grid-item">GIS Job' + '</div>'
             + '<div class="grid-item">' + gisName + '</div>'+
             '<div class="grid-item">Binder Size' + '</div>'
-            + '<div class="grid-item">' + (binderSize == "NULL"?"N/A":binderSize) + '</div>'+
+            + '<div class="grid-item">' + (userData[0].binder_size == "NULL"?"N/A":userData[0].binder_size) + '</div>'+
             '<div class="grid-item">Description of Services' + '</div>'
             + '<div class="grid-item">' + breakedDesc + '</div>'+
             '</div>';
@@ -1230,9 +1232,17 @@ function saveChoices(currPage) {
     if(currPage == 2) {
         document.getElementById('search').value = '';
         searchKeywords(document.getElementById('search'));
-        userData[0].ProjectLoation = document.getElementById('LocDesc').value.trim();
-        userData[0].Lattitude = document.getElementById('lat').value.trim();
-        userData[0].Longitude = document.getElementById('long').value.trim();
+        if(isProject && isBillingGroup) {
+            userData[0].group_location = document.getElementById('LocDesc').value.trim();
+        }
+        else if(isProject) {
+            userData[0].project_location = document.getElementById('LocDesc').value.trim();
+        }
+        else {
+            userData[0].promo_location = document.getElementById('LocDesc').value.trim();
+        }
+        userData[0].latitude = document.getElementById('lat').value.trim();
+        userData[0].longitude = document.getElementById('long').value.trim();
         let prevkeys = document.querySelectorAll('input[name="key"]:checked');
         Projkeywords = [];
         keyNames = [];
@@ -1260,7 +1270,7 @@ function saveChoices(currPage) {
 
         if(isProject) {
             userData[0].total_contract = document.getElementById('contract').value;
-            userData[0].retainer = (document.getElementById('retainer').value == "Enter Amount")?document.getElementById('newAmount').value:(document.getElementById('retainer').value.includes("Waived by"))?"Waived by X":document.getElementById('retainer').value;
+            userData[0].retainer = document.getElementById('retainer').value;
             userData[0].retainer_paid = (document.getElementById('retainer').value == "Enter Amount")?document.getElementById('newAmount').value:null;
             userData[0].waived_by = (document.getElementById('retainer').value.includes("Waived by"))?document.getElementById('personnel').value:null;
             if(!isBillingGroup) {
@@ -1275,12 +1285,15 @@ function saveChoices(currPage) {
             else {
                 userData[0].contract_ID = document.getElementById('contactType').value;
                 contactTypeName = document.getElementById('contactType').options[document.getElementById("contactType").selectedIndex].text;
-                userData[0].invoice_format = document.getElementById('invoiceFormat').options[document.getElementById("invoiceFormat").selectedIndex].text;
+                userData[0].invoice_format = document.getElementById('invoiceFormat').value;
+                invoiceName = document.getElementById('invoiceFormat').options[document.getElementById("invoiceFormat").selectedIndex].text;
                 userData[0].client_contract_PO = document.getElementById('PO').value.trim();
                 userData[0].outside_markup = document.getElementById('OutMark').value;
                 userData[0].prevailing_wage = document.getElementById('wage').value;
-                userData[0].agency = (document.getElementById('wage').value == '1')?document.getElementById('agency').value:"NULL";
+                userData[0].agency_name = (document.getElementById('wage').value == '1')?document.getElementById('agency').value:"NULL";
                 userData[0].special_billing_instructions = (document.getElementById('billInst').value.trim() == ''?"NULL":document.getElementById('billInst').value.trim());
+                userData[0].binder_size = document.getElementById('binder').value;
+                userData[0].description_service = ((typeof document.getElementById('describe').value == "string")?document.getElementById('describe').value.trim():document.getElementById('describe').value);
             }
             // if(document.getElementById('retainer').value == 'Enter Amount') {
             //     userData[0].retainer_paid = document.getElementById('newAmount').value;
@@ -1288,6 +1301,9 @@ function saveChoices(currPage) {
             // else if(userData[0].RetainerPaid == 'Waived by X') {
             //     userData[0].RetainerPaid = "Waived by " + document.getElementById('personnel').value.trim();
             // }
+        }
+        else {
+            userData[0].SHNOffice_ID = document.getElementById("office").value;
         }
         
     }
@@ -1302,7 +1318,7 @@ function saveChoices(currPage) {
             userData[0].outside_markup = document.getElementById('OutMark').value;
             // outsideMarkupName = document.getElementById('OutMark').options[document.getElementById("OutMark").selectedIndex].text;
             userData[0].prevailing_wage = document.getElementById('wage').value;
-            userData[0].agency = (document.getElementById('wage').value == '1')?document.getElementById('agency').value:"NULL";
+            userData[0].agency_name = (document.getElementById('wage').value == '1')?document.getElementById('agency').value:"NULL";
             userData[0].special_billing_instructions = document.getElementById('billInst').value.trim();
             userData[0].see_also = document.getElementById('seeAlso').value.trim();
             userData[0].autoCAD = (document.getElementById('yesAuto').checked)?1:0;
@@ -1476,7 +1492,7 @@ function reqField(currPage) {
 
         // Test against user selections and fields to determine if values are valid.
 
-        if(userData[0].project_location == '' || userData[0].latitude == '' || userData[0].longitude == '' || Projkeywords.length + otherKeys.length <= 0) {
+        if(userData[0].project_location == '' || userData[0].promo_location == '' || userData[0].group_location == ''|| userData[0].latitude == '' || userData[0].longitude == '' || Projkeywords.length + otherKeys.length <= 0) {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
@@ -1515,22 +1531,27 @@ function reqField(currPage) {
         
         // Test the values of the other variables.
 
-        if(userData[0].SHNOffice_ID == -1 || userData[0].SHNOffice_ID == null || userData[0].SHNOffice_ID == undefined || userData[0].SHNOffice_ID == '' || userData[0].service_area == 0 || userData[0].service_area == undefined || userData[0].service_area == null || userData[0].profile_code_id == -1 || userData[0].profile_code_id == undefined || userData[0].profile_code_id == null) {
+        if(userData[0].service_area == 0 || userData[0].service_area == undefined || userData[0].service_area == null || userData[0].profile_code_id == -1 || userData[0].profile_code_id == undefined || userData[0].profile_code_id == null) {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
         if(isProject) {
             // If user selected "Yes" on the servide agreement field, then we test if the user also inputted text into the explanation field.
 
-            if(ServAgree && document.getElementById('bruh').value.trim() == '') { // If user didn't input anything, yell at them and return false.
-                alert("Please fill all required fields, and/or fix invalid fields.");
-                return false;
+            if(!isBillingGroup) {
+                if(userData[0].SHNOffice_ID == -1 || userData[0].SHNOffice_ID == null || userData[0].SHNOffice_ID == undefined || userData[0].SHNOffice_ID == '') {
+                    alert("Please select an office.");
+                    return false;
+                }
+                if(ServAgree && document.getElementById('bruh').value.trim() == '') { // If user didn't input anything, yell at them and return false.
+                    alert("Please fill all required fields, and/or fix invalid fields.");
+                    return false;
+                }
+                else if (!ServAgree) { // If "No" was selected, we empty our variable.
+                    Explanation = '';
+                    userData[0].why = null;
+                }
             }
-            else if (!ServAgree) { // If "No" was selected, we empty our variable.
-                Explanation = '';
-                userData[0].why = null;
-            }
-
             if(userData[0].total_contract == '' || userData[0].total_contract < 0 || document.getElementById('retainer').value == 0 ) {
                 alert("Please fill all required fields, and/or fix invalid fields.");
                 return false;
@@ -1552,6 +1573,32 @@ function reqField(currPage) {
             }
             else if(document.getElementById('retainer').value == 'Waived by X' && document.getElementById('personnel').value.trim() == '') {
                 alert("Please enter personnel name.");
+                return false;
+            }
+
+            // For checking billing groups.
+            if(isBillingGroup) {
+                if(userData[0].contract_ID == 0 || userData[0].outside_markup == '' || userData[0].outside_markup < 0 || userData[0].outside_markup > 100) {
+                    alert("Please fix outside markup.");
+                    return false;
+                }
+                if(userData[0].prevailing_wage != 0 && userData[0].prevailing_wage.trim() == '') {
+                    alert("What's the prevailing wage?.");
+                    return false;
+                }
+                else if(userData[0].prevailing_wage == 1 && (userData[0].agency_name == null || userData[0].agency_name == "NULL")) {
+                    alert("Enter the agency name.");
+                    return false;
+                }
+                if(userData[0].description_service == null || userData[0].description_service == '') {
+                    alert("Fix your description of services.");
+                    return false;
+                }
+            }
+        }
+        else {
+            if(userData[0].SHNOffice_ID == -1 || userData[0].SHNOffice_ID == null || userData[0].SHNOffice_ID == undefined || userData[0].SHNOffice_ID == '') {
+                alert("Please select an office.");
                 return false;
             }
         }
