@@ -74,7 +74,6 @@ function manager(currPage) {
         }
         else {
             document.getElementById('newBillName').value = userData[0].group_name;
-            document.getElementById('newBillNum').value = userData[0].group_number;
         }
         document.getElementById('start').setAttribute("value", userData[0].start_date);
         document.getElementById('end').setAttribute("value", userData[0].close_date);
@@ -423,8 +422,6 @@ function getPage(num) {
             return '<div class="grid-container">'+
             '<div class="grid-item"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><input type="text" id="newBillName" maxlength="255" required/></div>'+
-            '<div class="grid-item"><label for="groupNumb">Billing Group Number<br>(Only enter the 3 digits)<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="text" id="newBillNum" maxlength="3" required/></div>'+
             '<div class="grid-item"><label for="autocad">AutoCAD Job</label></div><div class="grid-item"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
             '<div class="grid-item"><label for="gis">GIS Job</label></div><div class="grid-item"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div>'+
             '<div class="grid-item"><label for="projMgr">Group Manager<span class="astrick">*</span></label></div>'+
@@ -1425,7 +1422,6 @@ function reqField(currPage) {
         }
         else if(isBillingGroup) {
             userData[0].group_name = document.getElementById("newBillName").value;
-            userData[0].group_number = document.getElementById("newBillNum").value;
             userData[0].manager_id = document.getElementById("projMgr").value;
         }
         else {
@@ -1443,10 +1439,6 @@ function reqField(currPage) {
         let mySelects = document.querySelectorAll('input[name="Team"]:checked');
 
         // Test variables for illegal inputs.
-        if(isBillingGroup && (!isNum(userData[0].group_number[0]) || !isNum(userData[0].group_number[1]) || !isNum(userData[0].group_number[2]))) {
-            alert("Invalid Billing Group number.");
-            return false;
-        }
         if(isBillingGroup && userData[0].group_name.trim() == '') {
             alert("Invalid Billing group name.");
             return false;
@@ -1845,7 +1837,7 @@ function preparePost() {
     // userData[0].why = Explanation;
     userData[0].ProjectMgrName = mgrName;
     userData[0].QAQCPersonName = qaqcName;
-    userData[0].relationship = clientRelation;
+    userData[0].relationship = (clientRelation == ''?'NULL':clientRelation);
     // userData[0].client_contract_PO = contractPONum;
     // userData[0].outside_markup = outsideMarkup;
     userData[0].Project_Specifications = (userData[0].Project_Specifications == -1)?-1:0;

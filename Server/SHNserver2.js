@@ -410,9 +410,10 @@ app.post('/keyName', jsonParser, (req, res) => {
 app.post('/updater', jsonParser, (req, res) => {
     // Build and find directory of the original project/promo.
     // let dir = 'P:';
-    let isProject = (req.body.Projectid != undefined && req.body.Projectid != null && req.body.Projectid != '')?true:false;
-    const num = (req.body.Projectid != undefined && req.body.Projectid != null && req.body.Projectid != '')?req.body.Projectid:req.body.PromoId;
-    let dir = PATH + ((isProject)?getDir(req.body.Projectid[0]):getDir(req.body.PromoId[0]));
+    let isProject = (req.body.isWhat != 1?true:false);
+    let isBillingGroup = (req.body.isWhat = -1?true:false);
+    const num = (isProject)?req.body.project_id:req.body.promo_id;
+    let dir = PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
     dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
     dir += (isProject)?'':'/Promos';
     if(!fs.exists(dir)) {
@@ -441,14 +442,82 @@ app.post('/updater', jsonParser, (req, res) => {
             }
         });
     }
+    else if(isBillingGroup) {
+        dir += '/' +  req.body.group_number;
+    }
 
-    // Build the SQL statement.
+    // Build the SQL statement by settling similarities and differences in column names.
 
-    const query = 'UPDATE Projects SET project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', project_manager_ID = ' + req.body.project_manager_ID+ ', AlternateTitle = \''+ req.body.AlternateTitle +'\', QA_QCPerson = \'' + req.body.QA_QCPerson.replace(/'/gi, "''") + '\', TeamMembers = \''+ req.body.TeamMembers.replace(/'/gi, "''") +'\', StartDate = \'' + req.body.StartDate.replace(/'/gi, "''") + '\', CloseDate = \''+ req.body.CloseDate.replace(/'/gi, "''") +'\', ProjectLoation = \''+ req.body.ProjectLoation.replace(/'/gi, "''") +'\', ' + ((!isNaN(req.body.Lattitude) && !isNaN(req.body.Longitude))?'Lattitude = '+ req.body.Lattitude + ', Longitude = '+ req.body.Longitude + ', ':'')+
-    'ProjectKeywords = \''+ req.body.ProjectKeywords.replace(/'/gi, "''") +'\', SHNOffice = \'' + req.body.SHNOffice.replace(/'/gi, "''") + '\', ToatlContract = \'' + req.body.ToatlContract.replace(/'/gi, "''") + '\', RetainerPaid = \'' + req.body.RetainerPaid.replace(/'/gi, "''") + '\', ProfileCode = \'' + req.body.ProfileCode.replace(/'/gi, "''") + '\', ServiceArea = \''+ req.body.ServiceArea.replace(/'/gi, "''") + '\', ContractType = \'' + req.body.ContractType.replace(/'/gi, "''") + '\', InvoiceFormat = \'' + req.body.InvoiceFormat.replace(/'/gi, "''") + '\', PREVAILING_WAGE = \''+ req.body.PREVAILING_WAGE.replace(/'/gi, "''") +'\', OutsideMarkup = \'' + req.body.OutsideMarkup + '\', SpecialBillingInstructins = \'' + req.body.SpecialBillingInstructins.replace(/'/gi, "''") + '\', SEEALSO = \'' + req.body.SEEALSO.replace(/'/gi, "''") + '\', Project_Specifications = ' + req.body.Project_Specifications +
-    ', AutoCAD_Project = ' + req.body.AutoCAD_Project + ', GIS_Project = ' + req.body.GIS_Project + ', ClientCompany1 = \'' + req.body.ClientCompany1.replace(/'/gi, "''") + '\', OfficeMailingLists1 = \'' + req.body.OfficeMailingLists1.replace(/'/gi, "''") + '\','+
-    'ClientAbbrev1 = \'' + req.body.ClientAbbrev1.replace(/'/gi, "''") + '\', ClientContactFirstName1 = \'' + req.body.ClientContactFirstName1.replace(/'/gi, "''") + '\', ClientContactLastName1 = \'' + req.body.ClientContactLastName1.replace(/'/gi, "''") + '\', Title1 = \'' + req.body.Title1.replace(/'/gi, "''") + '\', Address1_1 = \'' + req.body.Address1_1.replace(/'/gi, "''") + '\', Address2_1 = \'' + req.body.Address2_1.replace(/'/gi, "''") + '\', City1 = \'' + req.body.City1.replace(/'/gi, "''") + '\', State1 = \'' + req.body.State1.replace(/'/gi, "''") + '\', Zip1 = \'' + req.body.Zip1.replace(/'/gi, "''") + '\', PhoneW1 = \''+ req.body.PhoneW1.replace(/'/gi, "''") + '\', PhoneH1 = \'' + req.body.PhoneH1.replace(/'/gi, "''") + '\', Cell1 = \'' + req.body.Cell1.replace(/'/gi, "''") + '\', Fax1 = \'' + req.body.Fax1.replace(/'/gi, "''") + '\', Email1 = \'' + req.body.Email1.replace(/'/gi, "''") + '\', '+
-    'BinderSize = \'' + req.body.BinderSize.replace(/'/gi, "''") + '\', BinderLocation = \'' + req.body.BinderLocation.replace(/'/gi, "''") + '\', DescriptionService = \''+  req.body.DescriptionService.replace(/'/gi, "''") + '\', DTStamp = \'' + req.body.CreatedOn + '\' WHERE ID = ' + req.body.ID + ');';
+    let query = 'UPDATE '+(req.body.isWhat == 0?'Projects':(req.body.isWhat == 1?'Promos':'BillingGroups')) + ' SET ';
+    if(isProject && !isBillingGroup) { // Is Project.
+        query += 'project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', ';
+        query += 'project_manager_ID = '+ req.body.manager_id + ', ';
+        query += 'project_location = \''+ req.body.promo_title.replace(/'/gi, "''") + '\', ';
+        query += 'closed = ' + req.body.closed + ', ';
+        query += 'SHNOffice_ID = ' + req.body.SHNOffice + ', ';
+        query += 'total_contract = ' + req.body.total_contract + ', ';
+        query += 'exempt_agreement = ' + req.body.exempt_agreement + ', ';
+        query += 'why = \'' + req.body.why.replace(/'/gi, "''") + '\', ';
+        query += 'retainer = \'' + req.body.retainer.replace(/'/gi, "''") + '\', ';
+        query += 'retainer_paid = ' + req.body.retainer_paid + ', ';
+        query += 'waived_by = \'' + req.body.waived_by.replace(/'/gi, "''") + '\', ';
+        query += 'contract_ID = ' + req.body.contract_ID + ', ';
+        query += 'invoice_format = \'' + req.body.invoice_format.replace(/'/gi, "''") + '\', ';
+        query += 'client_contract_PO = \'' + req.body.client_contract_PO.replace(/'/gi, "''") + '\', ';
+        query += 'outside_markup = ' + req.body.outside_markup + ', ';
+        query += 'prevailing_wage = ' + req.body.prevailing_wage + ', ';
+        query += 'agency_name = \'' + req.body.agency_name.replace(/'/gi, "''") + '\', ';
+        query += 'special_billing_instructions = \'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\', ';
+        query += 'see_also = \'' + req.body.see_also.replace(/'/gi, "''") + '\', ';
+        query += 'autoCAD = ' + req.body.autoCAD + ', ';
+        query += 'GIS = ' + req.body.GIS + ', ';
+        query += 'project_specifications = ' + req.body.project_specifications + ', ';
+        // LEFT OFF AT INSERTING CLIENT INFO
+        query += 'binder_location = \'' + req.body.binder_location.replace(/'/gi, "''") + '\', ';
+    }
+    else if(isBillingGroup) { // Is Billing group
+        query += 'group_number = \''+ req.body.group_number.replace(/'/gi, "''") + '\', ';
+        query += 'group_name = \''+ req.body.group_name.replace(/'/gi, "''") + '\', ';
+        query += 'manager_id = '+ req.body.manager_id + ', ';
+        query += 'group_location = \''+ req.body.promo_title.replace(/'/gi, "''") + '\', ';
+        query += 'total_contract = ' + req.body.total_contract + ', ';
+        query += 'retainer = \'' + req.body.retainer.replace(/'/gi, "''") + '\', ';
+        query += 'retainer_paid = ' + req.body.retainer_paid + ', ';
+        query += 'waived_by = \'' + req.body.waived_by.replace(/'/gi, "''") + '\', ';
+        query += 'contract_ID = ' + req.body.contract_ID + ', ';
+        query += 'invoice_format = \'' + req.body.invoice_format + '\', ';
+        query += 'client_contract_PO = \'' + req.body.client_contract_PO + '\', ';
+        query += 'outside_markup = ' + req.body.outside_markup + ', ';
+        query += 'prevailing_wage = ' + req.body.prevailing_wage + ', ';
+        query += 'agency_name = \'' + req.body.agency_name + '\', ';
+        query += 'special_billing_instructions = \'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\', ';
+        query += 'autoCAD = ' + req.body.autoCAD + ', ';
+        query += 'GIS = ' + req.body.GIS + ', ';
+    }
+    else { // Is Promo
+        query += 'promo_type = \''+ req.body.promo_type.replace(/'/gi, "''") + '\', ';
+        query += 'promo_title = \''+ req.body.promo_title.replace(/'/gi, "''") + '\', ';
+        query += 'manager_id = '+ req.body.manager_id + ', ';
+        query += 'promo_location = \''+ req.body.promo_title.replace(/'/gi, "''") + '\', ';
+        query += 'closed = ' + req.body.closed + ', ';
+        query += 'SHNOffice_ID = ' + req.body.SHNOffice + ', ';
+        // LEFT OFF AT INSERTING CLIENT INFO
+    }
+    query += 'qaqc_person_ID = '+ req.body.qaqc_person_ID + ', ';
+    query += 'created = \'' + req.body.created.replace(/'/gi, "''") + '\', ';
+    query += 'start_date = \'' + req.body.start_date + '\', ';
+    query += 'close_date = \'' + req.body.close_date + '\', ';
+    query += 'latitude = ' + req.body.latitude + ', ';
+    query += 'longitude = ' + req.body.longitude + ', ';
+    query += 'service_area = \'' + req.body.service_area.replace(/'/gi, "''") + '\', ';
+    query += 'profile_code_id = ' + req.body.profile_code_id + ', ';
+    query += 'binder_size = ' + req.body.binder_size + ', ';
+    query += 'description_service = \'' + req.body.description_service.replace(/'/gi, "''") + '\', ';
+    // 'project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', project_manager_ID = ' + req.body.project_manager_ID+ ', AlternateTitle = \''+ req.body.AlternateTitle +'\', QA_QCPerson = \'' + req.body.QA_QCPerson.replace(/'/gi, "''") + '\', TeamMembers = \''+ req.body.TeamMembers.replace(/'/gi, "''") +'\', StartDate = \'' + req.body.StartDate.replace(/'/gi, "''") + '\', CloseDate = \''+ req.body.CloseDate.replace(/'/gi, "''") +'\', ProjectLoation = \''+ req.body.ProjectLoation.replace(/'/gi, "''") +'\', ' + ((!isNaN(req.body.Lattitude) && !isNaN(req.body.Longitude))?'Lattitude = '+ req.body.Lattitude + ', Longitude = '+ req.body.Longitude + ', ':'')+
+    // 'ProjectKeywords = \''+ req.body.ProjectKeywords.replace(/'/gi, "''") +'\', SHNOffice = \'' + req.body.SHNOffice.replace(/'/gi, "''") + '\', ToatlContract = \'' + req.body.ToatlContract.replace(/'/gi, "''") + '\', RetainerPaid = \'' + req.body.RetainerPaid.replace(/'/gi, "''") + '\', ProfileCode = \'' + req.body.ProfileCode.replace(/'/gi, "''") + '\', ServiceArea = \''+ req.body.ServiceArea.replace(/'/gi, "''") + '\', ContractType = \'' + req.body.ContractType.replace(/'/gi, "''") + '\', InvoiceFormat = \'' + req.body.InvoiceFormat.replace(/'/gi, "''") + '\', PREVAILING_WAGE = \''+ req.body.PREVAILING_WAGE.replace(/'/gi, "''") +'\', OutsideMarkup = \'' + req.body.OutsideMarkup + '\', SpecialBillingInstructins = \'' + req.body.SpecialBillingInstructins.replace(/'/gi, "''") + '\', SEEALSO = \'' + req.body.SEEALSO.replace(/'/gi, "''") + '\', Project_Specifications = ' + req.body.Project_Specifications +
+    // ', AutoCAD_Project = ' + req.body.AutoCAD_Project + ', GIS_Project = ' + req.body.GIS_Project + ', ClientCompany1 = \'' + req.body.ClientCompany1.replace(/'/gi, "''") + '\', OfficeMailingLists1 = \'' + req.body.OfficeMailingLists1.replace(/'/gi, "''") + '\','+
+    // 'ClientAbbrev1 = \'' + req.body.ClientAbbrev1.replace(/'/gi, "''") + '\', ClientContactFirstName1 = \'' + req.body.ClientContactFirstName1.replace(/'/gi, "''") + '\', ClientContactLastName1 = \'' + req.body.ClientContactLastName1.replace(/'/gi, "''") + '\', Title1 = \'' + req.body.Title1.replace(/'/gi, "''") + '\', Address1_1 = \'' + req.body.Address1_1.replace(/'/gi, "''") + '\', Address2_1 = \'' + req.body.Address2_1.replace(/'/gi, "''") + '\', City1 = \'' + req.body.City1.replace(/'/gi, "''") + '\', State1 = \'' + req.body.State1.replace(/'/gi, "''") + '\', Zip1 = \'' + req.body.Zip1.replace(/'/gi, "''") + '\', PhoneW1 = \''+ req.body.PhoneW1.replace(/'/gi, "''") + '\', PhoneH1 = \'' + req.body.PhoneH1.replace(/'/gi, "''") + '\', Cell1 = \'' + req.body.Cell1.replace(/'/gi, "''") + '\', Fax1 = \'' + req.body.Fax1.replace(/'/gi, "''") + '\', Email1 = \'' + req.body.Email1.replace(/'/gi, "''") + '\', '+
+    // 'BinderSize = \'' + req.body.BinderSize.replace(/'/gi, "''") + '\', BinderLocation = \'' + req.body.BinderLocation.replace(/'/gi, "''") + '\', DescriptionService = \''+  req.body.DescriptionService.replace(/'/gi, "''") + '\', DTStamp = \'' + req.body.CreatedOn + '\' WHERE ID = ' + req.body.ID + ');';
     // If latitude and/or longitude aren't numbers, don't bother inserting them into the database.
 
     // query += (req.body.Projectid != null && req.body.Projectid != undefined && req.body.Projectid.length >=6 && !isNaN(req.body.Projectid))?' WHERE Projectid = \'' + req.body.Projectid + '\'':' WHERE PromoId = \'' + req.body.PromoId + '\'';
