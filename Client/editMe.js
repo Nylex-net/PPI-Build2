@@ -37,10 +37,10 @@ async function starter(res) {
     }
     document.getElementsByTagName("h1")[0].innerHTML = (isProject)?((isBillingGroup)?userData[0].group_number + ' in ' + userData[0].project_id:userData[0].project_id):userData[0].promo_id;
     for(let id of userData) {
-        if(!Projkeywords.includes(id.keyword_id)) {
+        if(id.hasOwnProperty('keyword_id') && !Projkeywords.includes(id.keyword_id)) {
             Projkeywords.push(id.keyword_id);
         }
-        if(!teamMem.includes(id.member_id)) {
+        if(id.hasOwnProperty('member_id') && !teamMem.includes(id.member_id)) {
             teamMem.push(id.member_id);
         }
     }
@@ -1185,9 +1185,9 @@ function getUsers(num) {
 function fillAfterLoad(currPage) {
     if(currPage == 1) {
 
-    // Set previous or default values to fields.
-    document.getElementById("qaqc").value = userData[0].qaqc_person_ID;
-    document.getElementById("projMgr").value = (isProject && !isBillingGroup?userData[0].project_manager_ID:userData[0].manager_id);
+        // Set previous or default values to fields.
+        document.getElementById("qaqc").value = userData[0].qaqc_person_ID;
+        document.getElementById("projMgr").value = (isProject && !isBillingGroup?userData[0].project_manager_ID:userData[0].manager_id);
 
         // Select all checkbox inputs to test which ones need to be checked.
 
