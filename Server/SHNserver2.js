@@ -452,45 +452,61 @@ app.post('/updater', jsonParser, (req, res) => {
     if(isProject && !isBillingGroup) { // Is Project.
         query += 'project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', ';
         query += 'project_manager_ID = '+ req.body.manager_id + ', ';
-        query += 'project_location = \''+ req.body.promo_title.replace(/'/gi, "''") + '\', ';
-        query += 'closed = ' + req.body.closed + ', ';
+        query += 'project_location = \''+ req.body.project_location.replace(/'/gi, "''") + '\', ';
+        // query += 'closed = ' + req.body.closed + ', ';
         query += 'SHNOffice_ID = ' + req.body.SHNOffice + ', ';
-        query += 'total_contract = ' + req.body.total_contract + ', ';
+        query += 'total_contract = ' + (req.body.total_contract == 'NULL' || req.body.total_contract == null ? 'NULL':req.body.total_contract) + ', ';
         query += 'exempt_agreement = ' + req.body.exempt_agreement + ', ';
-        query += 'why = \'' + req.body.why.replace(/'/gi, "''") + '\', ';
+        query += 'why = ' + (req.body.why == 'NULL' || req.body.why == null?'NULL':req.body.why.replace(/'/gi, "''")) + ', ';
         query += 'retainer = \'' + req.body.retainer.replace(/'/gi, "''") + '\', ';
-        query += 'retainer_paid = ' + req.body.retainer_paid + ', ';
-        query += 'waived_by = \'' + req.body.waived_by.replace(/'/gi, "''") + '\', ';
+        query += 'retainer_paid = ' + (req.body.retainer_paid == 'NULL'|| req.body.retainer_paid == null ? 'NULL':req.body.retainer_paid) + ', ';
+        query += 'waived_by = '+ (req.body.waived_by == 'NULL' || req.body.waived_by == null ?'NULL':'\''+req.body.waived_by.replace(/'/gi, "''") + '\'') + ', ';
         query += 'contract_ID = ' + req.body.contract_ID + ', ';
-        query += 'invoice_format = \'' + req.body.invoice_format.replace(/'/gi, "''") + '\', ';
+        query += 'invoice_format = '+ (req.body.invoice_format == 'NULL' || req.body.invoice_format == null ? 'NULL': '\'' + req.body.invoice_format.replace(/'/gi, "''") + '\'') +', ';
         query += 'client_contract_PO = \'' + req.body.client_contract_PO.replace(/'/gi, "''") + '\', ';
         query += 'outside_markup = ' + req.body.outside_markup + ', ';
         query += 'prevailing_wage = ' + req.body.prevailing_wage + ', ';
-        query += 'agency_name = \'' + req.body.agency_name.replace(/'/gi, "''") + '\', ';
-        query += 'special_billing_instructions = \'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\', ';
-        query += 'see_also = \'' + req.body.see_also.replace(/'/gi, "''") + '\', ';
+        query += 'agency_name = ' + (req.body.agency_name == 'NULL' || req.body.agency_name == null ? 'NULL':'\'' + req.body.agency_name.replace(/'/gi, "''")) + '\'' + ', ';
+        query += 'special_billing_instructions = ' + (req.body.special_billing_instructions == 'NULL' || req.body.special_billing_instructions == null ? 'NULL':'\'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'see_also = ' + (eq.body.see_also == 'NULL' || eq.body.see_also == null ? 'NULL':'\'' + req.body.see_also.replace(/'/gi, "''") + '\'') + ', ';
         query += 'autoCAD = ' + req.body.autoCAD + ', ';
         query += 'GIS = ' + req.body.GIS + ', ';
         query += 'project_specifications = ' + req.body.project_specifications + ', ';
-        // LEFT OFF AT INSERTING CLIENT INFO
+        query += 'client_company = \'' + req.body.client_company.replace(/'/gi, "''") + '\', ';
+        query += 'client_abbreviation = ' + (req.body.client_abbreviation == 'NULL' || req.body.client_abbreviation == null?'NULL':'\'' + req.body.client_abbreviation.replace(/'/gi, "''")) + '\', ';
+        query += 'mailing_list = ' + (req.body.mailing_list == 'NULL' || req.body.mailing_list == null?'NULL':'\''+req.body.mailing_list.replace(/'/gi, "''")+'\'') + ', ';
+        query += 'first_name = \'' + req.body.first_name.replace(/'/gi, "''") + '\', ';
+        query += 'last_name = \'' + req.body.last_name.replace(/'/gi, "''") + '\', ';
+        query += 'relationship = ' + (req.body.relationship == 'NULL' || req.body.relationship == null?'NULL':'\'' + req.body.relationship.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'job_title = ' + (req.body.job_title == 'NULL' || req.body.job_title == null ? 'NULL':'\'' + req.body.job_title.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'address1 = \'' + req.body.address1.replace(/'/gi, "''") + '\', ';
+        query += 'address2 = ' + (req.body.address2 == 'NULL' || req.body.address2 == null ?'NULL':'\'' + req.body.address2.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'city = \'' + req.body.city.replace(/'/gi, "''") + '\', ';
+        query += 'state = \'' + req.body.state.replace(/'/gi, "''") + '\', ';
+        query += 'zip_code = \'' + req.body.zip_code.replace(/'/gi, "''") + '\', ';
+        query += 'work_phone = \'' + req.body.work_phone.replace(/'/gi, "''") + '\', ';
+        query += 'home_phone = ' + (req.body.home_phone == 'NULL' || req.body.home_phone == null ?'NULL':'\'' + req.body.home_phone.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'cell = ' + (req.body.cell == 'NULL' || req.body.cell == null ?'NULL':'\'' + req.body.cell.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'fax = ' + (req.body.fax == 'NULL' || req.body.fax == null?'NULL':'\'' + req.body.fax.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'email = \'' + req.body.email.replace(/'/gi, "''") + '\', ';
         query += 'binder_location = \'' + req.body.binder_location.replace(/'/gi, "''") + '\', ';
     }
     else if(isBillingGroup) { // Is Billing group
         query += 'group_number = \''+ req.body.group_number.replace(/'/gi, "''") + '\', ';
         query += 'group_name = \''+ req.body.group_name.replace(/'/gi, "''") + '\', ';
         query += 'manager_id = '+ req.body.manager_id + ', ';
-        query += 'group_location = \''+ req.body.promo_title.replace(/'/gi, "''") + '\', ';
-        query += 'total_contract = ' + req.body.total_contract + ', ';
+        query += 'group_location = \''+ req.body.group_location.replace(/'/gi, "''") + '\', ';
+        query += 'total_contract = ' + (req.body.total_contract == 'NULL' || req.body.total_contract == null ? 'NULL':req.body.total_contract) + ', ';
         query += 'retainer = \'' + req.body.retainer.replace(/'/gi, "''") + '\', ';
-        query += 'retainer_paid = ' + req.body.retainer_paid + ', ';
-        query += 'waived_by = \'' + req.body.waived_by.replace(/'/gi, "''") + '\', ';
+        query += 'retainer_paid = ' + (req.body.retainer_paid == 'NULL'|| req.body.retainer_paid == null ? 'NULL':req.body.retainer_paid) + ', ';
+        query += 'waived_by = '+ (req.body.waived_by == 'NULL' || req.body.waived_by == null ?'NULL':'\''+req.body.waived_by.replace(/'/gi, "''") + '\'') + ', ';
         query += 'contract_ID = ' + req.body.contract_ID + ', ';
-        query += 'invoice_format = \'' + req.body.invoice_format + '\', ';
+        query += 'invoice_format = '+ (req.body.invoice_format == 'NULL' || req.body.invoice_format == null ? 'NULL': '\'' + req.body.invoice_format.replace(/'/gi, "''") + '\'') +', ';
         query += 'client_contract_PO = \'' + req.body.client_contract_PO + '\', ';
         query += 'outside_markup = ' + req.body.outside_markup + ', ';
         query += 'prevailing_wage = ' + req.body.prevailing_wage + ', ';
-        query += 'agency_name = \'' + req.body.agency_name + '\', ';
-        query += 'special_billing_instructions = \'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\', ';
+        query += 'agency_name = ' + (req.body.agency_name == 'NULL' || req.body.agency_name == null ? 'NULL':'\'' + req.body.agency_name.replace(/'/gi, "''")) + '\'' + ', ';
+        query += 'special_billing_instructions = ' + (req.body.special_billing_instructions == 'NULL' || req.body.special_billing_instructions == null ? 'NULL':'\'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\'') + ', ';
         query += 'autoCAD = ' + req.body.autoCAD + ', ';
         query += 'GIS = ' + req.body.GIS + ', ';
     }
@@ -498,9 +514,25 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'promo_type = \''+ req.body.promo_type.replace(/'/gi, "''") + '\', ';
         query += 'promo_title = \''+ req.body.promo_title.replace(/'/gi, "''") + '\', ';
         query += 'manager_id = '+ req.body.manager_id + ', ';
-        query += 'promo_location = \''+ req.body.promo_title.replace(/'/gi, "''") + '\', ';
-        query += 'closed = ' + req.body.closed + ', ';
+        query += 'promo_location = \''+ req.body.promo_location.replace(/'/gi, "''") + '\', ';
+        // query += 'closed = ' + req.body.closed + ', ';
         query += 'SHNOffice_ID = ' + req.body.SHNOffice + ', ';
+        query += 'client_company = \'' + req.body.client_company.replace(/'/gi, "''") + '\', ';
+        query += 'client_abbreviation = ' + (req.body.client_abbreviation == 'NULL' || req.body.client_abbreviation == null?'NULL':'\'' + req.body.client_abbreviation.replace(/'/gi, "''")) + '\', ';
+        query += 'first_name = \'' + req.body.first_name.replace(/'/gi, "''") + '\', ';
+        query += 'last_name = \'' + req.body.last_name.replace(/'/gi, "''") + '\', ';
+        query += 'relationship = ' + (req.body.relationship == 'NULL' || req.body.relationship == null?'NULL':'\'' + req.body.relationship.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'job_title = ' + (req.body.job_title == 'NULL' || req.body.job_title == null ? 'NULL':'\'' + req.body.job_title.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'address1 = \'' + req.body.address1.replace(/'/gi, "''") + '\', ';
+        query += 'address2 = ' + (req.body.address2 == 'NULL' || req.body.address2 == null ?'NULL':'\'' + req.body.address2.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'city = \'' + req.body.city.replace(/'/gi, "''") + '\', ';
+        query += 'state = \'' + req.body.state.replace(/'/gi, "''") + '\', ';
+        query += 'zip_code = \'' + req.body.zip_code.replace(/'/gi, "''") + '\', ';
+        query += 'work_phone = \'' + req.body.work_phone.replace(/'/gi, "''") + '\', ';
+        query += 'home_phone = ' + (req.body.home_phone == 'NULL' || req.body.home_phone == null ?'NULL':'\'' + req.body.home_phone.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'cell = ' + (req.body.cell == 'NULL' || req.body.cell == null ?'NULL':'\'' + req.body.cell.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'fax = ' + (req.body.fax == 'NULL' || req.body.fax == null?'NULL':'\'' + req.body.fax.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'email = \'' + req.body.email.replace(/'/gi, "''") + '\', ';
         // LEFT OFF AT INSERTING CLIENT INFO
     }
     query += 'qaqc_person_ID = '+ req.body.qaqc_person_ID + ', ';
@@ -509,9 +541,9 @@ app.post('/updater', jsonParser, (req, res) => {
     query += 'close_date = \'' + req.body.close_date + '\', ';
     query += 'latitude = ' + req.body.latitude + ', ';
     query += 'longitude = ' + req.body.longitude + ', ';
-    query += 'service_area = \'' + req.body.service_area.replace(/'/gi, "''") + '\', ';
+    query += 'service_area = ' + (req.body.service_area == 'NULL' || req.body.service_area == null?'NULL': '\'' + req.body.service_area.replace(/'/gi, "''") + '\'') + ', ';
     query += 'profile_code_id = ' + req.body.profile_code_id + ', ';
-    query += 'binder_size = ' + req.body.binder_size + ', ';
+    query += 'binder_size = ' + (req.body.binder_size == 'NULL' || req.body.binder_size == null?"NULL":req.body.binder_size) + ', ';
     query += 'description_service = \'' + req.body.description_service.replace(/'/gi, "''") + '\', ';
     // 'project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', project_manager_ID = ' + req.body.project_manager_ID+ ', AlternateTitle = \''+ req.body.AlternateTitle +'\', QA_QCPerson = \'' + req.body.QA_QCPerson.replace(/'/gi, "''") + '\', TeamMembers = \''+ req.body.TeamMembers.replace(/'/gi, "''") +'\', StartDate = \'' + req.body.StartDate.replace(/'/gi, "''") + '\', CloseDate = \''+ req.body.CloseDate.replace(/'/gi, "''") +'\', ProjectLoation = \''+ req.body.ProjectLoation.replace(/'/gi, "''") +'\', ' + ((!isNaN(req.body.Lattitude) && !isNaN(req.body.Longitude))?'Lattitude = '+ req.body.Lattitude + ', Longitude = '+ req.body.Longitude + ', ':'')+
     // 'ProjectKeywords = \''+ req.body.ProjectKeywords.replace(/'/gi, "''") +'\', SHNOffice = \'' + req.body.SHNOffice.replace(/'/gi, "''") + '\', ToatlContract = \'' + req.body.ToatlContract.replace(/'/gi, "''") + '\', RetainerPaid = \'' + req.body.RetainerPaid.replace(/'/gi, "''") + '\', ProfileCode = \'' + req.body.ProfileCode.replace(/'/gi, "''") + '\', ServiceArea = \''+ req.body.ServiceArea.replace(/'/gi, "''") + '\', ContractType = \'' + req.body.ContractType.replace(/'/gi, "''") + '\', InvoiceFormat = \'' + req.body.InvoiceFormat.replace(/'/gi, "''") + '\', PREVAILING_WAGE = \''+ req.body.PREVAILING_WAGE.replace(/'/gi, "''") +'\', OutsideMarkup = \'' + req.body.OutsideMarkup + '\', SpecialBillingInstructins = \'' + req.body.SpecialBillingInstructins.replace(/'/gi, "''") + '\', SEEALSO = \'' + req.body.SEEALSO.replace(/'/gi, "''") + '\', Project_Specifications = ' + req.body.Project_Specifications +
@@ -522,9 +554,121 @@ app.post('/updater', jsonParser, (req, res) => {
 
     // query += (req.body.Projectid != null && req.body.Projectid != undefined && req.body.Projectid.length >=6 && !isNaN(req.body.Projectid))?' WHERE Projectid = \'' + req.body.Projectid + '\'':' WHERE PromoId = \'' + req.body.PromoId + '\'';
     // console.log(query);
-    // Connect to database.
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 
+    pool.query(query, (err, foo) => {
+        if(err) {
+            createTicket(err, "Cannot update initiation:");
+            console.log(err);
+            res.send(JSON.parse(JSON.stringify(err)));
+        }
+        else {
+            const doc = new PDFDocument();
+            doc.pipe(fs.createWriteStream(dir + '/'+num+'.pdf'));
+            for(let ifNull of Object.keys(req.body)) {
+                if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL' || req.body[ifNull] == '') {
+                    req.body[ifNull] = "None";
+                }
+            }
+            // PDF table creation runs asynchronously.
+            (async function(){
+                // Table data.
+                const table = {
+                title: ((isProject && !isBillingGroup)?req.body.project_id:(isBillingGroup?req.body.group_number:req.body.promo_id)),
+                headers: ["Name", "User Input", "Client", "Info"],
+                rows: [
+                    [((req.body.isWhat == 0)?"Project ID":(req.body.isWhat == 1?"Promo ID":"Billing Group Number")), ((req.body.isWhat == 0)?req.body.project_id:(req.body.isWhat == 1?req.body.promo_id:req.body.group_number)), "Client Company", req.body.client_company],
+                    ["Title", ((req.body.isWhat == 0)?req.body.project_title:(req.body.isWhat == 1?req.body.promo_title:req.body.group_name)), "Client Abbreviation", (req.body.hasOwnProperty('client_abbreviation'))?req.body.client_abbreviation:'NA'],
+                    ["Project Manager", req.body.ProjectMgrName, "Client First Name", req.body.first_name],
+                    ["QAQC Person", req.body.QAQCPersonName, "Client Last Name", req.body.first_name],
+                    ["Type of Promo", req.body.promo_type, "Relationship", req.body.relationship],
+                    ["Team Members", req.body.TeamMemberNames, "Job Title", req.body.job_title],
+                    ["Start Date", formatDate(req.body.start_date), "Address", req.body.address1],
+                    ["Close Date", formatDate(req.body.close_date), "2nd Address", (req.body.address2 == 'NULL' || req.body.address2 == null ?'None':req.body.address2)],
+                    ["Location", (isProject && isBillingGroup ? req.body.group_location:(isProject?req.body.project_location:req.body.promo_location)),"City", req.body.city],
+                    ["Latitude", req.body.Lattitude, "State", req.body.State1],
+                    ["Longitude", req.body.Longitude, "Zip", req.body.Zip1],
+                    ["Keywords", req.body.ProjectKeywords, "Work Phone", req.body.PhoneW1],
+                    ["SHN Office", req.body.SHNOffice, "Home Phone", req.body.PhoneH1],
+                    ["Service Area", req.body.ServiceArea, "Cell Phone", req.body.Cell1],
+                    ["Total Contract", req.body.ToatlContract, "Fax", req.body.Fax1],
+                    ["Service Agreement", req.body.ServiceAgreement, "Email", req.body.Email1],
+                    ["If yes, why?", req.body.Explanation, "Binder Size", req.body.BinderSize],
+                    ["Retainer", req.body.RetainerPaid, "Binder Location", req.body.BinderLocation],
+                    ["Profile Code", req.body.ProfileCode,'',''],
+                    ["Contract Type", req.body.ContractType,'',''],
+                    ["Invoice Format", req.body.InvoiceFormat,'',''],
+                    ["Client Contract/PO#", req.body.ClientContractPONumber,'',''],
+                    ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'',''],
+                    ["Prevailing Wage", req.body.PREVAILING_WAGE,'',''],
+                    ["Special Billing Instructions", req.body.SpecialBillingInstructins,'',''],
+                    ["See also", req.body.SEEALSO,'',''],
+                    ["AutoCAD", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
+                    ["GIS Job", (req.body.GIS_Project == -1)?'Yes':'No','',''],
+                    ["Project Specifications", (req.body.Project_Specifications == -1)?'Yes':'No','Updated On',new Date().toString()],
+                    ["Description of Service",req.body.DescriptionService,'Updated By', req.body.CreatedBy]
+                ]
+                };
+                
+                // Description of service table.
+                // const descTable = {
+                //     title: "Description of Services",
+                //     headers: ["Description of Services", "Description"],
+                //     rows: [["Description of Services", req.body.DescriptionService]]
+                // };
+                // A4 595.28 x 841.89 (portrait) (about width sizes)
+                // width
+                // await doc.table(table, { 
+                //   width: 400
+                // });
+                // or columnsSize
+                await doc.table(table, {
+                    columnsSize: [ 120, 130, 100, 130],
+                    padding: 2,
+                    prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => { // Additional formatting of table.
+                        (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
+                        // doc.addBackground(rectRow, (indexRow % 2 ? '#555555' : '#60A13F'), 0.15);
+                        const {x, y, width, height} = rectCell;
+                        // first line 
+                        // if(indexColumn === 0){
+                        //     doc
+                        //     .lineWidth(.5)
+                        //     .moveTo(x, y)
+                        //     .lineTo(x, y + height)
+                        //     .stroke();  
+                        // }
+                        // else
+                        if(indexColumn === 1 && indexRow != table.rows.length - 1) {
+                            doc
+                            .lineWidth(1)
+                            .moveTo(x + width, y)
+                            .lineTo(x + width, y + height)
+                            .stroke();
+                        }
+                        if((indexRow === 8 || indexRow === 17 || indexRow === 25) && indexColumn === 0) {
+                            doc
+                            .lineWidth(2)
+                            .moveTo(x, y)
+                            .lineTo(x + 250, y)
+                            .stroke();
+                        }
+
+                        doc.fontSize(10).fillColor('#000000');
+                    }
+                });
+
+                // await doc.table(descTable, {
+                //     columnsSize: [ 100, 400],
+                //     prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => { // Additional formatting of table.
+                //         (indexColumn == 0)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
+                //     }
+                // });
+                // done!
+                doc.end();
+            })();
+            // doc.end();
+            res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));
+        }
+    });
     // Executes the query.
     connection.execute(query)
     .then(() => { // Everything that happens as a result of a successful execution.
@@ -532,7 +676,7 @@ app.post('/updater', jsonParser, (req, res) => {
         const doc = new PDFDocument();
         doc.pipe(fs.createWriteStream(dir + '/'+num+'.pdf'));
         for(let ifNull of Object.keys(req.body)) {
-            if(req.body[ifNull] == null || req.body[ifNull] == undefined) {
+            if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL') {
                 req.body[ifNull] = "None";
             }
         }
@@ -635,7 +779,7 @@ app.post('/updater', jsonParser, (req, res) => {
         // doc.end();
         res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));
     }).catch(error => { // Print and send error to client for debugging.
-        createTicket(error, "Cannot update ticket:");
+        createTicket(error, "Cannot update initiation:");
         console.log(error);
         res.send(JSON.parse(JSON.stringify(error)));
     });
