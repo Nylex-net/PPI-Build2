@@ -124,11 +124,8 @@ function manager(currPage) {
                 customAmount();
                 document.getElementById('personnel').value = userData[0].waived_by;
             }
-            else if(userData[0].retainer == "None") {
-                document.getElementById('retainer').value = 0;
-            }
             else {
-                document.getElementById('retainer').value = userData[0].retainer;
+                document.getElementById('retainer').value = (userData[0].retainer.includes("Existing Client")?"Existing Client":(userData[0].retainer.includes("Exempt")?"Exempt Public Client":0));
             }
         }
         else if (isBillingGroup) {

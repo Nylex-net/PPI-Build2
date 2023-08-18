@@ -112,7 +112,7 @@ function resultString(jsonRes) {
         result += '<tr><td>' + ((num.closed == 1)?'<strong>X</strong> ':'')+num.project_id + '</td><td>' + ((num.BillGrp == null || num.BillGrp == undefined)?'':num.BillGrp) + '</td><td>' +
         ((num.promo_id == null || num.promo_id == undefined)?'':num.promo_id) + '</td><td>' + num.last + ", " + num.first + '</td><td>' +
         num.project_title + '</td><td>' + num.client_company + '</td><td>' + 
-        '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
+        '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +', null)">Display</button>'+ '</td><td>'+ 
         '<button type="button" onclick="edit(\''+ num.ID +'\', 0);">Edit</>'+'</td></tr>';
     });
     numRes = filteredData.length;
@@ -134,7 +134,7 @@ function resultString(jsonRes) {
         result += '<tr><td>' + ((num.closed == 1)?'<strong>X</strong> ':'')+ '</td><td>' + ((num.BillGrp == null || num.BillGrp == undefined)?'':num.BillGrp) + '</td><td>' +
         ((num.promo_id == null || num.promo_id == undefined)?'':num.promo_id) + '</td><td>' + num.last + ", " + num.first + '</td><td>' +
         num.promo_title + '</td><td>' + num.client_company + '</td><td>' + 
-        '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
+        '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +', null)">Display</button>'+ '</td><td>'+ 
         '<button type="button" onclick="edit(\''+ num.ID +'\', 1);">Edit</>'+'</td></tr>';
     });
     numRes += filteredData.length;
@@ -155,7 +155,7 @@ function resultString(jsonRes) {
         }
         result += '<tr><td>' + ((num.closed == 1)?'<strong>X</strong> ':'')+ num.project_id +'</td><td>' + num.group_number + '</td><td></td><td>' + num.last + ", " + num.first + '</td><td>' +
         num.group_name + '</td><td>' + num.client_company + '</td><td>' + 
-        '<button type="button" onclick="openPDF(\''+ num.project_id +'\', '+ ((num.closed == 1)?true:false) +')">Display</button>'+ '</td><td>'+ 
+        '<button type="button" onclick="openPDF(\''+ num.project_id +'\', '+ ((num.closed == 1)?true:false) +', \''+num.group_number+'\')">Display</button>'+ '</td><td>'+ 
         '<button type="button" onclick="edit(\''+ num.ID +'\', -1);">Edit</>'+'</td></tr>';
     });
     numRes += filteredData.length;
@@ -168,7 +168,7 @@ function resultString(jsonRes) {
  * Builds URL to open project and promo PDFs.
  */
 
-async function openPDF(numSearch, closed) {
+async function openPDF(numSearch, closed, BillingGroup) {
     if(numSearch == undefined || numSearch == null) {
         alert("Something about the number is wrong.");
         return;
@@ -187,7 +187,7 @@ async function openPDF(numSearch, closed) {
             "responseType":"application/pdf",
             
         },
-        body: JSON.parse(JSON.stringify('{"ProjectID":"' + numSearch + '","isClosed":"'+ closed +'"}'))
+        body: JSON.parse(JSON.stringify('{"ProjectID":"' + numSearch + '","isClosed":"'+ closed +'", "BillingGroup":"'+BillingGroup+'"}'))
     })
     .then(path => {
         return path.arrayBuffer();

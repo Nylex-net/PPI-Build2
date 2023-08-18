@@ -122,21 +122,21 @@ app.post('/closeMe', jsonParser, (req, res) => {
  */
 app.post('/search', jsonParser, (req, res) => {
     let result =[];
-    pool.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.client_company, Projects.closed, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID INNER JOIN ProfileCodes ON Projects.profile_code_id = ProfileCodes.ID INNER JOIN ProjectKeywords ON Projects.ID = ProjectKeywords.project_id WHERE Projects.project_id LIKE '%"+req.body.entry+"%' OR Projects.project_title LIKE '%"+req.body.entry+"%' OR Projects.first_name LIKE '%"+req.body.entry+"%' OR Projects.last_name LIKE '%"+req.body.entry+"%' OR Projects.client_company LIKE '%"+req.body.entry+"%' OR Projects.description_service LIKE '%"+req.body.entry+"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR ProjectKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%') OR Projects.project_location LIKE '%"+req.body.entry+"%';", (err, data) => {
+    pool.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.client_company, Projects.closed, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID INNER JOIN ProfileCodes ON Projects.profile_code_id = ProfileCodes.ID LEFT JOIN ProjectKeywords ON Projects.ID = ProjectKeywords.project_id WHERE Projects.project_id LIKE '%"+req.body.entry+"%' OR Projects.project_title LIKE '%"+req.body.entry+"%' OR Projects.first_name LIKE '%"+req.body.entry+"%' OR Projects.last_name LIKE '%"+req.body.entry+"%' OR Projects.client_company LIKE '%"+req.body.entry+"%' OR Projects.description_service LIKE '%"+req.body.entry+"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR ProjectKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%') OR Projects.project_location LIKE '%"+req.body.entry+"%' OR Staff.first LIKE '%"+req.body.entry+"%' OR Staff.last LIKE '%"+req.body.entry+"%';", (err, data) => {
         if(err) {
             console.error(err);
             res.send(JSON.stringify(err));
         }
         else {
             result.push(data);
-            pool.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.client_company, Promos.closed, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_ID = Staff.ID INNER JOIN ProfileCodes ON Promos.profile_code_id = ProfileCodes.ID INNER JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id WHERE Promos.promo_id LIKE '%"+req.body.entry+"%' OR Promos.promo_title LIKE '%"+req.body.entry+"%' OR Promos.first_name LIKE '%"+req.body.entry+"%' OR Promos.last_name LIKE '%"+req.body.entry+"%' OR Promos.client_company LIKE '%"+req.body.entry+"%' OR Promos.description_service LIKE '%"+req.body.entry+"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR PromoKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%') OR Promos.promo_location LIKE '%"+req.body.entry+"%';", (err, promos) => {
+            pool.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.client_company, Promos.closed, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_ID = Staff.ID INNER JOIN ProfileCodes ON Promos.profile_code_id = ProfileCodes.ID LEFT JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id WHERE Promos.promo_id LIKE '%"+req.body.entry+"%' OR Promos.promo_title LIKE '%"+req.body.entry+"%' OR Promos.first_name LIKE '%"+req.body.entry+"%' OR Promos.last_name LIKE '%"+req.body.entry+"%' OR Promos.client_company LIKE '%"+req.body.entry+"%' OR Promos.description_service LIKE '%"+req.body.entry+"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR PromoKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%') OR Promos.promo_location LIKE '%"+req.body.entry+"%' OR Staff.first LIKE '%"+req.body.entry+"%' OR Staff.last LIKE '%"+req.body.entry+"%';", (err, promos) => {
                 if(err) {
                     console.error(err);
                     res.send(JSON.stringify(err));
                 }
                 else {
                     result.push(promos);
-                    pool.query("SELECT BillingGroups.ID, Projects.project_id, BillingGroups.group_number, BillingGroups.group_name, Projects.closed, Staff.first, Staff.last, Projects.client_company FROM BillingGroups INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID INNER JOIN Staff ON BillingGroups.manager_id = Staff.ID INNER JOIN ProfileCodes ON BillingGroups.profile_code_id = profileCodes.ID INNER JOIN BillingGroupKeywords ON BillingGroups.ID = BillingGroupKeywords.group_id WHERE Projects.project_id LIKE '%"+ req.body.entry +"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR BillingGroupKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%') OR Staff.first LIKE '%"+req.body.entry+"%' OR Staff.last LIKE '%"+req.body.entry+"%' OR BillingGroups.group_location LIKE '%"+req.body.entry+"%' OR BillingGroups.description_service LIKE '%"+req.body.entry+"%';", (bruh, bill) => {
+                    pool.query("SELECT BillingGroups.ID, Projects.project_id, BillingGroups.group_number, BillingGroups.group_name, Projects.closed, Staff.first, Staff.last, Projects.client_company FROM BillingGroups INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID INNER JOIN Staff ON BillingGroups.manager_id = Staff.ID INNER JOIN ProfileCodes ON BillingGroups.profile_code_id = profileCodes.ID LEFT JOIN BillingGroupKeywords ON BillingGroups.ID = BillingGroupKeywords.group_id WHERE Projects.project_id LIKE '%"+ req.body.entry +"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR BillingGroupKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%') OR Staff.first LIKE '%"+req.body.entry+"%' OR Staff.last LIKE '%"+req.body.entry+"%' OR BillingGroups.group_location LIKE '%"+req.body.entry+"%' OR BillingGroups.description_service LIKE '%"+req.body.entry+"%';", (bruh, bill) => {
                         if(bruh) {
                             console.error(bruh);
                             res.send(JSON.stringify(bruh));
@@ -690,32 +690,21 @@ app.post('/updater', jsonParser, (req, res) => {
                     padding: 2,
                     prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => { // Additional formatting of table.
                         (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                        // doc.addBackground(rectRow, (indexRow % 2 ? '#555555' : '#60A13F'), 0.15);
                         const {x, y, width, height} = rectCell;
-                        // first line 
-                        // if(indexColumn === 0){
+                        // if(indexColumn === 1 && indexRow != table.rows.length - 1) {
                         //     doc
-                        //     .lineWidth(.5)
-                        //     .moveTo(x, y)
-                        //     .lineTo(x, y + height)
-                        //     .stroke();  
+                        //     .lineWidth(1)
+                        //     .moveTo(x + width, y)
+                        //     .lineTo(x + width, y + height)
+                        //     .stroke();
                         // }
-                        // else
-                        if(indexColumn === 1 && indexRow != table.rows.length - 1) {
-                            doc
-                            .lineWidth(1)
-                            .moveTo(x + width, y)
-                            .lineTo(x + width, y + height)
-                            .stroke();
-                        }
-                        if((indexRow === 8 || indexRow === 17 || indexRow === 25) && indexColumn === 0) {
-                            doc
-                            .lineWidth(2)
-                            .moveTo(x, y)
-                            .lineTo(x + 250, y)
-                            .stroke();
-                        }
-
+                        // if((indexRow === 8 || indexRow === 17 || indexRow === 25) && indexColumn === 0) {
+                        //     doc
+                        //     .lineWidth(2)
+                        //     .moveTo(x, y)
+                        //     .lineTo(x + 250, y)
+                        //     .stroke();
+                        // }
                         doc.fontSize(10).fillColor('#000000');
                     }
                 });
@@ -884,65 +873,144 @@ app.post('/getPath', jsonParser, (req, res) => {
         }
         else {
             dirFiles = fs.readdirSync(PATH + dir);
-            found = false;
-            let tempdir = '';
-            let namelength = undefined;
-            for(let file of dirFiles) {
-                if(file == 'PI.pdf') {
-                    dir += '/' + file;
-                    found = true;
-                    break;
+            if(req.body.BillingGroup != null && req.body.BillingGroup != 'null') {
+                found = false;
+                for(let file of dirFiles) {
+                    if(file.includes(req.body.BillingGroup)) {
+                        dir += '/' + file;
+                        found = true;
+                        break;
+                    }
                 }
-                else if(file.includes(arcata) && namelength == undefined) {
-                    namelength = file.length;
-                    tempdir = file;
+                if(!found) {
+                    console.log("Didn't find "+ req.body.BillingGroup +" in " +PATH+ dir);
+                    res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                 }
-                else if(file.includes(arcata) && file.length < namelength) {
-                    namelength = file.length;
-                    tempdir = file;
-                }
-            }
-            if(!found && tempdir == '') {
-                dir += '/Setup';
-                if(fs.existsSync(PATH+ dir)) {
-                    dirFiles = fs.readdirSync(PATH+ dir);
+                else {
                     found = false;
-                    tempdir = '';
-                    namelength = undefined;
+                    let tempdir = '';
+                    let namelength = undefined;
+                    dirFiles = fs.readdirSync(PATH + dir);
                     for(let file of dirFiles) {
                         if(file == 'PI.pdf') {
                             dir += '/' + file;
                             found = true;
                             break;
                         }
-                        else if(file.includes(arcata) && namelength == undefined) {
+                        else if(file.includes(req.body.BillingGroup) && namelength == undefined) {
                             namelength = file.length;
                             tempdir = file;
                         }
-                        else if(file.includes(arcata) && file.length < namelength) {
+                        else if(file.includes(req.body.BillingGroup) && file.length < namelength) {
                             namelength = file.length;
                             tempdir = file;
                         }
                     }
                     if(!found && tempdir == '') {
-                        console.log("Didn't find "+ req.body.ProjectID +" in " + PATH + dir);
-                        res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
+                        dir += '/Setup';
+                        if(fs.existsSync(PATH+ dir)) {
+                            dirFiles = fs.readdirSync(PATH+ dir);
+                            found = false;
+                            tempdir = '';
+                            namelength = undefined;
+                            for(let file of dirFiles) {
+                                if(file == 'PI.pdf') {
+                                    dir += '/' + file;
+                                    found = true;
+                                    break;
+                                }
+                                else if(file.includes(req.body.BillingGroup) && namelength == undefined) {
+                                    namelength = file.length;
+                                    tempdir = file;
+                                }
+                                else if(file.includes(req.body.BillingGroup) && file.length < namelength) {
+                                    namelength = file.length;
+                                    tempdir = file;
+                                }
+                            }
+                            if(!found && tempdir == '') {
+                                console.log("Didn't find "+ req.body.BillingGroup +" in " + PATH + dir);
+                                res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
+                            }
+                            else {
+                                dir += '/' + tempdir;
+                                res.download(PATH+dir);
+                                // res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
+                            }
+                        }
+                        else {
+                            console.log("Didn't find "+ req.body.BillingGroup +" in " + PATH + dir);
+                            res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
+                        }
                     }
                     else {
                         dir += '/' + tempdir;
-                        res.download(PATH+dir);
-                        // res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
+                        res.download(PATH + dir);
+                        //res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                     }
-                }
-                else {
-                    console.log("Didn't find "+ req.body.ProjectID +" in " + PATH + dir);
-                    res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                 }
             }
             else {
-                dir += '/' + tempdir;
-                res.download(PATH + dir);
-                //res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
+                found = false;
+                let tempdir = '';
+                let namelength = undefined;
+                for(let file of dirFiles) {
+                    if(file == 'PI.pdf') {
+                        dir += '/' + file;
+                        found = true;
+                        break;
+                    }
+                    else if(file.includes(arcata) && namelength == undefined) {
+                        namelength = file.length;
+                        tempdir = file;
+                    }
+                    else if(file.includes(arcata) && file.length < namelength) {
+                        namelength = file.length;
+                        tempdir = file;
+                    }
+                }
+                if(!found && tempdir == '') {
+                    dir += '/Setup';
+                    if(fs.existsSync(PATH+ dir)) {
+                        dirFiles = fs.readdirSync(PATH+ dir);
+                        found = false;
+                        tempdir = '';
+                        namelength = undefined;
+                        for(let file of dirFiles) {
+                            if(file == 'PI.pdf') {
+                                dir += '/' + file;
+                                found = true;
+                                break;
+                            }
+                            else if(file.includes(arcata) && namelength == undefined) {
+                                namelength = file.length;
+                                tempdir = file;
+                            }
+                            else if(file.includes(arcata) && file.length < namelength) {
+                                namelength = file.length;
+                                tempdir = file;
+                            }
+                        }
+                        if(!found && tempdir == '') {
+                            console.log("Didn't find "+ req.body.ProjectID +" in " + PATH + dir);
+                            res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
+                        }
+                        else {
+                            dir += '/' + tempdir;
+                            res.download(PATH+dir);
+                            // res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
+                        }
+                    }
+                    else {
+                        console.log("Didn't find "+ req.body.ProjectID +" in " + PATH + dir);
+                        res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
+                    }
+                }
+                else {
+                    dir += '/' + tempdir;
+                    res.download(PATH + dir);
+                    //res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
+                }
             }
         }
     }
