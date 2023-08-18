@@ -3,6 +3,7 @@ let userData; // JSON of original entry
 const isProject = (JSON.parse(fromSession).Identifier == 0 || JSON.parse(fromSession).Identifier == -1) ? true:false;
 const isBillingGroup = JSON.parse(fromSession).Identifier == -1 ? true:false;
 let mgrName = '';
+const oldMgrName = (isBillingGroup?userData[0].last+ ", " + userData[0].first:null);
 let teamMem = new Array();
 let memNames = new Array();
 let keyNames = new Array();
@@ -1786,6 +1787,12 @@ function teamString(memberArray) {
  * On success, thanks.html will load.
  */
 function preparePost() {
+    userData[0].ProfileCode = profCodeName;
+    userData[0].contactTypeName = contactTypeName;
+    userData[0].invoiceName = invoiceName;
+    if(oldMgrName != null) {
+        userData[0].oldMgrName = oldMgrName;
+    }
     if(userData[0].special_billing_instructions == '') {
         userData[0].special_billing_instructions = 'NULL';
     }

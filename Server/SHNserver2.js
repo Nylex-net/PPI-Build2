@@ -533,7 +533,6 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'cell = ' + (req.body.cell == 'NULL' || req.body.cell == null ?'NULL':'\'' + req.body.cell.replace(/'/gi, "''") + '\'') + ', ';
         query += 'fax = ' + (req.body.fax == 'NULL' || req.body.fax == null?'NULL':'\'' + req.body.fax.replace(/'/gi, "''") + '\'') + ', ';
         query += 'email = \'' + req.body.email.replace(/'/gi, "''") + '\', ';
-        // LEFT OFF AT INSERTING CLIENT INFO
     }
     query += 'qaqc_person_ID = '+ req.body.qaqc_person_ID + ', ';
     query += 'created = \'' + req.body.created.replace(/'/gi, "''") + '\', ';
@@ -544,7 +543,7 @@ app.post('/updater', jsonParser, (req, res) => {
     query += 'service_area = ' + (req.body.service_area == 'NULL' || req.body.service_area == null?'NULL': '\'' + req.body.service_area.replace(/'/gi, "''") + '\'') + ', ';
     query += 'profile_code_id = ' + req.body.profile_code_id + ', ';
     query += 'binder_size = ' + (req.body.binder_size == 'NULL' || req.body.binder_size == null?"NULL":req.body.binder_size) + ', ';
-    query += 'description_service = \'' + req.body.description_service.replace(/'/gi, "''") + '\', ';
+    query += 'description_service = \'' + req.body.description_service.replace(/'/gi, "''") + '\' WHERE ID = ' + req.body.ID + ';';
     // 'project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', project_manager_ID = ' + req.body.project_manager_ID+ ', AlternateTitle = \''+ req.body.AlternateTitle +'\', QA_QCPerson = \'' + req.body.QA_QCPerson.replace(/'/gi, "''") + '\', TeamMembers = \''+ req.body.TeamMembers.replace(/'/gi, "''") +'\', StartDate = \'' + req.body.StartDate.replace(/'/gi, "''") + '\', CloseDate = \''+ req.body.CloseDate.replace(/'/gi, "''") +'\', ProjectLoation = \''+ req.body.ProjectLoation.replace(/'/gi, "''") +'\', ' + ((!isNaN(req.body.Lattitude) && !isNaN(req.body.Longitude))?'Lattitude = '+ req.body.Lattitude + ', Longitude = '+ req.body.Longitude + ', ':'')+
     // 'ProjectKeywords = \''+ req.body.ProjectKeywords.replace(/'/gi, "''") +'\', SHNOffice = \'' + req.body.SHNOffice.replace(/'/gi, "''") + '\', ToatlContract = \'' + req.body.ToatlContract.replace(/'/gi, "''") + '\', RetainerPaid = \'' + req.body.RetainerPaid.replace(/'/gi, "''") + '\', ProfileCode = \'' + req.body.ProfileCode.replace(/'/gi, "''") + '\', ServiceArea = \''+ req.body.ServiceArea.replace(/'/gi, "''") + '\', ContractType = \'' + req.body.ContractType.replace(/'/gi, "''") + '\', InvoiceFormat = \'' + req.body.InvoiceFormat.replace(/'/gi, "''") + '\', PREVAILING_WAGE = \''+ req.body.PREVAILING_WAGE.replace(/'/gi, "''") +'\', OutsideMarkup = \'' + req.body.OutsideMarkup + '\', SpecialBillingInstructins = \'' + req.body.SpecialBillingInstructins.replace(/'/gi, "''") + '\', SEEALSO = \'' + req.body.SEEALSO.replace(/'/gi, "''") + '\', Project_Specifications = ' + req.body.Project_Specifications +
     // ', AutoCAD_Project = ' + req.body.AutoCAD_Project + ', GIS_Project = ' + req.body.GIS_Project + ', ClientCompany1 = \'' + req.body.ClientCompany1.replace(/'/gi, "''") + '\', OfficeMailingLists1 = \'' + req.body.OfficeMailingLists1.replace(/'/gi, "''") + '\','+
@@ -562,6 +561,101 @@ app.post('/updater', jsonParser, (req, res) => {
             res.send(JSON.parse(JSON.stringify(err)));
         }
         else {
+            let rower, head, titler, subtitler; // Will hold arrays of submission info for PDF configurations.
+            if(isProject && isBillingGroup) { // Is a billing group.
+                rower = [
+                    ["Billing Group #", req.body.group_number, "Project ID", (req.body.project_id[req.body.project_id.length - 1] == 'A'?req.body.project_id.substring(0,req.body.project_id.length - 1):req.body.project_id)],
+                    [ "Billing Title", req.body.group_name, "Project Title", req.body.project_title],
+                    ['Group Manager', req.body.ProjectMgrName, "Project Manager", req.body.oldMgrName],
+                    ["Start Date", formatDate(req.body.start_date),'-','-'],
+                    ["Close Date", formatDate(req.body.close_date),'-','-'],
+                    ["QAQC Person", req.body.QAQCPersonName,'-','-'],
+                    ["Team Members", req.body.TeamMemberNames,'-','-'],
+                    ["Location", req.body.project_location,'-','-'],
+                    ["Latitude", req.body.latitude.toString(),'-','-'],
+                    ["Longitude", req.body.longitude.toString(),'-','-'],
+                    ["Keywords", req.body.ProjectKeywords,'-','-'],
+                    ["Service Area", (req.body.service_area == "NULL" || req.body.service_area == null?"None":req.body.service_area),'-','-'],
+                    ["Profile Code", req.body.ProfileCode,'-','-'],
+                    ["Total Contract", (req.body.total_contract == "NULL" || req.body.total_contract == null?"None":req.body.total_contract.toString()),'-','-'],
+                    ["Retainer", (req.body.retainer == "Waived by X"?"Waived by " + req.body.waived_by:(req.body.retainer == "Enter Amount"?req.body.retainer_paid.toString():req.body.retainer)),'-','-'],
+                    ["Contract Type",req.body.contactTypeName,'-','-'],
+                    ["Invoice Format", req.body.invoiceName,'-','-'],
+                    ["Client Contract/PO #", req.body.client_contract_PO,'-','-'],
+                    ["Outside Markup", req.body.outside_markup.toString(),'-','-'],
+                    ["Prevailing Wage", (req.body.prevailing_wage == 1?req.body.agency_name:"No"),'-','-'],
+                    ["Billing Instructions", req.body.special_billing_instructions,'-','-'],
+                    ["AutoCAD Project", (req.body.autoCAD == 1)?'Yes':'No','-','-'],
+                    ["GIS Project", (req.body.GIS == 1)?'Yes':'No','-','-'],
+                    ["Binder Size", (req.body.binder_size == "NULL" || req.body.binder_size == null?"None":req.body.BinderSize + " inch"),'Updated on',new Date().toString()],
+                    ["Description of Services", req.body.description_service,'Updated By',req.body.CreatedBy]
+                ];
+                head = ["Billing", "Input", "Project", "Info"];
+                titler = req.body.project_id;
+                subtitler = 'Billing group ' + req.body.group_number + ' updated for ' + req.body.project_id;
+            }
+            else if(isProject) { // Is a project.
+                rower = [
+                    ["Project", (req.body.project_id[req.body.project_id.length - 1] == 'A'?req.body.project_id.substring(0,req.body.project_id.length - 1):req.body.project_id), "Client Company", req.body.client_company],
+                    ["Title", req.body.project_title, "Client Abbreviation", (req.body.client_abbreviation == null || req.body.client_abbreviation == undefined || req.body.client_abbreviation == 'NULL')?"None":req.body.client_abbreviation],
+                    ["Project Manager", req.body.ProjectMgrName, "Client First Name", req.body.first_name],
+                    ["QAQC Person", req.body.QAQCPersonName, "Client Last Name", req.body.last_name],
+                    ["Team Members", req.body.TeamMemberNames, "Relationship", req.body.relationship],
+                    ["Start Date", formatDate(req.body.start_date), "Job Title", req.body.job_title],
+                    ["Close Date", formatDate(req.body.close_date), "Address", req.body.address1],
+                    ["Location", req.body.project_location, "2nd Address", req.body.address2],
+                    ["Latitude", req.body.latitude.toString(),"City", req.body.city],
+                    ["Longitude", req.body.longitude.toString(), "State", req.body.state],
+                    ["Keywords", req.body.ProjectKeywords, "Zip", req.body.zip_code],
+                    ["SHN Office", getDir(req.body.SHNOffice_ID).substring(1,req.body.SHNOffice_ID.length), "Work Phone", req.body.work_phone],
+                    ["Service Area", req.body.service_area, "Home Phone", req.body.home_phone],
+                    ["Total Contract", req.body.total_contract, "Cell Phone", (req.body.cell)],
+                    ["Service Agreement", req.body.exempt_agreement, "Fax", (req.body.fax)],
+                    ["Why?", req.body.why, "Email", (req.body.email)],
+                    ["Retainer", (req.body.retainer == 'Enter Amount'?req.body.retainer_paid.toString():(req.body.retainer == 'Waived by X'?'Waived By ' + req.body.waived_by:req.body.retainer)), "Binder Size", req.body.binder_size.toString()],
+                    ["Profile Code", req.body.ProfileCode, "Binder Location", req.body.binder_location],
+                    ["Contract Type", req.body.contactTypeName,'-','-'],
+                    ["Invoice Format", req.body.invoiceName,'-','-'],
+                    ["Client Contract/PO#", req.body.client_contract_PO,'-','-'],
+                    ["Outside Markup", req.body.outside_markup.toString(),'-','-'],
+                    ["Prevailing Wage", (req.body.prevailing_wage == 1?req.body.agency_name:'No'), '-','-'],
+                    ["Billing Instructions", (req.body.special_billing_instructions),'-','-'],
+                    ["See Also", (req.body.see_also == 'NULL' || req.body.see_also == null?'None':req.body.see_also),'-','-'],
+                    ["AutoCAD", (req.body.autoCAD == 1)?'Yes':'No','-','-'],
+                    ["GIS Job", (req.body.GIS == 1)?'Yes':'No','-','-'],
+                    ["Project Specifications", (req.body.project_specifications == 1)?'Yes':'No','Updated on',new Date().toString()],
+                    ["Description of Services", (req.body.description_service),'Updated By',(req.body.CreatedBy)]
+                ];
+                head = ["Name", "User Input", "Client", "Info"];
+                titler = req.body.project_id;
+                subtitler = "Project Updated";
+            }
+            else { // Is a Promo.
+                rower = [
+                    ["Promo ID", (req.body.promo_id[req.body.promo_id.length - 1] == 'A'?req.body.promo_id.substring(0,req.body.promo_id.length - 1):req.body.promo_id), "Client Company", req.body.client_company],
+                    ["Title", req.body.promo_title, "Client Abbreviation", req.body.client_abbreviation],
+                    ["Project Manager", req.body.ProjectMgrName, "Client First Name", req.body.first_name],
+                    ["QAQC Person", req.body.QAQCPersonName, "Client Last Name", req.body.first_name],
+                    ["Type of Promo", req.body.promo_type, "Relationship", req.body.relationship],
+                    ["Team Members", req.body.TeamMemberNames, "Job Title", req.body.job_title],
+                    ["Start Date", formatDate(req.body.start_date), "Address", req.body.address1],
+                    ["Close Date", formatDate(req.body.close_date), "2nd Address", (req.body.address2 == 'NULL' || req.body.address2 == null ?'None':req.body.address2)],
+                    ["Location", req.body.promo_location,"City", req.body.city],
+                    ["Latitude", req.body.latitude.toString(), "State", req.body.state],
+                    ["Longitude", req.body.longitude.toString(), "Zip", req.body.zip_code],
+                    ["Keywords", req.body.ProjectKeywords, "Work Phone", req.body.PhoneW1],
+                    ["SHN Office", getDir(req.body.SHNOffice_ID).substring(1,req.body.SHNOffice_ID.length), "Home Phone", (req.body.home_phone == 'NULL' || req.body.home_phone == null ?'None':req.body.home_phone)],
+                    ["Service Area", req.body.service_area, "Cell Phone", (req.body.cell == 'NULL' || req.body.cell == null ?'None':req.body.cell)],
+                    ["Profile Code", req.body.ProfileCode, "Fax", (req.body.fax == 'NULL' || req.body.fax == null ?'None':req.body.fax)],
+                    ['-', '-', "Email", req.body.email],
+                    ['-', '-', "Binder Size", (req.body.binder_size == 'NULL' || req.body.binder_size == null ?'None':req.body.binder_size)],
+                    ['-', '-', 'Updated On', new Date().toString()],
+                    ["Description of Service",req.body.description_service,'Updated By', req.body.CreatedBy]
+                ];
+                head = ["Name", "User Input", "Client", "Info"];
+                titler = req.body.promo_id;
+                subtitler = "Promo Updated";
+            }
             const doc = new PDFDocument();
             doc.pipe(fs.createWriteStream(dir + '/'+num+'.pdf'));
             for(let ifNull of Object.keys(req.body)) {
@@ -573,40 +667,10 @@ app.post('/updater', jsonParser, (req, res) => {
             (async function(){
                 // Table data.
                 const table = {
-                title: ((isProject && !isBillingGroup)?req.body.project_id:(isBillingGroup?req.body.group_number:req.body.promo_id)),
-                headers: ["Name", "User Input", "Client", "Info"],
-                rows: [
-                    [((req.body.isWhat == 0)?"Project ID":(req.body.isWhat == 1?"Promo ID":"Billing Group Number")), ((req.body.isWhat == 0)?req.body.project_id:(req.body.isWhat == 1?req.body.promo_id:req.body.group_number)), "Client Company", req.body.client_company],
-                    ["Title", ((req.body.isWhat == 0)?req.body.project_title:(req.body.isWhat == 1?req.body.promo_title:req.body.group_name)), "Client Abbreviation", (req.body.hasOwnProperty('client_abbreviation'))?req.body.client_abbreviation:'NA'],
-                    ["Project Manager", req.body.ProjectMgrName, "Client First Name", req.body.first_name],
-                    ["QAQC Person", req.body.QAQCPersonName, "Client Last Name", req.body.first_name],
-                    ["Type of Promo", req.body.promo_type, "Relationship", req.body.relationship],
-                    ["Team Members", req.body.TeamMemberNames, "Job Title", req.body.job_title],
-                    ["Start Date", formatDate(req.body.start_date), "Address", req.body.address1],
-                    ["Close Date", formatDate(req.body.close_date), "2nd Address", (req.body.address2 == 'NULL' || req.body.address2 == null ?'None':req.body.address2)],
-                    ["Location", (isProject && isBillingGroup ? req.body.group_location:(isProject?req.body.project_location:req.body.promo_location)),"City", req.body.city],
-                    ["Latitude", req.body.Lattitude, "State", req.body.State1],
-                    ["Longitude", req.body.Longitude, "Zip", req.body.Zip1],
-                    ["Keywords", req.body.ProjectKeywords, "Work Phone", req.body.PhoneW1],
-                    ["SHN Office", req.body.SHNOffice, "Home Phone", req.body.PhoneH1],
-                    ["Service Area", req.body.ServiceArea, "Cell Phone", req.body.Cell1],
-                    ["Total Contract", req.body.ToatlContract, "Fax", req.body.Fax1],
-                    ["Service Agreement", req.body.ServiceAgreement, "Email", req.body.Email1],
-                    ["If yes, why?", req.body.Explanation, "Binder Size", req.body.BinderSize],
-                    ["Retainer", req.body.RetainerPaid, "Binder Location", req.body.BinderLocation],
-                    ["Profile Code", req.body.ProfileCode,'',''],
-                    ["Contract Type", req.body.ContractType,'',''],
-                    ["Invoice Format", req.body.InvoiceFormat,'',''],
-                    ["Client Contract/PO#", req.body.ClientContractPONumber,'',''],
-                    ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'',''],
-                    ["Prevailing Wage", req.body.PREVAILING_WAGE,'',''],
-                    ["Special Billing Instructions", req.body.SpecialBillingInstructins,'',''],
-                    ["See also", req.body.SEEALSO,'',''],
-                    ["AutoCAD", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
-                    ["GIS Job", (req.body.GIS_Project == -1)?'Yes':'No','',''],
-                    ["Project Specifications", (req.body.Project_Specifications == -1)?'Yes':'No','Updated On',new Date().toString()],
-                    ["Description of Service",req.body.DescriptionService,'Updated By', req.body.CreatedBy]
-                ]
+                title: titler,
+                // subtitle: subtitler,
+                headers: head,
+                rows: rower
                 };
                 
                 // Description of service table.
@@ -670,6 +734,7 @@ app.post('/updater', jsonParser, (req, res) => {
         }
     });
     // Executes the query.
+    /*
     connection.execute(query)
     .then(() => { // Everything that happens as a result of a successful execution.
         // Build PDF in project/promo.
@@ -783,7 +848,7 @@ app.post('/updater', jsonParser, (req, res) => {
         console.log(error);
         res.send(JSON.parse(JSON.stringify(error)));
     });
-    
+    */
 });
 
 /**
