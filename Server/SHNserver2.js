@@ -371,10 +371,10 @@ app.post('/qaqc', jsonParser, (req, res) => {
 
 app.post('/getMe', jsonParser, (req, res) => {
     const database = (req.body.Identifier == 0?"Projects":(req.body.Identifier == 1?"Promos":"BillingGroups"));
-    const query1 = 'SELECT '+(database == "BillingGroups"?database + '.*, Projects.project_id':database + '.*')+', '+(req.body.Identifier == 0?"ProjectTeam.member_id":(req.body.Identifier == 1?"PromoTeam.member_id":"BillingGroupTeam.member_id")) + ', ' + (req.body.Identifier == 0?"ProjectKeywords":(req.body.Identifier == 1?"PromoKeywords":"BillingGroupKeywords")) + '.keyword_id, Staff.* FROM ' + database + ' INNER JOIN '+ (req.body.Identifier == 0?"ProjectTeam":(req.body.Identifier == 1?"PromoTeam":"BillingGroupTeam")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectTeam.project_id":(req.body.Identifier == 1?"PromoTeam.promo_id":"BillingGroupTeam.billing_id"))+' INNER JOIN '+(req.body.Identifier == 0?"ProjectKeywords":(req.body.Identifier == 1?"PromoKeywords":"BillingGroupKeywords")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectKeywords.project_id":(req.body.Identifier == 1?"PromoKeywords.promo_id":"BillingGroupKeywords.group_id")) + (req.body.Identifier != 1 && req.body.Identifier != 0?' INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID ':'') +' INNER JOIN Staff ON '+(req.body.Identifier == 0?"Projects.project_manager_ID":(req.body.Identifier == 1?"Promos.manager_id":"BillingGroups.manager_id"))+' = Staff.ID WHERE '+database+'.ID = ' + req.body.ID;
-    const query2 = 'SELECT '+(database == "BillingGroups"?database + '.*, Projects.project_id':database + '.*')+', '+(req.body.Identifier == 0?"ProjectTeam.member_id":(req.body.Identifier == 1?"PromoTeam.member_id":"BillingGroupTeam.member_id")) + ', Staff.* FROM ' + database + ' INNER JOIN '+ (req.body.Identifier == 0?"ProjectTeam":(req.body.Identifier == 1?"PromoTeam":"BillingGroupTeam")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectTeam.project_id":(req.body.Identifier == 1?"PromoTeam.promo_id":"BillingGroupTeam.billing_id"))+(req.body.Identifier != 1 && req.body.Identifier != 0?' INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID ':'') +' INNER JOIN Staff ON '+(req.body.Identifier == 0?"Projects.project_manager_ID":(req.body.Identifier == 1?"Promos.manager_id":"BillingGroups.manager_id"))+' = Staff.ID WHERE '+database+'.ID = ' + req.body.ID;
-    const query3 = 'SELECT '+(database == "BillingGroups"?database + '.*, Projects.project_id':database + '.*')+', ' + (req.body.Identifier == 0?"ProjectKeywords":(req.body.Identifier == 1?"PromoKeywords":"BillingGroupKeywords")) + '.keyword_id, Staff.* FROM ' + database + ' INNER JOIN '+(req.body.Identifier == 0?"ProjectKeywords":(req.body.Identifier == 1?"PromoKeywords":"BillingGroupKeywords")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectKeywords.project_id":(req.body.Identifier == 1?"PromoKeywords.promo_id":"BillingGroupKeywords.group_id")) + (req.body.Identifier != 1 && req.body.Identifier != 0?' INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID ':'') +' INNER JOIN Staff ON '+(req.body.Identifier == 0?"Projects.project_manager_ID":(req.body.Identifier == 1?"Promos.manager_id":"BillingGroups.manager_id"))+' = Staff.ID WHERE '+database+'.ID = ' + req.body.ID;
-    const query4 = 'SELECT '+ (database == "BillingGroups"?database + '.*, Projects.project_id':database+ '.*') + ', Staff.* FROM ' + database + (req.body.Identifier != 1 && req.body.Identifier != 0?' INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID ':'') +' INNER JOIN Staff ON '+(req.body.Identifier == 0?"Projects.project_manager_ID":(req.body.Identifier == 1?"Promos.manager_id":"BillingGroups.manager_id"))+' = Staff.ID WHERE '+database+'.ID = ' + req.body.ID;
+    const query1 = 'SELECT '+(database == "BillingGroups"?database + '.*, Projects.project_id':database + '.*')+', '+(req.body.Identifier == 0?"ProjectTeam.member_id":(req.body.Identifier == 1?"PromoTeam.member_id":"BillingGroupTeam.member_id")) + ', ' + (req.body.Identifier == 0?"ProjectKeywords":(req.body.Identifier == 1?"PromoKeywords":"BillingGroupKeywords")) + '.keyword_id, Staff.first, Staff.last, Staff.ID AS staffyID FROM ' + database + ' INNER JOIN '+ (req.body.Identifier == 0?"ProjectTeam":(req.body.Identifier == 1?"PromoTeam":"BillingGroupTeam")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectTeam.project_id":(req.body.Identifier == 1?"PromoTeam.promo_id":"BillingGroupTeam.billing_id"))+' INNER JOIN '+(req.body.Identifier == 0?"ProjectKeywords":(req.body.Identifier == 1?"PromoKeywords":"BillingGroupKeywords")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectKeywords.project_id":(req.body.Identifier == 1?"PromoKeywords.promo_id":"BillingGroupKeywords.group_id")) + (req.body.Identifier != 1 && req.body.Identifier != 0?' INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID ':'') +' INNER JOIN Staff ON '+(req.body.Identifier == 0?"Projects.project_manager_ID":(req.body.Identifier == 1?"Promos.manager_id":"BillingGroups.manager_id"))+' = Staff.ID WHERE '+database+'.ID = ' + req.body.ID;
+    const query2 = 'SELECT '+(database == "BillingGroups"?database + '.*, Projects.project_id':database + '.*')+', '+(req.body.Identifier == 0?"ProjectTeam.member_id":(req.body.Identifier == 1?"PromoTeam.member_id":"BillingGroupTeam.member_id")) + ', Staff.first, Staff.last, Staff.ID AS staffyID FROM ' + database + ' INNER JOIN '+ (req.body.Identifier == 0?"ProjectTeam":(req.body.Identifier == 1?"PromoTeam":"BillingGroupTeam")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectTeam.project_id":(req.body.Identifier == 1?"PromoTeam.promo_id":"BillingGroupTeam.billing_id"))+(req.body.Identifier != 1 && req.body.Identifier != 0?' INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID ':'') +' INNER JOIN Staff ON '+(req.body.Identifier == 0?"Projects.project_manager_ID":(req.body.Identifier == 1?"Promos.manager_id":"BillingGroups.manager_id"))+' = Staff.ID WHERE '+database+'.ID = ' + req.body.ID;
+    const query3 = 'SELECT '+(database == "BillingGroups"?database + '.*, Projects.project_id':database + '.*')+', ' + (req.body.Identifier == 0?"ProjectKeywords":(req.body.Identifier == 1?"PromoKeywords":"BillingGroupKeywords")) + '.keyword_id, Staff.first, Staff.last, Staff.ID AS staffyID FROM ' + database + ' INNER JOIN '+(req.body.Identifier == 0?"ProjectKeywords":(req.body.Identifier == 1?"PromoKeywords":"BillingGroupKeywords")) +' ON '+database+'.ID = '+(req.body.Identifier == 0?"ProjectKeywords.project_id":(req.body.Identifier == 1?"PromoKeywords.promo_id":"BillingGroupKeywords.group_id")) + (req.body.Identifier != 1 && req.body.Identifier != 0?' INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID ':'') +' INNER JOIN Staff ON '+(req.body.Identifier == 0?"Projects.project_manager_ID":(req.body.Identifier == 1?"Promos.manager_id":"BillingGroups.manager_id"))+' = Staff.ID WHERE '+database+'.ID = ' + req.body.ID;
+    const query4 = 'SELECT '+ (database == "BillingGroups"?database + '.*, Projects.project_id':database+ '.*') + ', Staff.first, Staff.last, Staff.ID AS staffyID FROM ' + database + (req.body.Identifier != 1 && req.body.Identifier != 0?' INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID ':'') +' INNER JOIN Staff ON '+(req.body.Identifier == 0?"Projects.project_manager_ID":(req.body.Identifier == 1?"Promos.manager_id":"BillingGroups.manager_id"))+' = Staff.ID WHERE '+database+'.ID = ' + req.body.ID;
     // console.log('IF EXISTS (' + query1 + ') BEGIN '+ query1 + '; END ELSE IF EXISTS ('+query2+') OR EXISTS ('+query3+') BEGIN IF EXISTS ('+query2+') BEGIN '+query2+'; END ELSE IF EXISTS ('+query3+') BEGIN '+query3+'; END ELSE BEGIN '+query4+'; END');
     pool.query('IF EXISTS (' + query1 + ') BEGIN '+ query1 + '; END ELSE IF EXISTS ('+query2+') OR EXISTS ('+query3+') BEGIN IF EXISTS ('+query2+') BEGIN '+query2+'; END ELSE IF EXISTS ('+query3+') BEGIN '+query3+'; END END ELSE BEGIN '+query4+'; END', (err, data) => {
         if(err) {
@@ -411,7 +411,7 @@ app.post('/updater', jsonParser, (req, res) => {
     // Build and find directory of the original project/promo.
     // let dir = 'P:';
     let isProject = (req.body.isWhat != 1?true:false);
-    let isBillingGroup = (req.body.isWhat = -1?true:false);
+    let isBillingGroup = (req.body.isWhat == -1?true:false);
     const num = (isProject)?req.body.project_id:req.body.promo_id;
     let dir = PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
     dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
@@ -442,8 +442,25 @@ app.post('/updater', jsonParser, (req, res) => {
             }
         });
     }
-    else if(isBillingGroup) {
-        dir += '/' +  req.body.group_number;
+    else if(isProject && isBillingGroup) {
+        dirFiles = fs.readdirSync(dir);
+        found = false;
+        for(let file of dirFiles) {
+            if(file.substring(0, 12).includes(req.body.group_number)) {
+                dir += '/' + file;
+                found = true;
+                break;
+            }
+        }
+        if(!found) {
+            dir += '/' + req.body.group_number;
+            fs.mkdir((dir), err => {
+                if(err){
+                    createTicket(err, "Billing group "+req.body.group_number+" not found:");
+                    throw err;
+                }
+            });
+        }
     }
 
     // Build the SQL statement by settling similarities and differences in column names.
@@ -451,10 +468,10 @@ app.post('/updater', jsonParser, (req, res) => {
     let query = 'UPDATE '+(req.body.isWhat == 0?'Projects':(req.body.isWhat == 1?'Promos':'BillingGroups')) + ' SET ';
     if(isProject && !isBillingGroup) { // Is Project.
         query += 'project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', ';
-        query += 'project_manager_ID = '+ req.body.manager_id + ', ';
+        query += 'project_manager_ID = '+ req.body.project_manager_ID + ', ';
         query += 'project_location = \''+ req.body.project_location.replace(/'/gi, "''") + '\', ';
         // query += 'closed = ' + req.body.closed + ', ';
-        query += 'SHNOffice_ID = ' + req.body.SHNOffice + ', ';
+        query += 'SHNOffice_ID = ' + req.body.SHNOffice_ID + ', ';
         query += 'total_contract = ' + (req.body.total_contract == 'NULL' || req.body.total_contract == null ? 'NULL':req.body.total_contract) + ', ';
         query += 'exempt_agreement = ' + req.body.exempt_agreement + ', ';
         query += 'why = ' + (req.body.why == 'NULL' || req.body.why == null?'NULL':req.body.why.replace(/'/gi, "''")) + ', ';
@@ -466,14 +483,14 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'client_contract_PO = \'' + req.body.client_contract_PO.replace(/'/gi, "''") + '\', ';
         query += 'outside_markup = ' + req.body.outside_markup + ', ';
         query += 'prevailing_wage = ' + req.body.prevailing_wage + ', ';
-        query += 'agency_name = ' + (req.body.agency_name == 'NULL' || req.body.agency_name == null ? 'NULL':'\'' + req.body.agency_name.replace(/'/gi, "''")) + '\'' + ', ';
+        query += 'agency_name = ' + (req.body.agency_name == 'NULL' || req.body.agency_name == null ? 'NULL':'\'' + req.body.agency_name.replace(/'/gi, "''")+'\'') + ', ';
         query += 'special_billing_instructions = ' + (req.body.special_billing_instructions == 'NULL' || req.body.special_billing_instructions == null ? 'NULL':'\'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\'') + ', ';
-        query += 'see_also = ' + (eq.body.see_also == 'NULL' || eq.body.see_also == null ? 'NULL':'\'' + req.body.see_also.replace(/'/gi, "''") + '\'') + ', ';
+        query += 'see_also = ' + (req.body.see_also == 'NULL' || req.body.see_also == null ? 'NULL':'\'' + req.body.see_also.replace(/'/gi, "''") + '\'') + ', ';
         query += 'autoCAD = ' + req.body.autoCAD + ', ';
         query += 'GIS = ' + req.body.GIS + ', ';
         query += 'project_specifications = ' + req.body.project_specifications + ', ';
         query += 'client_company = \'' + req.body.client_company.replace(/'/gi, "''") + '\', ';
-        query += 'client_abbreviation = ' + (req.body.client_abbreviation == 'NULL' || req.body.client_abbreviation == null?'NULL':'\'' + req.body.client_abbreviation.replace(/'/gi, "''")) + '\', ';
+        query += 'client_abbreviation = ' + (req.body.client_abbreviation == 'NULL' || req.body.client_abbreviation == null?'NULL':'\'' + req.body.client_abbreviation.replace(/'/gi, "''") + '\'') + ', ';
         query += 'mailing_list = ' + (req.body.mailing_list == 'NULL' || req.body.mailing_list == null?'NULL':'\''+req.body.mailing_list.replace(/'/gi, "''")+'\'') + ', ';
         query += 'first_name = \'' + req.body.first_name.replace(/'/gi, "''") + '\', ';
         query += 'last_name = \'' + req.body.last_name.replace(/'/gi, "''") + '\', ';
@@ -489,7 +506,7 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'cell = ' + (req.body.cell == 'NULL' || req.body.cell == null ?'NULL':'\'' + req.body.cell.replace(/'/gi, "''") + '\'') + ', ';
         query += 'fax = ' + (req.body.fax == 'NULL' || req.body.fax == null?'NULL':'\'' + req.body.fax.replace(/'/gi, "''") + '\'') + ', ';
         query += 'email = \'' + req.body.email.replace(/'/gi, "''") + '\', ';
-        query += 'binder_location = \'' + req.body.binder_location.replace(/'/gi, "''") + '\', ';
+        query += 'binder_location = ' + (req.body.binder_location == 'NULL' || req.body.binder_location == null?'NULL':'\'' + req.body.binder_location.replace(/'/gi, "''") + '\'') + ', ';
     }
     else if(isBillingGroup) { // Is Billing group
         query += 'group_number = \''+ req.body.group_number.replace(/'/gi, "''") + '\', ';
@@ -516,7 +533,7 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'manager_id = '+ req.body.manager_id + ', ';
         query += 'promo_location = \''+ req.body.promo_location.replace(/'/gi, "''") + '\', ';
         // query += 'closed = ' + req.body.closed + ', ';
-        query += 'SHNOffice_ID = ' + req.body.SHNOffice + ', ';
+        query += 'SHNOffice_ID = ' + req.body.SHNOffice_ID + ', ';
         query += 'client_company = \'' + req.body.client_company.replace(/'/gi, "''") + '\', ';
         query += 'client_abbreviation = ' + (req.body.client_abbreviation == 'NULL' || req.body.client_abbreviation == null?'NULL':'\'' + req.body.client_abbreviation.replace(/'/gi, "''")) + '\', ';
         query += 'first_name = \'' + req.body.first_name.replace(/'/gi, "''") + '\', ';
@@ -552,7 +569,7 @@ app.post('/updater', jsonParser, (req, res) => {
     // If latitude and/or longitude aren't numbers, don't bother inserting them into the database.
 
     // query += (req.body.Projectid != null && req.body.Projectid != undefined && req.body.Projectid.length >=6 && !isNaN(req.body.Projectid))?' WHERE Projectid = \'' + req.body.Projectid + '\'':' WHERE PromoId = \'' + req.body.PromoId + '\'';
-    // console.log(query);
+    console.log(query);
 
     pool.query(query, (err, foo) => {
         if(err) {
@@ -561,6 +578,11 @@ app.post('/updater', jsonParser, (req, res) => {
             res.send(JSON.parse(JSON.stringify(err)));
         }
         else {
+            for(let ifNull of Object.keys(req.body)) {
+                if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL' || req.body[ifNull] == '') {
+                    req.body[ifNull] = "None";
+                }
+            }
             let rower, head, titler, subtitler; // Will hold arrays of submission info for PDF configurations.
             if(isProject && isBillingGroup) { // Is a billing group.
                 rower = [
@@ -658,11 +680,7 @@ app.post('/updater', jsonParser, (req, res) => {
             }
             const doc = new PDFDocument();
             doc.pipe(fs.createWriteStream(dir + '/'+num+'.pdf'));
-            for(let ifNull of Object.keys(req.body)) {
-                if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL' || req.body[ifNull] == '') {
-                    req.body[ifNull] = "None";
-                }
-            }
+        
             // PDF table creation runs asynchronously.
             (async function(){
                 // Table data.
