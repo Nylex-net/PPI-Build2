@@ -22,27 +22,24 @@ function findProjects() {
     xhr.onerror = function(e) { // If the server returns an error, display an error message to the user.
         document.getElementById('results').innerHTML = 'The server did an oopsie whoopsie UWU';
         console.log(e);
-    }
+    };
     xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
+        if (xhr.readyState == 4 && xhr.status == 200) {
             var json = JSON.parse(xhr.responseText);
             console.log(json);
-            if(json.length > 0 && json[0].hasOwnProperty('Projectid')) { // JSON Results should at least contain a Projectid Key.
+            if(json[0].length > 0 && json[1].length > 0) { // JSON Results should at least contain a Projectid Key.
                 document.getElementById('results').innerHTML = resultString(json);
             }
             else{ // No JSON results.  We got an empty array instead [].
                 document.getElementById('results').innerHTML = 'No Results.';
             }
         }
+        else {
+            document.getElementById('results').innerHTML = 'The server did an oopsie whoopsie UWU';
+        }
     };
     // Try connecting and sending to server.  If error, display "Unable to connect".
-    try{
-        xhr.send(jsonString);  // an error message typically looks like "{process: {…}, exitCode: 0}" in the console.
-    }
-    catch(error) {
-        document.getElementById('results').innerHTML = 'Unable to connect.';
-    }
-    
+    xhr.send(jsonString);  // an error message typically looks like "{process: {…}, exitCode: 0}" in the console.
 }
 
 /**
@@ -50,17 +47,12 @@ function findProjects() {
  */
 
 function resultString(json) {
-    const mapper = [];
-    let result = '<table><tr><th><strong>Project ID</strong></th><th><strong>Project Manager</strong></th><th><strong>Project Title</strong></th><th><strong>Client Company</strong></th><th><strong>Description</strong></th><th></th></tr>';
-    for(let entry of json) {
-        if(mapper.indexOf(entry.Projectid) == -1 && entry.Projectid != '' && entry.Projectid != null && entry.Projectid != undefined) {
-            result += '<tr><td>' + entry.Projectid + '</td><td>' + entry.First + " " + entry.Last + '</td><td>' + entry.ProjectTitle + '</td><td>' + entry.ClientCompany1 + '</td><td>' + entry.DescriptionService + '</td><td><button type="button" onclick="closeProject(\''+ entry.Projectid +'\');">Close</button></td></tr>';
-            mapper.push(entry.Projectid);
-        }
-        else if(mapper.indexOf(entry.PromoId) == -1 && entry.PromoId != '' && entry.PromoId != null && entry.PromoId != undefined) {
-            result += '<tr><td>' + entry.PromoId + '</td><td>' + entry.First + " " + entry.Last + '</td><td>' + entry.ProjectTitle + '</td><td>' + entry.ClientCompany1 + '</td><td>' + entry.DescriptionService + '</td><td><button type="button" onclick="closeProject(\''+ entry.PromoId +'\');">Close</button></td></tr>';
-            mapper.push(entry.PromoId);
-        }
+    let result = '<table><tr><th><strong>Project/Promo ID</strong></th><th><strong>Manager</strong></th><th><strong>Title</strong></th><th><strong>Client Company</strong></th><th><strong>Description</strong></th><th></th></tr>';
+    for(let entry of json[0]) {
+        result += '<tr><td>' + entry.project_id + '</td><td>' + entry.first + " " + entry.last + '</td><td>' + entry.project_title + '</td><td>' + entry.client_company + '</td><td>' + entry.description_service + '</td><td><button type="button" onclick="closeProject('+ entry.ID +', true);">Close</button></td></tr>';
+    }
+    for(let pros of json[1]) {
+        result += '<tr><td>' + pros.promo_id + '</td><td>' + pros.first + " " + pros.last + '</td><td>' + pros.promo_title + '</td><td>' + pros.client_company + '</td><td>' + pros.description_service + '</td><td><button type="button" onclick="closeProject('+ pros.ID +', false);">Close</button></td></tr>';
     }
     result += '</table>';
     return result;
