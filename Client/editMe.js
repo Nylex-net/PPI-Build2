@@ -222,7 +222,7 @@ function manager(currPage) {
         }
     }
     else if(currPage === 6 && isProject && !isBillingGroup) {
-        document.getElementById('binder').value = (userData[0].binder_size == undefined || userData[0].binder_size == null)? 'NA':userData[0].binder_size;
+        document.getElementById('binder').value = (userData[0].binder_size == undefined || userData[0].binder_size == null)? 'NULL':userData[0].binder_size;
         document.getElementById('bindLoc').value = (userData[0].binder_location == undefined || userData[0].binder_location == null)? '':userData[0].binder_location;
         document.getElementById('describe').value = (userData[0].description_service == undefined || userData[0].description_service == null)?'':userData[0].description_service;
     }
