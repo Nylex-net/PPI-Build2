@@ -739,7 +739,7 @@ function getPage(num) {
         '<div class="grid-item">Email' + '</div>'
         + '<div class="grid-item">' + userData[0].email + '</div>'+
         '<div class="grid-item">Binder Size' + '</div>'
-        + '<div class="grid-item">' + userData[0].binder_size + '</div>'+
+        + '<div class="grid-item">' + (userData[0].binder_size == null || userData[0].binder_size == 'NULL'?'N/A':userData[0].binder_size + ' inch') + '</div>'+
         '<div class="grid-item">Description of Services' + '</div>'
         + '<div class="grid-item">' + userData[0].description_service.replaceAll('\n', '<br>') + '</div></div>';
     }
@@ -836,7 +836,7 @@ function getPage(num) {
         '<div class="grid-item">Exempt from Service Agreement?' + '</div>'
         + '<div class="grid-item">' + (userData[0].exempt_agreement == 1?"Yes":"No") + '</div>'+
         '<div class="grid-item">If yes, why?' + '</div>'
-        + '<div class="grid-item">' + userData[0].why + '</div>'+
+        + '<div class="grid-item">' + (userData[0].why == null || userData[0].why == 'NULL'?'N/A':userData[0].why) + '</div>'+
         '<div class="grid-item">Retainer' + '</div>'
         + '<div class="grid-item">' + waiver + '</div>'+
         '<div class="grid-item">Profile Code' + '</div>'
@@ -896,7 +896,7 @@ function getPage(num) {
         '<div class="grid-item">Email' + '</div>'
         + '<div class="grid-item">' + userData[0].email + '</div>'+
         '<div class="grid-item">Binder Size' + '</div>'
-        + '<div class="grid-item">' + userData[0].binder_size + '</div>'+
+        + '<div class="grid-item">' + (userData[0].binder_size == null || userData[0].binder_size == 'NULL'?'N/A':userData[0].binder_size + ' inch') + '</div>'+
         '<div class="grid-item">Binder Location' + '</div>'
         + '<div class="grid-item">' + userData[0].binder_location + '</div>'+
         '<div class="grid-item">Description of Services' + '</div>'
@@ -1786,7 +1786,17 @@ function teamString(memberArray) {
 function preparePost() {
     userData[0].ProfileCode = profCodeName;
     userData[0].contactTypeName = contactTypeName;
-    userData[0].invoiceName = invoiceName;
+    if(isProject) {
+        let Service_Agreement = '0';
+        if(ServAgree) {
+            Service_Agreement = '1';
+        }
+        else {
+            userData[0].why = "NULL";
+        }
+        userData[0].invoiceName = invoiceName;
+        userData[0].exempt_agreement = Service_Agreement;
+    }
     if(oldMgrName != null) {
         userData[0].oldMgrName = oldMgrName;
     }
@@ -1827,15 +1837,7 @@ function preparePost() {
     }
 
     userData[0].ProjectKeywords = teamString(keyNames) + " || " + teamString(otherKeys);
-
-    let Service_Agreement = '0';
-    if(ServAgree) {
-        Service_Agreement = '1';
-    }
-    else {
-        userData[0].why = "NULL";
-    }
-    userData[0].exempt_agreement = Service_Agreement;
+    
     userData[0].CreatedBy = activeUser;
     // userData[0].CreatedOn = new Date().toString();
     // userData[0].why = Explanation;

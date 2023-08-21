@@ -535,7 +535,7 @@ app.post('/updater', jsonParser, (req, res) => {
         // query += 'closed = ' + req.body.closed + ', ';
         query += 'SHNOffice_ID = ' + req.body.SHNOffice_ID + ', ';
         query += 'client_company = \'' + req.body.client_company.replace(/'/gi, "''") + '\', ';
-        query += 'client_abbreviation = ' + (req.body.client_abbreviation == 'NULL' || req.body.client_abbreviation == null?'NULL':'\'' + req.body.client_abbreviation.replace(/'/gi, "''")) + '\', ';
+        query += 'client_abbreviation = ' + (req.body.client_abbreviation == 'NULL' || req.body.client_abbreviation == null?'NULL':'\'' + req.body.client_abbreviation.replace(/'/gi, "''") + '\'') + ', ';
         query += 'first_name = \'' + req.body.first_name.replace(/'/gi, "''") + '\', ';
         query += 'last_name = \'' + req.body.last_name.replace(/'/gi, "''") + '\', ';
         query += 'relationship = ' + (req.body.relationship == 'NULL' || req.body.relationship == null?'NULL':'\'' + req.body.relationship.replace(/'/gi, "''") + '\'') + ', ';
