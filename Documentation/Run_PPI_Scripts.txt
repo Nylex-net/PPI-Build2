@@ -1,0 +1,33 @@
+// To start PPI scripts if they're not running.
+
+C:\xampp\htdocs\shn-ppi> pm2 start SHNserver.js
+[PM2] Applying action restartProcessId on app [SHNserver](ids: [ 0 ])
+[PM2] [SHNserver](0) ✓
+[PM2] Process successfully started
+┌─────┬───────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name          │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼───────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0   │ SHNserver     │ default     │ 1.0.0   │ fork    │ 12932    │ 0s     │ 1    │ online    │ 0%       │ 35.5mb   │ adm… │ disabled │
+└─────┼───────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────
+
+C:\xampp\htdocs\shn-ppi> pm2 start SHNserver2.js
+[PM2] Applying action restartProcessId on app [SHNserver2](ids: [ 1 ])
+[PM2] [SHNserver2](1) ✓
+[PM2] Process successfully started
+┌─────┬───────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name          │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼───────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0   │ SHNserver     │ default     │ 1.0.0   │ fork    │ 12932    │ 67s    │ 1    │ online    │ 0%       │ 60.2mb   │ adm… │ disabled │
+│ 1   │ SHNserver2    │ default     │ 1.0.0   │ fork    │ 10792    │ 0s     │ 0    │ online    │ 0%       │ 34.7mb   │ adm… │ disabled │
+└─────┴───────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+// If processes are already on PM2 but need to be restarted, you can use the restart command.
+// Example below (Notice you don't have to specify the file extension. Just refer to it by the process name.):
+
+C:\xampp\htdocs\shn-ppi> pm2 restart SHNserver
+
+// To view script logs, use the monitor option.
+
+C:\xampp\htdocs\shn-ppi> pm2 monit
+
+// Note: The monitor needs to be left open to view any possible errors that may arise and print to the screen.  Otherwise, the logs will not show anything if it's not open.
