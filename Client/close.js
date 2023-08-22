@@ -27,7 +27,7 @@ function findProjects() {
         if (xhr.readyState == 4 && xhr.status == 200) {
             var json = JSON.parse(xhr.responseText);
             console.log(json);
-            if(json[0].length > 0 && json[1].length > 0) { // JSON Results should at least contain a Projectid Key.
+            if(json[0].length > 0 || json[1].length > 0) { // JSON Results should at least contain a Projectid Key.
                 document.getElementById('results').innerHTML = resultString(json);
             }
             else{ // No JSON results.  We got an empty array instead [].
@@ -49,16 +49,18 @@ function findProjects() {
 function resultString(json) {
     let result = '<table><tr><th><strong>Project/Promo ID</strong></th><th><strong>Manager</strong></th><th><strong>Title</strong></th><th><strong>Client Company</strong></th><th><strong>Description</strong></th><th></th></tr>';
     for(let entry of json[0]) {
-        result += '<tr><td>' + entry.project_id + '</td><td>' + entry.first + " " + entry.last + '</td><td>' + entry.project_title + '</td><td>' + entry.client_company + '</td><td>' + entry.description_service + '</td><td><button type="button" onclick="closeProject('+ entry.ID +', true);">Close</button></td></tr>';
+        result += '<tr><td>' + entry.project_id + '</td><td>' + entry.first + " " + entry.last + '</td><td>' + entry.project_title + '</td><td>' + entry.client_company + '</td><td>' + entry.description_service + '</td><td><button type="button" onclick="closeProject('+ entry.ID +', true, \''+entry.project_id+'\');">Close</button></td></tr>';
     }
     for(let pros of json[1]) {
-        result += '<tr><td>' + pros.promo_id + '</td><td>' + pros.first + " " + pros.last + '</td><td>' + pros.promo_title + '</td><td>' + pros.client_company + '</td><td>' + pros.description_service + '</td><td><button type="button" onclick="closeProject('+ pros.ID +', false);">Close</button></td></tr>';
+        result += '<tr><td>' + pros.promo_id + '</td><td>' + pros.first + " " + pros.last + '</td><td>' + pros.promo_title + '</td><td>' + pros.client_company + '</td><td>' + pros.description_service + '</td><td><button type="button" onclick="closeProject('+ pros.ID +', false, \''+pros.promo_id+'\');">Close</button></td></tr>';
     }
     result += '</table>';
     return result;
 }
 
 let closer;
+let proggy;
+let userID;
 
 /**
  * Alerts user if they're sure they want to close a project.
@@ -66,9 +68,11 @@ let closer;
  * and user will be prompted that the project is now closed.
  * @param {String} ID 
  */
-function closeProject(ID) {
-    if(confirm("Are you sure you want to close this project?\nProject ID: " + ID)) {
+function closeProject(ID, isProj, daBos) {
+    if(confirm("Are you sure you want to close this "+(isProj?"Project:\nProject ID":"Promo:\nPromo ID")+": " + daBos)) {
         closer = ID;
+        proggy = isProj;
+        userID = daBos;
         signIn();
     }
 }
@@ -81,7 +85,9 @@ function closeProject(ID) {
 function starter(res) {
     const postData = {
         projID: closer,
-        ClosedBy: res.account.name
+        isProject: proggy,
+        ClosedBy: res.account.name,
+        userID: userID
     };
     if (postData.projID == undefined || postData.projID == null || postData.ClosedBy.includes('@')) { // If user logs in but wasn't closing a project.
         return;
@@ -95,13 +101,13 @@ function starter(res) {
         },
             body: JSON.stringify(postData)
         }).then(response => {
-            if (!response.ok) {
+            if (response.status != 200) {
                 const message = 'Error with Status Code: ' + response.status;
                 document.getElementById('results').innerHTML = message;
                 throw new Error(message);
             }
             else {
-                document.getElementById('results').innerHTML = "Project "+ postData.projID +" is now closed.";
+                document.getElementById('results').innerHTML = (postData.isProject?"Project ":"Promo ")+ postData.userID +" is now closed.";
             }
         });
     }
@@ -110,3 +116,5 @@ function starter(res) {
         console.log('Error: ' + err);
     }
 }
+
+window.addEventListener("load", signIn(), false);

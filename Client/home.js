@@ -310,6 +310,10 @@ function fillMe(page) {
         document.getElementById('PO').value = contractPONum;
         document.getElementById('OutMark').value = outsideMarkup;
         document.getElementById('wage').value = prevWage;
+        if(prevWage == 1) {
+            agency();
+            document.getElementById('agency').value = agency_name;
+        }
         document.getElementById('billInst').value = specBillInstr;
         document.getElementById('binder').value = binderSize;
         document.getElementById('describe').value = descOfServ;
@@ -381,7 +385,7 @@ function nextPage(num) {
         getTextField('Client Contract/PO #', 'PO', contractPONum, false) +
         '<div class="grid-item"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
         '<div class="grid-item"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-        '<div class="grid-item"><label for="wage">Prevailing Wage</label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select></div>'+
+        '<div class="grid-item"><label for="wage">Prevailing Wage</label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
         '<div class="grid-item"><label for="billInst">Special Billing Instructions</label></div><div class="grid-item"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
         '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
         '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'+
@@ -685,6 +689,9 @@ function saveChoices(num) {
         contractPONum = document.getElementById('PO').value.trim();
         outsideMarkup = document.getElementById('OutMark').value;
         prevWage = document.getElementById('wage').value;
+        if(prevWage == 1) {
+            agency_name = document.getElementById('agency').value;
+        }
         specBillInstr = document.getElementById('billInst').value.trim();
         binderSize = document.getElementById('binder').value;
         descOfServ = document.getElementById('describe').value;
@@ -767,6 +774,11 @@ function reqField(currPage) {
 
         if(contractPONum.length > 45 || outsideMarkup.length > 45) {
             alert("Keep Client Contract/PO # and/or Outside Markup under 45 characters.");
+            return false;
+        }
+
+        if(prevWage == 1 && agency_name == undefined) {
+            alert("Add an agency.");
             return false;
         }
 
@@ -1270,7 +1282,7 @@ function teamString(memberArray) {
 
 function agency() {
     if(document.getElementById('wage').value == "1") {
-        document.getElementById('agent').innerHTML = '<br><label for="agentcy">Name of Agency:<span class="astrick">*</span></label><br><input type="text" id="agency" name="agency" title="Agency" maxlength="255">';
+        document.getElementById('agent').innerHTML = '<br><label for="agency">Name of Agency:<span class="astrick">*</span></label><br><input type="text" id="agency" name="agency" title="Agency" maxlength="255">';
     }
     else {
         document.getElementById('agent').innerHTML = '';

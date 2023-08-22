@@ -1,4 +1,5 @@
 let globalID;
+let isProject;
 let activeUser;
 /**
  * find() takes user input to search the database.
@@ -87,47 +88,45 @@ function toTable(json) {
     currResults.result = null;
     currResults.map.clear();
     console.log(json);
-    if(json.length == 0) {
+    if(json[0].length == 0 && json[1].length == 0) {
         document.getElementById('results').innerHTML = 'No results';
         return;
     }
-    const mapping = new Array();
     let syntax = '<table id="Rolo"><tr><th><strong>ID</strong></th><th><strong>Company</strong></th><th><strong>Name</strong></th><th><strong>Job Title</strong></th><th><strong>Address</strong></th><th><strong>Phone</strong></th><th><strong>Email</strong></th><th><strong>Info</strong></th></tr>';
-    json.forEach(entry => {
-        if(!mapping.includes(entry.Projectid) && (entry.Projectid != '' && entry.Projectid != null && entry.Projectid != undefined)) {
-            mapping.push(entry.Projectid);
-            currResults.map.set(entry.Projectid, entry);
-            syntax += addRow(entry);
-        }
-        else if(!mapping.includes(entry.PromoId) && (entry.PromoId != '' && entry.PromoId != null && entry.PromoId != undefined)) {
-            mapping.push(entry.PromoId);
-            currResults.map.set(entry.PromoId, entry);
-            syntax += addRow(entry);
-        }
+    json[0].forEach(entry => {
+        currResults.map.set(entry.project_id, entry);
+        syntax += addRow(entry, true);
+    });
+    json[1].forEach(entry => {
+        currResults.map.set(entry.promo_id, entry);
+        syntax += addRow(entry, false);
     });
     syntax += '</table>';
-    document.getElementById('results').innerHTML = mapping.length + ' Results<br>' + syntax;
-    currResults.result =  mapping.length + ' Results<br>' + syntax;
-}
-
-function addRow(entry) {
-    let row = '<tr>';
-    let isProj = false;
-    if(entry.Projectid != '' && entry.Projectid != null && entry.Projectid != undefined) {
-        row += '<td>' + entry.Projectid + '</td>';
-        isProj = true;
+    if(json[0].length + json[1].length === 0) {
+        document.getElementById('results').innerHTML = 'No Results<br>';
     }
     else {
-        row += '<td>' + entry.PromoId + '</td>';
+        document.getElementById('results').innerHTML = (json[0].length + json[1].length) + ' Results<br>' + syntax;
+        currResults.result =  (json[0].length + json[1].length) + ' Results<br>' + syntax;
     }
-    row += (entry.ClientCompany1 != null || entry.ClientCompany1 != undefined) ? '<td>'+ entry.ClientCompany1 +'</td>':'<td></td>';
-    row += (entry.ClientContactFirstName1 != null || entry.ClientContactFirstName1 != undefined) ? '<td>'+ entry.ClientContactFirstName1 + ' ':'<td>';
-    row += (entry.ClientContactLastName1 != null || entry.ClientContactLastName1 != undefined) ? entry.ClientContactLastName1 + '</td>':'</td>';
-    row += (entry.Title1 != null || entry.Title1 != undefined) ? '<td>'+ entry.Title1 +'</td>':'<td></td>';
-    row += (entry.Address1_1 != null || entry.Address1_1 != undefined) ? '<td>'+ entry.Address1_1 + ' ' + entry.City1 + ', ' + entry.State1 + ' ' + entry.Zip1 + '</td>':'<td></td>';
-    row += (entry.PhoneW1 != null || entry.PhoneW1 != undefined) ? '<td>'+ entry.PhoneW1 +'</td>':'<td></td>';
-    row += ((entry.Email1 != null || entry.Email1 != undefined) && entry.Email1.includes('@')) ? '<td><a href="mailto:'+entry.Email1+'">'+ entry.Email1 +'</a></td>':'<td></td>';
-    row += (isProj) ? '<td><button type="button" id="'+ entry.Projectid + '" onclick="edit(\''+ entry.Projectid +'\');">Edit</button></td>':'<td><button type="button" id="'+ entry.PromoId + '" onclick="edit(\''+ entry.PromoId + '\');">Edit</button></td>';
+}
+
+function addRow(entry, isProj) {
+    let row = '<tr>';
+    if(entry.hasOwnProperty('project_id')) {
+        row += '<td>' + entry.project_id + '</td>';
+    }
+    else {
+        row += '<td>' + entry.promo_id + '</td>';
+    }
+    row += (entry.client_company != null || entry.client_company != undefined) ? '<td>'+ entry.client_company +'</td>':'<td></td>';
+    row += (entry.first_name != null || entry.first_name != undefined) ? '<td>'+ entry.first_name + ' ':'<td>';
+    row += (entry.last_name != null || entry.last_name != undefined) ? entry.last_name + '</td>':'</td>';
+    row += (entry.job_title != null || entry.job_title != undefined) ? '<td>'+ entry.job_title +'</td>':'<td></td>';
+    row += (entry.address1 != null || entry.address1 != undefined) ? '<td>'+ entry.address1 + ' ' + entry.city + ', ' + entry.state + ' ' + entry.zip_code + '</td>':'<td></td>';
+    row += (entry.work_phone != null || entry.work_phone != undefined) ? '<td>'+ entry.work_phone +'</td>':'<td></td>';
+    row += ((entry.email != null || entry.email != undefined) && entry.email.includes('@')) ? '<td><a href="mailto:'+entry.email+'">'+ entry.email +'</a></td>':'<td></td>';
+    row += (isProj) ? '<td><button type="button" id="'+ entry.ID + '" onclick="edit(\''+ entry.project_id +'\', true);">Edit</button></td>':'<td><button type="button" id="'+ entry.ID + '" onclick="edit(\''+ entry.promo_id + '\', false);">Edit</button></td>';
     return row + '</tr>';
 }
 
@@ -174,8 +173,9 @@ function hide(ID) {
     document.getElementById(ID).onclick = function() {expand(ID.toString());};
 }
 
-function edit(id) {
+function edit(id, isProj) {
     globalID = id;
+    isProject = isProj;
     signIn();
 }
 
@@ -188,29 +188,29 @@ function starter(res) {
         json[key] = (json[key] == null || json[key] == undefined) ? '':json[key];
     }
 
-    document.getElementById('inserter').innerHTML = '<label for="comp">Company </label><input type="text" id="comp" name="comp" maxlength="255" value="'+json.ClientCompany1+'" required/><br>';
-    document.getElementById('inserter').innerHTML += ((globalID.length <= 7)?'<label for="office">Office Mailing List </label><input type="checkbox" id="xmas" name="xmas" title="xmas" placeholder="Christmas">Christmas <input type="checkbox" id="house" name="house" title="house" placeholder="Open House">Open House<br>':'');
-    document.getElementById('inserter').innerHTML += '<label for="first">First Name </label><input type="text" id="first" name="first" maxlength="255" value="'+ json.ClientContactFirstName1 +'" required/><br>';
-    document.getElementById('inserter').innerHTML += '<label for="last"> Last Name </label><input type="text" id="last" name="last" maxlength="255" value="'+ json.ClientContactLastName1 +'" required/><br>';
-    document.getElementById('inserter').innerHTML += '<label for="title">Job Title </label><input type="text" id="title" name="title" maxlength="255" value="'+ json.Title1 +'"/><br>';
-    document.getElementById('inserter').innerHTML += '<label for="add1">Address </label><input type="text" id="add1" name="add1" maxlength="255" value="'+ json.Address1_1 +'" required/><br>';
-    document.getElementById('inserter').innerHTML += '<label for="add2">Second Adddress </label><input type="text" id="add2" name="add2" maxlength="255" value="'+ json.Address2_1 +'"/><br>';
-    document.getElementById('inserter').innerHTML += '<label for="city">City </label><input type="text" id="city" name="city" maxlength="255" value="'+ json.City1 +'" required/><br>';
+    document.getElementById('inserter').innerHTML = '<label for="comp">Company </label><input type="text" id="comp" name="comp" maxlength="255" value="'+json.client_company+'" required/><br>';
+    document.getElementById('inserter').innerHTML += ((isProject)?'<label for="office">Office Mailing List </label><input type="checkbox" id="xmas" name="xmas" title="xmas" placeholder="Christmas">Christmas <input type="checkbox" id="house" name="house" title="house" placeholder="Open House">Open House<br>':'');
+    document.getElementById('inserter').innerHTML += '<label for="first">First Name </label><input type="text" id="first" name="first" maxlength="255" value="'+ json.first_name +'" required/><br>';
+    document.getElementById('inserter').innerHTML += '<label for="last"> Last Name </label><input type="text" id="last" name="last" maxlength="255" value="'+ json.last_name +'" required/><br>';
+    document.getElementById('inserter').innerHTML += '<label for="title">Job Title </label><input type="text" id="title" name="title" maxlength="255" value="'+ json.job_title +'"/><br>';
+    document.getElementById('inserter').innerHTML += '<label for="add1">Address </label><input type="text" id="add1" name="add1" maxlength="255" value="'+ json.address1 +'" required/><br>';
+    document.getElementById('inserter').innerHTML += '<label for="add2">Second Adddress </label><input type="text" id="add2" name="add2" maxlength="255" value="'+ json.address2 +'"/><br>';
+    document.getElementById('inserter').innerHTML += '<label for="city">City </label><input type="text" id="city" name="city" maxlength="255" value="'+ json.city +'" required/><br>';
     document.getElementById('inserter').innerHTML += '<label for="state">State </label><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select><br>';
-    document.getElementById('inserter').innerHTML += '<label for="zip">Zip </label><input type="text" id="zip" name="zip" maxlength="20" value="'+ json.Zip1 +'" required><br>';
-    document.getElementById('inserter').innerHTML += '<label for="WP">Work Phone </label><input type="tel" id="WP" name="WP" maxlength="20" value="'+json.PhoneW1+'"required><br>';
-    document.getElementById('inserter').innerHTML += '<label for="HP">Home Phone </label><input type="tel" id="HP" name="HP" value="'+json.PhoneH1+'" maxlength="20"><br>';
-    document.getElementById('inserter').innerHTML += '<label for="cell">Cell </label><input type="tel" id="cell" name="cell" value="'+ json.Cell1 +'" maxlength="20"><br>';
-    document.getElementById('inserter').innerHTML += '<label for="fax">Fax </label><input type="tel" id="fax" name="fax" value="'+ json.Zip1 +'" maxlength="20"><br>';
-    document.getElementById('inserter').innerHTML += '<label for="email">Email </label><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" value="'+ json.Email1 +'" required><br>';
-    document.getElementById('state').value = json.State1;
-    document.getElementById('inserter').innerHTML += '<div id="submitter"><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost(\''+ globalID +'\')">Submit</button></div>';
+    document.getElementById('inserter').innerHTML += '<label for="zip">Zip </label><input type="text" id="zip" name="zip" maxlength="20" value="'+ json.zip_code +'" required><br>';
+    document.getElementById('inserter').innerHTML += '<label for="WP">Work Phone </label><input type="tel" id="WP" name="WP" maxlength="20" value="'+json.work_phone+'"required><br>';
+    document.getElementById('inserter').innerHTML += '<label for="HP">Home Phone </label><input type="tel" id="HP" name="HP" value="'+json.home_phone+'" maxlength="20"><br>';
+    document.getElementById('inserter').innerHTML += '<label for="cell">Cell </label><input type="tel" id="cell" name="cell" value="'+ json.cell +'" maxlength="20"><br>';
+    document.getElementById('inserter').innerHTML += '<label for="fax">Fax </label><input type="tel" id="fax" name="fax" value="'+ json.fax +'" maxlength="20"><br>';
+    document.getElementById('inserter').innerHTML += '<label for="email">Email </label><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" value="'+ json.email +'" required><br>';
+    document.getElementById('state').value = json.state;
+    document.getElementById('inserter').innerHTML += '<div id="submitter"><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+json.ID+', '+isProject+')">Submit</button></div>';
 
-    if(globalID.length <= 7) {
-        if(json.OfficeMailingLists1.includes("Open House")) {
+    if(isProject) {
+        if(json.mailing_list.includes("ouse")) {
             document.getElementById("house").checked = true;
         }
-        if(json.OfficeMailingLists1.includes("Christmas")) {
+        if(json.mailing_list.includes("mas")) {
             document.getElementById("xmas").checked = true;
         }
     }
@@ -222,9 +222,8 @@ function back() {
     window.scrollTo(0, state.scroller);
 }
 
-function preparePost(Id) {
+function preparePost(Id, proj) {
     // Test against required user selections and fields to determine if values are valid.
-
     if(document.getElementById('comp').value.trim() == '' || document.getElementById('first').value.trim() == '' || document.getElementById('last').value.trim() == '' || document.getElementById('add1').value.trim() == '' || document.getElementById('city').value.trim() == '' || document.getElementById('zip').value.trim() == '' || document.getElementById('WP').value.trim() == '' || document.getElementById('email').value.trim() == '') {
         alert("Please fill all required fields, and/or fix invalid fields.");
         return false;
@@ -251,29 +250,31 @@ function preparePost(Id) {
     document.getElementById('submitter').innerHTML = '<p>Submitting</p>';
 
     // Fill optional inputs.
-    let title = (document.getElementById('title').value.trim() != '') ? document.getElementById('title').value.trim():'None';
-    let addr2 = (document.getElementById('add2').value.trim() != '') ? document.getElementById('add2').value.trim():'None';
-    let homePhone = (document.getElementById('HP').value.trim() != '') ? document.getElementById('HP').value.trim():'None';
-    let cell = (document.getElementById('cell').value.trim() != '') ? document.getElementById('cell').value.trim():'None';
-    let fax = (document.getElementById('fax').value.trim() != '') ? document.getElementById('fax').value.trim():'None';
-    let mailer = (document.getElementById('house').checked)?'Open House':'';
-    mailer += (document.getElementById('xmas').checked)?((document.getElementById('house').checked)?' || Christmas':'Christmas'):'';
+    let title = (document.getElementById('title').value.trim() != '') ? document.getElementById('title').value.trim():'';
+    let addr2 = (document.getElementById('add2').value.trim() != '') ? document.getElementById('add2').value.trim():'';
+    let homePhone = (document.getElementById('HP').value.trim() != '') ? document.getElementById('HP').value.trim():'';
+    let cell = (document.getElementById('cell').value.trim() != '') ? document.getElementById('cell').value.trim():'';
+    let fax = (document.getElementById('fax').value.trim() != '') ? document.getElementById('fax').value.trim():'';
+    if(proj) {
+        var mailer = (document.getElementById('house').checked)?'Open House':'';
+        mailer += (document.getElementById('xmas').checked)?((document.getElementById('house').checked)?' || Christmas':'Christmas'):'';
+    }
 
-    let sql = '{"Id":"'+Id+'","ClientCompany1":"'+ format(document.getElementById('comp').value.trim()) +
-    '","OfficeMailingLists1":"'+ mailer +
-    '","ClientContactFirstName1":"'+ format(document.getElementById('first').value.trim()) +
-    '","ClientContactLastName1":"'+ format(document.getElementById('last').value.trim()) +
-    '","Title1":"'+ format(title) +
-    '","Address1_1":"'+format(document.getElementById('add1').value.trim())+
-    '","Address2_1":"'+ format(addr2) +
-    '","City1":"'+format(document.getElementById('city').value.trim())+
-    '","State1":"'+ format(document.getElementById('state').value) +
-    '","Zip1":"'+ format(document.getElementById('zip').value.trim()) +
-    '","PhoneW1":"'+ format(document.getElementById('WP').value.trim()) +
-    '","PhoneH1":"'+ format(homePhone) +
-    '","Cell1":"'+ format(cell) +
-    '","Fax1":"'+ format(fax) +
-    '","Email1":"'+ format(document.getElementById('email').value.trim()) +'"}';
+    let sql = '{"ID":"'+Id+'", "initID":"'+ globalID +'", "isProject":'+proj+',"client_company":"'+ format(document.getElementById('comp').value.trim()) +
+    (Boolean(proj)?'","mailing_list":"'+ mailer:'') +
+    '","first_name":"'+ format(document.getElementById('first').value.trim()) +
+    '","last_name":"'+ format(document.getElementById('last').value.trim()) +
+    '","job_title":"'+ format(title) +
+    '","address1":"'+format(document.getElementById('add1').value.trim())+
+    '","address2":"'+ format(addr2) +
+    '","city":"'+format(document.getElementById('city').value.trim())+
+    '","state":"'+ format(document.getElementById('state').value) +
+    '","zip_code":"'+ format(document.getElementById('zip').value.trim()) +
+    '","work_phone":"'+ format(document.getElementById('WP').value.trim()) +
+    '","home_phone":"'+ format(homePhone) +
+    '","cell":"'+ format(cell) +
+    '","fax":"'+ format(fax) +
+    '","email":"'+ format(document.getElementById('email').value.trim()) +'"}';
 
     const JsonString = JSON.parse(JSON.stringify(sql));
     console.log(JsonString);
@@ -293,12 +294,12 @@ function preparePost(Id) {
             document.getElementById('submitter').innerHTML = '<p>Submitted! Thanks, '+ activeUser +'.</p><br><button type="button" onclick="location.reload()">Back to Rolodex</button>';
         }
         else {
-            document.getElementById('submitter').innerHTML = '<p>Something didn\'t go right. Please contact help.</p><br><button type="button" onclick="preparePost(\''+ Id +'\')">Submit</button>';
+            document.getElementById('submitter').innerHTML = '<p>Something didn\'t go right. Please contact help.</p><br><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+ Id +', '+proj+')">Submit</button>';
             console.log(response);
         }
     })
     .catch(error => {
-        document.getElementById('submitter').innerHTML = '<p>An error ocurred. Please contact help.</p><br><button type="button" onclick="preparePost(\''+ Id +'\')">Submit</button>';
+        document.getElementById('submitter').innerHTML = '<p>An error ocurred. Please contact help.</p><br><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+ Id + ', '+proj+')">Submit</button>';
         console.log(error);
     });
 }
