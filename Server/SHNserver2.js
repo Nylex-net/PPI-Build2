@@ -61,59 +61,48 @@ pool.on('open', (options) => {
 // projects API returns the project info in projects, plus the first and last name of the Project Manager.
 
 app.post('/projects', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE (Projects.Projectid LIKE \'%'+ req.body.projID +'%\' OR Projects.PromoId LIKE \'%'+ req.body.projID +'%\') AND (Closed_by_PM IS NULL OR Closed_by_PM = 0) ORDER BY Projects.Projectid IS NOT NULL, Projects.PromoId IS NULL, Contacts.Last, Contacts.First, Projects.ClientCompany1, Projects.ProjectTitle, Projects.DescriptionService')
-    .then(data => {
-        // Display formatted JSON data
-        res.send(JSON.stringify(data));
-        // callback(res);
-    })
-    .catch(error => {
-        console.error('Error occured while accessing database: ' + error);
-        connection.query('SELECT ID, First, Last From Contacts').then(contacts => { // Gets all employee names and their IDs.
-            let contactMap = new Map();
-            for(let contact of contacts) { // Store employees in map object for ease of access.
-                contactMap.set(contact.ID.toString(), contact.First.trim() + ';' + contact.Last.trim());
-            }
-            // Now search the projects database.
-            connection.query('SELECT * FROM Projects WHERE (Closed_by_PM IS NULL OR Closed_by_PM = 0) AND (Projectid LIKE \'%'+ req.body.projID +'%\' OR PromoId LIKE \'%'+ req.body.projID +
-            '%\') ORDER BY Projectid IS NOT NULL, PromoId IS NULL, ClientCompany1, ProjectTitle, DescriptionService').then(projData => {
-                // Associate each project manager to the cooresponding project they're managing.
-                for(let entry of projData) {
-                    let temp = (contactMap.get(entry.ProjectMgr) == undefined) ? undefined:contactMap.get(entry.ProjectMgr).split(';');
-                    if(temp != undefined && temp != null) {
-                        entry["First"] = temp[0];
-                        entry["Last"] = temp[1];
-                    }
-                    else {
-                        entry["First"] = "Unknown";
-                        entry["Last"] = "Unknown";
-                    }
+    pool.query('SELECT Projects.*, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id LIKE \'%'+req.body.projID+'%\' AND Projects.closed = 0 ORDER BY Projects.project_id, Staff.last, Staff.first, Projects.client_company, Projects.project_title, Projects.description_service;', (err, data) => {
+        if(err) {
+            console.error(err);
+            res.send(JSON.stringify(err));
+        }
+        else {
+            const result = new Array();
+            result.push(data);
+            pool.query('SELECT Promos.*, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_id = Staff.ID WHERE Promos.promo_id LIKE \'%'+req.body.projID+'%\' AND Promos.closed = 0 ORDER BY Promos.promo_id, Staff.last, Staff.first, Promos.client_company, Promos.promo_title, Promos.description_service;', (error, homo) => {
+                if(error) {
+                    console.error(error);
+                    res.send(JSON.stringify(error));
                 }
-                res.send(JSON.stringify(projData));
-            })
-            // If all fails, send back error.
-        }).catch(err => res.send(JSON.stringify(err)));
-        // return callback(new Error("An error has occurred"));
-    })
+                else {
+                    result.push(homo);
+                    res.send(JSON.stringify(result));
+                }
+            });
+        }
+    });
 });
 
 // Used to close Projects by setting "Closed_by_PM" to -1 and moving files to the office's closed projects folder.
 
 app.post('/closeMe', jsonParser, (req, res) => {
     const myJson = req.body;
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.execute("UPDATE Projects SET Closed_by_PM = -1 WHERE Projectid = \'"+ myJson.projID +"\' OR PromoId = \'"+ myJson.projID +"\'").then(() => {
-        let nutty = moveProject(myJson.projID, myJson.ClosedBy); // function returns null if directory is not found.
-        let response = '{"Status":"Success"}';
-        if(nutty == null) {
-            response = '{"Status":"Bruh"}';
+    console.log("UPDATE " + (req.body.isProject?"Projects":"Promos") + " SET closed = 1 WHERE ID = " + req.body.projID + ";");
+    pool.query("UPDATE " + (req.body.isProject?"Projects":"Promos") + " SET closed = 1 WHERE ID = " + req.body.projID + ";", (err, bar) => {
+        if(err) {
+            createTicket(err, "Could not close:");
+            res.send(JSON.parse(JSON.stringify(err)));
+            console.log(err);
         }
-        res.send(JSON.parse(JSON.stringify(response)));
-    }).catch(err => { // send error message to client and print error message in console.
-        createTicket(err, "Could not close:");
-        res.send(JSON.parse(JSON.stringify(err)));
-        console.log(err);
+        else {
+            let nutty = moveProject(myJson.userID, myJson.ClosedBy); // function returns null if directory is not found.
+            let response = '{"Status":"Success"}';
+            if(nutty == null) {
+                response = '{"Status":"Bruh"}';
+            }
+            res.statusCode = 200;
+            res.send(JSON.parse(JSON.stringify(response)));
+        }
     });
 });
 
@@ -150,46 +139,6 @@ app.post('/search', jsonParser, (req, res) => {
             });
         }
     });
-    //  connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE Projects.Projectid LIKE \'%'+ req.body.entry +
-    // '%\' OR Projects.PromoId LIKE \'%'+ req.body.entry +'%\' OR Projects.ProjectMgr = (SELECT TOP 1 Contacts.ID FROM Contacts WHERE Contacts.Last LIKE \'%'+ req.body.entry +'%\' OR Contacts.First LIKE \'%'+ req.body.entry +'%\') OR Projects.ProjectLoation LIKE \'%'+ req.body.entry +
-    // '%\' OR Projects.ProjectKeywords LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientCompany1 LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientContact1 LIKE \'%'+ req.body.entry +
-    // '%\' OR Projects.ClientContactFirstName1 LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientContactLastName1 LIKE \'%'+ req.body.entry +
-    // '%\' OR Projects.ProfileCode LIKE \'%'+ req.body.entry +'%\' OR Projects.DescriptionService LIKE \'%'+ req.body.entry +
-    // '%\' ORDER BY Projects.Projectid IS NOT NULL, Projects.PromoId IS NULL, Projects.Projectid, Projects.PromoId, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService')
-    // .then(data => {
-    //     data = JSON.stringify(data);
-    //     res.send(data);
-    // })
-    // .catch(error => { // Previous query doesn't always work and returns a datatype mismatch error, so we run the alternative method.
-    //      console.log(error);
-    //     connection.query('SELECT ID, First, Last From Contacts').then(contacts => { // Gets all employee names and their IDs.
-    //         let contactMap = new Map();
-    //         for(let contact of contacts) { // Store employees in map object for ease of access.
-    //             contactMap.set(contact.ID.toString(), contact.First.trim() + ';' + contact.Last.trim());
-    //         }
-    //         // Now search the projects database.
-    //         connection.query('SELECT * FROM Projects WHERE Projectid LIKE \'%'+ req.body.entry +'%\' OR ProjectLoation LIKE \'%'+ req.body.entry+
-    //         '%\' OR PromoId LIKE \'%'+ req.body.entry +'%\' OR ProjectKeywords LIKE \'%'+ req.body.entry +
-    //         '%\' OR ClientCompany1 LIKE \'%'+ req.body.entry +'%\' OR ClientContact1 LIKE \'%'+ req.body.entry + '%\' OR ClientContactFirstName1 LIKE \'%'+ req.body.entry +
-    //         '%\' OR ClientContactLastName1 LIKE \'%'+ req.body.entry +'%\' OR ProfileCode LIKE \'%'+ req.body.entry +'%\' OR DescriptionService LIKE \'%'+ req.body.entry +
-    //         '%\' ORDER BY Projectid IS NOT NULL, PromoId IS NULL, Projectid, PromoId, BillGrp, ClientCompany1, DescriptionService').then(projData => {
-    //             // Associate each project manager to the cooresponding project they're managing.
-    //             for(let entry of projData) {
-    //                 let temp = (contactMap.get(entry.ProjectMgr) == undefined) ? undefined:contactMap.get(entry.ProjectMgr).split(';');
-    //                 if(temp != undefined && temp != null) {
-    //                     entry["First"] = temp[0];
-    //                     entry["Last"] = temp[1];
-    //                 }
-    //                 else {
-    //                     entry["First"] = "Unknown";
-    //                     entry["Last"] = "Unknown";
-    //                 }
-    //             }
-    //             res.send(JSON.stringify(projData));
-    //         })
-    //         // If all fails, send back error.
-    //     }).catch(err => res.send(JSON.stringify(err)));
-    // });
 });
 
 /**
@@ -354,7 +303,7 @@ app.post('/searchDesc', jsonParser, (req, res) => {
 /**
  *  Gets the QAQC Manager via ID.
  */
-
+/*
 app.post('/qaqc', jsonParser, (req, res) => {
     const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
     connection.query('SELECT First, Last FROM Contacts WHERE ID = '+ req.body.id)
@@ -364,7 +313,7 @@ app.post('/qaqc', jsonParser, (req, res) => {
         res.send(JSON.stringify(err));
     });
 });
-
+*/
 /**
  * Gets Projects. promos, or billing groups based on IDs passed to API.
  */
@@ -389,6 +338,7 @@ app.post('/getMe', jsonParser, (req, res) => {
 
 // Returns IDs from recognizable keywords, assuming the keywords are split using " || ".
 // This may not work for older project initiations, as the database entries don't always conform to the expected format.
+/*
 app.post('/keyName', jsonParser, (req, res) => {
     const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
     let keyArray = req.body.keyText.split(/,| \|\| /g);
@@ -403,7 +353,7 @@ app.post('/keyName', jsonParser, (req, res) => {
         console.log(err);
         res.send(JSON.parse(JSON.stringify(err)));
     });
-});
+}); */
 
 // API used to update a project with sent information.
 
@@ -709,13 +659,13 @@ app.post('/updater', jsonParser, (req, res) => {
                     prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => { // Additional formatting of table.
                         (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
                         const {x, y, width, height} = rectCell;
-                        // if(indexColumn === 1 && indexRow != table.rows.length - 1) {
-                        //     doc
-                        //     .lineWidth(1)
-                        //     .moveTo(x + width, y)
-                        //     .lineTo(x + width, y + height)
-                        //     .stroke();
-                        // }
+                        if(indexColumn === 1 && indexRow != table.rows.length - 1) {
+                            doc
+                            .lineWidth(1)
+                            .moveTo(x + width, y)
+                            .lineTo(x + width, y + height)
+                            .stroke();
+                        }
                         // if((indexRow === 8 || indexRow === 17 || indexRow === 25) && indexColumn === 0) {
                         //     doc
                         //     .lineWidth(2)
@@ -1038,6 +988,7 @@ app.post('/getPath', jsonParser, (req, res) => {
     }
 });
 
+/*
 app.post('/delete', jsonParser, (req, res) => {
     let dir = PATH;
     if(!req.body.hasOwnProperty('ID') || !req.body.hasOwnProperty('Project')){
@@ -1067,6 +1018,7 @@ app.post('/delete', jsonParser, (req, res) => {
         });
     }    
 });
+*/
 
 // Used by the close API to move contents into the cooresponding office's closed jobs folder.
 function moveProject(ID, closer) {
