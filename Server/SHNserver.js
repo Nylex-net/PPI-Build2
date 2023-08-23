@@ -53,6 +53,7 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
 // Directory for testing environment.
 process.chdir("P:\\");
 const PATH = "P:";
+const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
 
 // create application/json parser
 var jsonParser = bodyParser.json();
@@ -988,7 +989,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
 /**
  * '/info' API used by the advanced search function to return specific results.
  */
-
+/*
 app.post('/info', jsonParser, (req, res) => {
     // Connect to database.
     const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
@@ -1018,12 +1019,12 @@ app.post('/info', jsonParser, (req, res) => {
         res.send(JSON.stringify(error)); // send back error if an error occurs.
     });
 });
-
+*/
 /**
  * General search API to search multiple fields from single input entry.
  * This is the most commonly used API by SHNers.
  */
-
+/*
 app.post('/search', jsonParser, (req, res) => {
     // Connect to database.
     const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
@@ -1041,11 +1042,6 @@ app.post('/search', jsonParser, (req, res) => {
         data = JSON.stringify(data); // send back results.
         res.send(data);
     })
-    /**
-     * If an error occurs, try the second method below.
-     * The above query sometimes errors because of the 'INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID'.
-     * The below queries will instead query both tables separately.
-     */
     .catch(error => {
         // Query contacts first.
         connection.query('SELECT ID, First, Last From Contacts').then(contacts => {
@@ -1079,7 +1075,7 @@ app.post('/search', jsonParser, (req, res) => {
         }).catch(err => res.send(JSON.stringify(err)));
     });
 })
-
+*/
 // Searches for projects to add a billing group to.
 
 app.post('/billMe', jsonParser, (req, res) => {
@@ -1140,7 +1136,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
     const mydate = new Date();
     let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
-    let dir = PATH + getDir(req.body.ProjectId[0]) + '/20' + req.body.ProjectId[1] + req.body.ProjectId[2]; // + '/' + req.body.ProjectId + '-' + removeSpace(data[0].ProjectTitle) + '/';
+    let dir = DEMO_PATH + getDir(req.body.ProjectId[0]) + '/20' + req.body.ProjectId[1] + req.body.ProjectId[2]; // + '/' + req.body.ProjectId + '-' + removeSpace(data[0].ProjectTitle) + '/';
     // let ArcataOffice = false;
     // let ArcDir = '';
     let projFolder = req.body.ProjectId;
@@ -1315,28 +1311,58 @@ app.post('/searchPromos', jsonParser, (req, res) => {
 
 app.post('/rolodex', jsonParser, (req, res) => {
     // Starting of query.
-    let query = 'SELECT Projectid, PromoId, ClientCompany1, ClientContactFirstName1, ClientContactLastName1, Title1, OfficeMailingLists1, Address1_1, Address2_1, City1, State1, Zip1, PhoneW1, PhoneH1, Cell1, Email1, Fax1, DTStamp FROM Projects WHERE ';
+    let query = 'SELECT ID, project_id, client_company, first_name, last_name, job_title, mailing_list, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Projects WHERE ';
     if(req.body.by == 'Job') {
-        query += 'Title1 LIKE \'%'+ req.body.search +'%\'';
+        query += 'job_title LIKE \'%'+ req.body.search +'%\'';
     }
     else if(req.body.by == 'First') {
-        query += 'ClientContactFirstName1 LIKE \'%'+ req.body.search +'%\'';
+        query += 'first_name LIKE \'%'+ req.body.search +'%\'';
     }
     else if(req.body.by == 'Last') {
-        query += 'ClientContactLastName1 LIKE \'%'+ req.body.search +'%\'';
+        query += 'last_name LIKE \'%'+ req.body.search +'%\'';
     }
     else if(req.body.by == 'Comp') {
-        query += 'ClientCompany1 LIKE \'%'+ req.body.search +'%\'';
+        query += 'client_company LIKE \'%'+ req.body.search +'%\'';
     }
     else { // Default "All."
-        query += 'ClientCompany1 LIKE \'%'+ req.body.search +'%\' OR ClientContactFirstName1 LIKE \'%'+ req.body.search +'%\' OR ClientContactLastName1 LIKE \'%'+ req.body.search +'%\' OR Title1 LIKE \'%'+ req.body.search +'%\'';
+        query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
     }
-    pool.query(query + ' ORDER BY ClientContactLastName1, ClientContactFirstName1, ClientCompany1, Projectid, PromoId', (error, data) => {
+    query += ' ORDER BY last_name, first_name, client_company, project_id;';
+    pool.query(query, (error, ProjData) => {
         if(error) {
+            console.error(error);
             res.send(JSON.parse(JSON.stringify(error)));
         }
         else {
-            res.send(JSON.parse(JSON.stringify(data)));
+            query = 'SELECT ID, promo_id, client_company, first_name, last_name, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Promos WHERE ';
+            if(req.body.by == 'Job') {
+                query += 'job_title LIKE \'%'+ req.body.search +'%\'';
+            }
+            else if(req.body.by == 'First') {
+                query += 'first_name LIKE \'%'+ req.body.search +'%\'';
+            }
+            else if(req.body.by == 'Last') {
+                query += 'last_name LIKE \'%'+ req.body.search +'%\'';
+            }
+            else if(req.body.by == 'Comp') {
+                query += 'client_company LIKE \'%'+ req.body.search +'%\'';
+            }
+            else { // Default "All."
+                query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
+            }
+            query += ' ORDER BY last_name, first_name, client_company, promo_id;';
+            pool.query(query, (err, ProData) => {
+                if(err) {
+                    console.error(err);
+                    res.send(JSON.parse(JSON.stringify(err)));
+                }
+                else {
+                    const result = new Array();
+                    result.push(ProjData);
+                    result.push(ProData);
+                    res.send(JSON.parse(JSON.stringify(result)));
+                }
+            });
         }
     });
 });
@@ -1346,21 +1372,30 @@ app.post('/rolodex', jsonParser, (req, res) => {
  */
 
 app.post('/contacts', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    let sql = 'UPDATE Projects SET ClientCompany1 = \''+ req.body.ClientCompany1 +'\', ClientContactFirstName1 = \''+ req.body.ClientContactFirstName1 + 
-    '\', ClientContactLastName1 = \'' + req.body.ClientContactLastName1 + '\', Title1 = \''+req.body.Title1 +
-    '\', OfficeMailingLists1 = \''+ req.body.OfficeMailingLists1 +'\', Address1_1 = \'' + req.body.Address1_1 + '\', Address2_1 = \'' + req.body.Address2_1 + '\', City1 = \'' + req.body.City1 +
-    '\', State1 = \'' + req.body.State1 + '\', Zip1 = \'' + req.body.Zip1 + '\', PhoneW1 = \'' + req.body.PhoneW1 +
-    '\', PhoneH1 = \'' + req.body.PhoneH1 + '\', Cell1 = \''+ req.body.Cell1 + '\', Fax1 = \'' + req.body.Fax1 + '\', Email1 = \'' + req.body.Email1 + '\'';
-    sql += ' WHERE Projectid = \''+ req.body.Id + '\' OR PromoId = \'' + req.body.Id + '\'';
-    connection.execute(sql).then(() => {
-        res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));
-    }).catch(err => {
-        console.log(err);
-        createTicket(err, "Cannot update contacts in Rolodex:");
-        res.send(JSON.parse(JSON.stringify(err)));
+    const sql = 'UPDATE '+(Boolean(req.body.isProject)?'Projects':'Promos')+' SET client_company = \''+ req.body.client_company +'\', first_name = \''+ req.body.first_name + 
+    '\', last_name = \'' + req.body.last_name + '\', job_title = ' + (req.body.job_title == '' || req.body.job_title == null?'NULL':'\''+req.body.job_title + '\'') + ', '+
+    ((req.body.hasOwnProperty('mailing_list'))?' mailing_list = '+(req.body.mailing_list == '' || req.body.mailing_list == null?'NULL':'\''+ req.body.mailing_list+'\'') + ', ':'') +'address1 = \'' + req.body.address1 + '\', address2 = ' + (req.body.address2 == '' || req.body.address2 == null?'NULL':'\''+req.body.address2 + '\'') + ', city = \'' + req.body.city +
+    '\', state = \'' + req.body.state + '\', zip_code = \'' + req.body.zip_code + '\', work_phone = \'' + req.body.work_phone +
+    '\', home_phone = ' + (req.body.home_phone == '' || req.body.home_phone == null?'NULL':'\''+req.body.home_phone + '\'')  + ', cell = '+ (req.body.cell == '' || req.body.cell == null?'NULL':'\''+req.body.cell + '\'') + ', fax = ' + (req.body.fax == '' || req.body.fax == null?'NULL':'\''+req.body.fax + '\'') + ', email = \'' + req.body.email + '\'' +
+    ' WHERE ID = '+ req.body.ID + ';';
+    pool.query(sql, (err, deez) => {
+        if(err) {
+            console.error(err + '\n' + sql);
+            res.send(JSON.parse(JSON.stringify(err)));
+        }
+        else {
+            res.statusCode = 200;
+            res.send(JSON.parse('{"Status":"Success"}'));
+        }
     });
-})
+    // connection.execute(sql).then(() => {
+    //     res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));
+    // }).catch(err => {
+    //     console.log(err);
+    //     createTicket(err, "Cannot update contacts in Rolodex:");
+    //     res.send(JSON.parse(JSON.stringify(err)));
+    // });
+});
 
 /**
  * Previous requests from Justin Sousa at SHN to build a program to query coordinate data from the database.
@@ -1382,6 +1417,7 @@ app.post('/peowihfds', jsonParser, (req, res) => {
     });
 })
 
+/*
 // API for Justin's program.
 app.post('/mapMe', jsonParser, (req, res) => {
     // console.log(req.body);
@@ -1411,7 +1447,7 @@ app.post('/coordyUpdatey', jsonParser, (req, res) => {
         res.send(JSON.stringify(error));
     });
 })
-
+*/
 /**
  * Helper functions used by the APIs.
  */

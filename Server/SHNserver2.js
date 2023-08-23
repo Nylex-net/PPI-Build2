@@ -17,6 +17,7 @@ const { create } = require('domain');
 app.use(cors());
 var jsonParser = bodyParser.json();
 const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\PPI\\Database\\SHN_Project_Backup.mdb;";
+const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
 
 // Directory for production environment.
 // process.chdir("P:\\");
@@ -363,7 +364,8 @@ app.post('/updater', jsonParser, (req, res) => {
     let isProject = (req.body.isWhat != 1?true:false);
     let isBillingGroup = (req.body.isWhat == -1?true:false);
     const num = (isProject)?req.body.project_id:req.body.promo_id;
-    let dir = PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
+    // let dir = PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
+    let dir = DEMO_PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
     dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
     dir += (isProject)?'':'/Promos';
     if(!fs.exists(dir)) {
@@ -690,122 +692,6 @@ app.post('/updater', jsonParser, (req, res) => {
             res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));
         }
     });
-    // Executes the query.
-    /*
-    connection.execute(query)
-    .then(() => { // Everything that happens as a result of a successful execution.
-        // Build PDF in project/promo.
-        const doc = new PDFDocument();
-        doc.pipe(fs.createWriteStream(dir + '/'+num+'.pdf'));
-        for(let ifNull of Object.keys(req.body)) {
-            if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL') {
-                req.body[ifNull] = "None";
-            }
-        }
-        // PDF table creation runs asynchronously.
-        (async function(){
-            // Table data.
-            const table = {
-              title: (req.body.Projectid != null && req.body.Projectid != undefined)?req.body.Projectid:req.body.PromoId,
-              headers: ["Name", "User Input", "Client", "Info"],
-              rows: [
-                [ "Project/Promo ID", (req.body.Projectid != null && req.body.Projectid != undefined && req.body.Projectid != '')?req.body.Projectid:req.body.PromoId, "Client Company", req.body.ClientCompany1],
-                [ "Title", req.body.ProjectTitle, "Client Abbreviation", (req.body.ClientAbbrev1 == null || req.body.ClientAbbrev1 == undefined || req.body.ClientAbbrev1 == '')?"none":req.body.ClientAbbrev1],
-                ["Project Manager", req.body.ProjectMgrName, "Client First Name", req.body.ClientContactFirstName1],
-                ["QAQC Person", req.body.QAQCPersonName, "Client Last Name", req.body.ClientContactLastName1],
-                ["Type of Promo", req.body.AlternateTitle, "Relationship", req.body.ClientRelation],
-                ["Team Members", req.body.TeamMemberNames, "Job Title", req.body.Title1],
-                ["Start Date", formatDate(req.body.StartDate), "Address", req.body.Address1_1],
-                ["Close Date", formatDate(req.body.CloseDate), "2nd Address", req.body.Address2_1],
-                ["Location", req.body.ProjectLoation,"City", req.body.City1],
-                ["Latitude", req.body.Lattitude, "State", req.body.State1],
-                ["Longitude", req.body.Longitude, "Zip", req.body.Zip1],
-                ["Keywords", req.body.ProjectKeywords, "Work Phone", req.body.PhoneW1],
-                ["SHN Office", req.body.SHNOffice, "Home Phone", req.body.PhoneH1],
-                ["Service Area", req.body.ServiceArea, "Cell Phone", req.body.Cell1],
-                ["Total Contract", req.body.ToatlContract, "Fax", req.body.Fax1],
-                ["Service Agreement", req.body.ServiceAgreement, "Email", req.body.Email1],
-                ["If yes, why?", req.body.Explanation, "Binder Size", req.body.BinderSize],
-                ["Retainer", req.body.RetainerPaid, "Binder Location", req.body.BinderLocation],
-                ["Profile Code", req.body.ProfileCode,'',''],
-                ["Contract Type", req.body.ContractType,'',''],
-                ["Invoice Format", req.body.InvoiceFormat,'',''],
-                ["Client Contract/PO#", req.body.ClientContractPONumber,'',''],
-                ["Outside Markup", (req.body.OutsideMarkup == undefined)?0:req.body.OutsideMarkup,'',''],
-                ["Prevailing Wage", req.body.PREVAILING_WAGE,'',''],
-                ["Special Billing Instructions", req.body.SpecialBillingInstructins,'',''],
-                ["See also", req.body.SEEALSO,'',''],
-                ["AutoCAD", (req.body.AutoCAD_Project == -1)?'Yes':'No','',''],
-                ["GIS Job", (req.body.GIS_Project == -1)?'Yes':'No','',''],
-                ["Project Specifications", (req.body.Project_Specifications == -1)?'Yes':'No','Updated On',new Date().toString()],
-                ["Description of Service",req.body.DescriptionService,'Updated By', req.body.CreatedBy]
-              ]
-            };
-            
-            // Description of service table.
-            // const descTable = {
-            //     title: "Description of Services",
-            //     headers: ["Description of Services", "Description"],
-            //     rows: [["Description of Services", req.body.DescriptionService]]
-            // };
-            // A4 595.28 x 841.89 (portrait) (about width sizes)
-            // width
-            // await doc.table(table, { 
-            //   width: 400
-            // });
-            // or columnsSize
-            await doc.table(table, {
-                columnsSize: [ 120, 130, 100, 130],
-                padding: 2,
-                prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => { // Additional formatting of table.
-                    (indexColumn == 0 || indexColumn == 2)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                    // doc.addBackground(rectRow, (indexRow % 2 ? '#555555' : '#60A13F'), 0.15);
-                    const {x, y, width, height} = rectCell;
-                    // first line 
-                    // if(indexColumn === 0){
-                    //     doc
-                    //     .lineWidth(.5)
-                    //     .moveTo(x, y)
-                    //     .lineTo(x, y + height)
-                    //     .stroke();  
-                    // }
-                    // else
-                    if(indexColumn === 1 && indexRow != table.rows.length - 1) {
-                        doc
-                        .lineWidth(1)
-                        .moveTo(x + width, y)
-                        .lineTo(x + width, y + height)
-                        .stroke();
-                    }
-                    if((indexRow === 8 || indexRow === 17 || indexRow === 25) && indexColumn === 0) {
-                        doc
-                        .lineWidth(2)
-                        .moveTo(x, y)
-                        .lineTo(x + 250, y)
-                        .stroke();
-                    }
-
-                    doc.fontSize(10).fillColor('#000000');
-                }
-            });
-
-            // await doc.table(descTable, {
-            //     columnsSize: [ 100, 400],
-            //     prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => { // Additional formatting of table.
-            //         (indexColumn == 0)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-            //     }
-            // });
-            // done!
-            doc.end();
-          })();
-        // doc.end();
-        res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));
-    }).catch(error => { // Print and send error to client for debugging.
-        createTicket(error, "Cannot update initiation:");
-        console.log(error);
-        res.send(JSON.parse(JSON.stringify(error)));
-    });
-    */
 });
 
 /**
@@ -813,7 +699,7 @@ app.post('/updater', jsonParser, (req, res) => {
  */
 
 app.post('/getPath', jsonParser, (req, res) => {
-    let dir = (req.body.isClosed == "true")?closedJobDirDemo(req.body.ProjectID[0]):getDir(req.body.ProjectID[0]);
+    let dir = PATH + (req.body.isClosed == "true"?closedJobDirDemo(req.body.ProjectID[0]):getDir(req.body.ProjectID[0]));
     // if(req.body.isClosed == "true") {
     //     dir += '/ClosedJobs';
     // }
@@ -823,8 +709,8 @@ app.post('/getPath', jsonParser, (req, res) => {
     if(req.body.ProjectID[6] == '.' && req.body.ProjectID.length > 6) { // If it's a promo, goto Promos folder.
         dir += "/Promos";
     }
-    if(fs.existsSync(PATH + dir)) {
-        let dirFiles = fs.readdirSync(PATH + dir);
+    if(fs.existsSync(dir)) {
+        let dirFiles = fs.readdirSync(dir);
         // If it's an Arcata Project, remove "A".
         let arcata = (req.body.ProjectID[req.body.ProjectID.length-1] == 'A')?req.body.ProjectID.substring(0,req.body.ProjectID.trim().length-1):req.body.ProjectID;
         let found = false;
@@ -836,11 +722,11 @@ app.post('/getPath', jsonParser, (req, res) => {
             }
         }
         if(!found) {
-            console.log("Didn't find "+ req.body.ProjectID +" in " +PATH+ dir);
+            console.log("Didn't find "+ req.body.ProjectID +" in " +dir);
             res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
         }
         else {
-            dirFiles = fs.readdirSync(PATH + dir);
+            dirFiles = fs.readdirSync(dir);
             if(req.body.BillingGroup != null && req.body.BillingGroup != 'null') {
                 found = false;
                 for(let file of dirFiles) {
@@ -851,14 +737,14 @@ app.post('/getPath', jsonParser, (req, res) => {
                     }
                 }
                 if(!found) {
-                    console.log("Didn't find "+ req.body.BillingGroup +" in " +PATH+ dir);
+                    console.log("Didn't find "+ req.body.BillingGroup +" in " +dir);
                     res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                 }
                 else {
                     found = false;
                     let tempdir = '';
                     let namelength = undefined;
-                    dirFiles = fs.readdirSync(PATH + dir);
+                    dirFiles = fs.readdirSync(dir);
                     for(let file of dirFiles) {
                         if(file == 'PI.pdf') {
                             dir += '/' + file;
@@ -876,8 +762,8 @@ app.post('/getPath', jsonParser, (req, res) => {
                     }
                     if(!found && tempdir == '') {
                         dir += '/Setup';
-                        if(fs.existsSync(PATH+ dir)) {
-                            dirFiles = fs.readdirSync(PATH+ dir);
+                        if(fs.existsSync( dir)) {
+                            dirFiles = fs.readdirSync(dir);
                             found = false;
                             tempdir = '';
                             namelength = undefined;
@@ -897,23 +783,23 @@ app.post('/getPath', jsonParser, (req, res) => {
                                 }
                             }
                             if(!found && tempdir == '') {
-                                console.log("Didn't find "+ req.body.BillingGroup +" in " + PATH + dir);
+                                console.log("Didn't find "+ req.body.BillingGroup +" in " + dir);
                                 res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                             }
                             else {
                                 dir += '/' + tempdir;
-                                res.download(PATH+dir);
+                                res.download(dir);
                                 // res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                             }
                         }
                         else {
-                            console.log("Didn't find "+ req.body.BillingGroup +" in " + PATH + dir);
+                            console.log("Didn't find "+ req.body.BillingGroup +" in " + dir);
                             res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                         }
                     }
                     else {
                         dir += '/' + tempdir;
-                        res.download(PATH + dir);
+                        res.download(dir);
                         //res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                     }
                 }
@@ -939,8 +825,8 @@ app.post('/getPath', jsonParser, (req, res) => {
                 }
                 if(!found && tempdir == '') {
                     dir += '/Setup';
-                    if(fs.existsSync(PATH+ dir)) {
-                        dirFiles = fs.readdirSync(PATH+ dir);
+                    if(fs.existsSync(dir)) {
+                        dirFiles = fs.readdirSync( dir);
                         found = false;
                         tempdir = '';
                         namelength = undefined;
@@ -960,30 +846,30 @@ app.post('/getPath', jsonParser, (req, res) => {
                             }
                         }
                         if(!found && tempdir == '') {
-                            console.log("Didn't find "+ req.body.ProjectID +" in " + PATH + dir);
+                            console.log("Didn't find "+ req.body.ProjectID +" in " + dir);
                             res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                         }
                         else {
                             dir += '/' + tempdir;
-                            res.download(PATH+dir);
+                            res.download(dir);
                             // res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                         }
                     }
                     else {
-                        console.log("Didn't find "+ req.body.ProjectID +" in " + PATH + dir);
+                        console.log("Didn't find "+ req.body.ProjectID +" in " + dir);
                         res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                     }
                 }
                 else {
                     dir += '/' + tempdir;
-                    res.download(PATH + dir);
+                    res.download(dir);
                     //res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                 }
             }
         }
     }
     else {
-        console.log("Didn't find in " + PATH+ dir);
+        console.log("Didn't find in " + dir);
         res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
     }
 });
@@ -1023,7 +909,7 @@ app.post('/delete', jsonParser, (req, res) => {
 // Used by the close API to move contents into the cooresponding office's closed jobs folder.
 function moveProject(ID, closer) {
     // let dir = 'P:';
-    let dir = PATH + ((!isNaN(ID[0]))? getDir(Number(ID[0])):getDir(0)); // Get office directory.
+    let dir = DEMO_PATH + ((!isNaN(ID[0]))? getDir(Number(ID[0])):getDir(0)); // Get office directory.
     dir += (!isNaN(ID[1] + ID[2]) && Number(ID[1] + ID[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + ID[1] + ID[2]:'/20' + ID[1] + ID[2]; // Get project year.
     const projYear = (!isNaN(ID[1] + ID[2]) && Number(ID[1] + ID[2]) > new Date().getFullYear().toString().slice(-2))?Number('19' + ID[1] + ID[2]):Number("20" + ID[1] + ID[2]);
     const isPromo = (ID.length > 7)?true:false;
@@ -1046,7 +932,7 @@ function moveProject(ID, closer) {
         }
         // Move file only if a file was found.
         if(filer != null) {
-            let dest = PATH + closedJobDirDemo(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'');
+            let dest = DEMO_PATH + closedJobDirDemo(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'');
             if(!fs.existsSync(dest)) {
                 fs.mkdir((dest), err => {
                     if(err){
