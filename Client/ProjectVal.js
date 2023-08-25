@@ -543,6 +543,7 @@ function preparePost() {
     '"RetainerPaid":"'+ retainAmnt + '",' +
     '"WaivedBy":"'+ format(waiver) + '",' +
     '"ProfileCode":"'+ profCode + '",' +
+    '"ProfileCodeName":"'+ profCodeName + '",' +
     '"ContractType":"'+ contactType + '",' +
     '"contactTypeName":"'+contactTypeName + '",'+
     '"InvoiceID":"'+ invoiceFormat + '",'+
@@ -992,7 +993,7 @@ function page7() {
     '<div class="grid-item">Client Company' + '</div>'
     + '<div class="grid-item">' + clientComp + '</div>'+
     '<div class="grid-item">Mail Lists' + '</div>'
-    + '<div class="grid-item">' + mailList + '</div>'+
+    + '<div class="grid-item">' + (mailList == 'NULL'?'None':mailList) + '</div>'+
     '<div class="grid-item">Client Abbreviation' + '</div>'
     + '<div class="grid-item">' + clientAbbr + '</div>'+
     '<div class="grid-item">Client First Name' + '</div>'
@@ -1024,7 +1025,7 @@ function page7() {
     '<div class="grid-item">Email' + '</div>'
     + '<div class="grid-item">' + email + '</div>'+
     '<div class="grid-item">Binder Size' + '</div>'
-    + '<div class="grid-item">' + binderSize + '</div>'+
+    + '<div class="grid-item">' + (binderSize == 'NULL'?'N/A':binderSize + ' inch') + '</div>'+
     '<div class="grid-item">Binder Location' + '</div>'
     + '<div class="grid-item">' + binderLoc + '</div>'+
     '<div class="grid-item">Description of Services' + '</div>'

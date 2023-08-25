@@ -51,7 +51,7 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
  */
 
 // Directory for testing environment.
-process.chdir("P:\\");
+process.chdir("U:\\Eureka\\Nylex\\test\\Mock_Drive");
 const PATH = "P:";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
 
@@ -327,6 +327,11 @@ app.post('/result', jsonParser, (req, res) => {
             doc.pipe(fs.createWriteStream(dir + '/'+ removeA +'.pdf'));
             (async function(){
                 // table 
+                for(let ifNull of Object.keys(req.body)) {
+                    if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL' || req.body[ifNull] == '') {
+                        req.body[ifNull] = "None";
+                    }
+                }
                 const table = {
                     title: (req.body.Projectid != null && req.body.Projectid != undefined)?req.body.Projectid:req.body.PromoId,
                     subtitle: "Project Initiation",
@@ -348,8 +353,8 @@ app.post('/result', jsonParser, (req, res) => {
                         ["Total Contract", req.body.TotalContract, "Cell Phone", removeEscapeQuote(req.body.Cell1)],
                         ["Service Agreement", req.body.ServiceAgreement, "Fax", removeEscapeQuote(req.body.Fax1)],
                         ["If yes, why?", req.body.Explanation, "Email", removeEscapeQuote(req.body.Email1)],
-                        ["Retainer", removeEscapeQuote((req.body.Retainer == 'enterAmnt'?req.body.RetainerPaid:(req.body.Retainer == 'Waived by X'?req.body.WaivedBy:req.body.Retainer))), "Binder Size", req.body.BinderSize],
-                        ["Profile Code", req.body.ProfileCode, "Binder Location", req.body.BinderLocation],
+                        ["Retainer", removeEscapeQuote((req.body.Retainer == 'Enter Amount'?req.body.RetainerPaid:(req.body.Retainer == 'Waived by X'?"Waived by " + removeEscapeQuote(req.body.WaivedBy):req.body.Retainer))), "Binder Size", req.body.BinderSize],
+                        ["Profile Code", req.body.ProfileCodeName, "Binder Location", req.body.BinderLocation],
                         ["Contract Type", req.body.contactTypeName,'-','-'],
                         ["Invoice Format", req.body.InvoiceFormat,'-','-'],
                         ["Client Contract/PO#", req.body.ClientContractPONumber,'-','-'],
@@ -601,7 +606,12 @@ app.post('/promo', jsonParser, (req, res) => {
             doc.pipe(fs.createWriteStream(myPath));
     
             (async function(){
-                // table 
+                // table
+                for(let ifNull of Object.keys(req.body)) {
+                    if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL' || req.body[ifNull] == '') {
+                        req.body[ifNull] = "None";
+                    }
+                }
                 const table = {
                   title: (req.body.Projectid != null && req.body.Projectid != undefined)?req.body.Projectid:req.body.PromoId,
                   subtitle: "Promo Initiation",
@@ -880,7 +890,12 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                 doc.pipe(fs.createWriteStream(dir + '/'+ removeA +'.pdf'));
                     
                 (async function(){
-                    // table 
+                    // table
+                    for(let ifNull of Object.keys(req.body)) {
+                        if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL' || req.body[ifNull] == '') {
+                            req.body[ifNull] = "None";
+                        }
+                    }
                     const table = {
                       title: "Promo to Project",
                       subtitle: "Promo " + req.body.PromoId + " converted to Project " + removeA,
@@ -1185,7 +1200,12 @@ app.post('/submitBill', jsonParser, (req, res) => {
                 doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
                 // Content of PDF.
                 (async function(){
-                    // table 
+                    // table
+                    for(let ifNull of Object.keys(req.body)) {
+                        if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL' || req.body[ifNull] == '') {
+                            req.body[ifNull] = "None";
+                        }
+                    }
                     const table = {
                     title: req.body.ProjectId,
                     subtitle: 'Billing group ' + req.body.BillingNum + ' created for ' + req.body.ProjectId,

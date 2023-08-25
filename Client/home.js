@@ -1167,6 +1167,7 @@ function submitBilling() {
         '"Longitude":"'+ format(longitude) + '",' +
         '"ProjectKeywords":"'+ teamString(keyNames) + ','+ format(myNames) + '",' +
         '"ProfileCode":"'+ profCode + '",' +
+        '"ProfileCodeName":"'+ format(profCodeName) + '",' +
         '"ContractType":"'+ contactType + '",' +
         '"contactTypeName":"'+ contactTypeName + '",'+
         '"InvoiceFormat":"'+ invoiceFormat + '",' +

@@ -699,7 +699,7 @@ app.post('/updater', jsonParser, (req, res) => {
  */
 
 app.post('/getPath', jsonParser, (req, res) => {
-    let dir = PATH + (req.body.isClosed == "true"?closedJobDirDemo(req.body.ProjectID[0]):getDir(req.body.ProjectID[0]));
+    let dir = DEMO_PATH + (req.body.isClosed == "true"?closedJobDirDemo(req.body.ProjectID[0]):getDir(req.body.ProjectID[0]));
     // if(req.body.isClosed == "true") {
     //     dir += '/ClosedJobs';
     // }
