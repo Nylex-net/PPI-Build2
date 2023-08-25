@@ -1010,8 +1010,8 @@ function page1() {
 
 function page2() {
     return '<div class="grid-container">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
-    getTextField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, true) +
-    getTextField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, true)
+    getNumberField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, -1, -90, 90, true) +
+    getNumberField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, -1, -90, 90, true)
     + '<div class="grid-item"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
     '<div class="grid-item"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
     +'</div>';
@@ -1436,6 +1436,13 @@ function reqField(currPage) { // Parameter currPage is the page the user is curr
         }
 
         // Success if we get here.
+        // Shorten coordinate values if they're too long.
+        if(latitude.toString().indexOf('.') !== -1) {
+            latitude = Number(latitude).toFixed(6);
+        }
+        if(longitude.toString().indexOf('.') !== -1) {
+            longitude = Number(longitude).toFixed(6);
+        }
 
     }
     else if(currPage == 3) { // Evaluate page 3.

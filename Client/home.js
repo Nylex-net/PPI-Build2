@@ -764,6 +764,14 @@ function reqField(currPage) {
            return false;
         }
         
+        // Success if we get here.
+        // Shorten coordinate values if they're too long.
+        if(latitude.toString().indexOf('.') !== -1) {
+            latitude = Number(latitude).toFixed(6);
+        }
+        if(longitude.toString().indexOf('.') !== -1) {
+            longitude = Number(longitude).toFixed(6);
+        }
     }
     else if(currPage == 3) {
 

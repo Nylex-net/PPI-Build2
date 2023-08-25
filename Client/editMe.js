@@ -1515,7 +1515,12 @@ function reqField(currPage) {
         }
 
         // Success if we get here.
-
+        if(latitude.toString().indexOf('.') !== -1) {
+            latitude = Number(latitude).toFixed(6);
+        }
+        if(longitude.toString().indexOf('.') !== -1) {
+            longitude = Number(longitude).toFixed(6);
+        }
     }
     else if(currPage == 3) { // Evaluate page 3.
 
