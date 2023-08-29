@@ -110,7 +110,7 @@ function findPromos() {
                 document.getElementById('results').innerHTML = '<strong>Results:</strong><br>';
                 jsonResults = json;
                 resultString(json);
-                for(content of formatMap.values()) {
+                for(let content of formatMap.values()) {
                     document.getElementById('results').innerHTML += content;
                 }
             }
@@ -1079,10 +1079,10 @@ function page7() {
     formatCloseDate = ((formatCloseDate.getMonth() + 1) + '-' + formatCloseDate.getDate() + '-' + formatCloseDate.getFullYear()).toString();
     let formatMem = '';
     let formatKeys = '';
-    for(names of memNames) {
+    for(let names of memNames) {
         formatMem += names + '<br>';
     }
-    for(keys of keyNames) {
+    for(let keys of keyNames) {
         formatKeys += keys + '<br>';
     }
     let waived = (retainer == 'Waived by X') ? 'Waived by ' + waiver:retainer;
@@ -1235,7 +1235,7 @@ function saveChoices(currPage) {
         let prevkeys = document.querySelectorAll('input[name="key"]:checked');
         Projkeywords = [];
         keyNames = [];
-        for(key of prevkeys) {
+        for(let key of prevkeys) {
             if(key.checked) {
                 Projkeywords.push(key.id);
                 keyNames.push(key.placeholder);
@@ -1243,7 +1243,7 @@ function saveChoices(currPage) {
         }
         let others = document.getElementsByName("Otherkey");
         otherKeys = [];
-        for(other of others) {
+        for(let other of others) {
             if(other.value.trim() != '') {
                 otherKeys.push(other.value.trim());
             }
@@ -1387,7 +1387,7 @@ function reqField(currPage) { // Parameter currPage is the page the user is curr
 
         // Inserts new selections into teamMem.
 
-        for(selection of mySelects) {
+        for(let selection of mySelects) {
             if(selection.checked){
                 teamMem.push(selection.id);
                 memNames.push(selection.placeholder);
@@ -1710,8 +1710,8 @@ function fillAfterLoad(currPage) {
         // For-loops to select the checkboxes from previous user selections, if any.
         // The loops tests checkboxes based on the checkbox IDs stored in variable teamMem.
         
-        for(memb of teamMem) {
-            for(selects of prevSelects) {
+        for(let memb of teamMem) {
+            for(let selects of prevSelects) {
                 if(memb == selects.id) {
                     document.getElementById(selects.id).checked = true;
                     break;
@@ -1728,8 +1728,8 @@ function fillAfterLoad(currPage) {
         // For-loops to select the checkboxes from previous user selections, if any.
         // The loops tests checkboxes based on the checkbox IDs stored in variable Projkeywords.
         
-        for(check of Projkeywords) {
-            for(ischeck of nuts) {
+        for(let check of Projkeywords) {
+            for(let ischeck of nuts) {
                 if(check == ischeck.id) {
                     document.getElementById(ischeck.id).checked = true;
                     break;

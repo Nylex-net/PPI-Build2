@@ -1208,8 +1208,8 @@ function fillAfterLoad(currPage) {
         // For-loops to select the checkboxes from previous user selections, if any.
         // The loops tests checkboxes based on the checkbox IDs stored in variable Projkeywords.
         
-        for(check of Projkeywords) {
-            for(ischeck of nuts) {
+        for(let check of Projkeywords) {
+            for(let ischeck of nuts) {
                 if(check == ischeck.id) {
                     document.getElementById(ischeck.id).checked = true;
                     break;
@@ -1245,7 +1245,7 @@ function saveChoices(currPage) {
         let prevkeys = document.querySelectorAll('input[name="key"]:checked');
         Projkeywords = [];
         keyNames = [];
-        for(key of prevkeys) {
+        for(let key of prevkeys) {
             if(key.checked) {
                 Projkeywords.push(key.id);
                 keyNames.push(key.placeholder);
@@ -1253,7 +1253,7 @@ function saveChoices(currPage) {
         }
         let others = document.getElementsByName("Otherkey");
         otherKeys = [];
-        for(other of others) {
+        for(let other of others) {
             if(other.value.trim() != '') {
                 otherKeys.push(other.value.trim());
             }

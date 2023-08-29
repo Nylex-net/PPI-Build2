@@ -410,10 +410,10 @@ function nextPage(num) {
 
         let formatMem = '';
         let formatKeys = '';
-        for(names of memNames) {
+        for(let names of memNames) {
             formatMem += names + '<br>';
         }
-        for(keys of keyNames) {
+        for(let keys of keyNames) {
             formatKeys += keys + '<br>';
         }
 

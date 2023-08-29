@@ -885,10 +885,10 @@ function page7() {
     formatCloseDate = ((formatCloseDate.getMonth() + 1) + '-' + formatCloseDate.getDate() + '-' + formatCloseDate.getFullYear()).toString();
     let formatMem = '';
     let formatKeys = '';
-    for(names of memNames) {
+    for(let names of memNames) {
         formatMem += names + '<br>';
     }
-    for(keys of keyNames) {
+    for(let keys of keyNames) {
         formatKeys += keys + '<br>';
     }
 
