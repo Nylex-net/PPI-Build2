@@ -121,7 +121,7 @@ function findPromos() {
     };
     console.log(document.getElementById('PromoSucc').value);
     try{
-        xhr.send(JSON.parse(JSON.stringify('{"PromoId":"' + document.getElementById('PromoSucc').value + '"}')));  // an error message typically looks like "{process: {…}, exitCode: 0}" in the console.
+        xhr.send(JSON.parse(JSON.stringify('{"PromoId":"' + document.getElementById('PromoSucc').value + '"}')));
     }
     catch(err) {
         document.getElementById('results').innerHTML = '<button type="button" onclick="search()">Search</button><br><br><strong>Could not connect.</strong><br>';
