@@ -1536,7 +1536,7 @@ function removeEscapeQuote(SQLFormat) {
 
 function createDirectories(root, gis) {
     // All directories needed.
-    const dir = ['Corr', 'Data/MatLab', 'Data/RefDocs', 'Data/SafetyMeetingForms', 'Dwgs/BY-OTHERS', 'Dwgs/PDF-DWF', 'Dwgs/RECORD-DRAWINGS', 'Figs', 'Inv', 'Photos', 'Promos', 'PUBS/agr', 'PUBS/Corr', 'PUBS/data', 'PUBS/inv', 'PUBS/promos', 'PUBS/rpts', 'Rpts', 'Setup'];
+    const dir = ['Corr', 'Data/MatLab', 'Data/RefDocs', 'Data/SafetyMeetingForms', 'Dwgs/BY-OTHERS', 'Dwgs/PDF', 'Dwgs/RECORD-DRAWINGS', 'Figs', 'Inv', 'Photos', 'Promos', 'PUBS/agr', 'PUBS/Corr', 'PUBS/data', 'PUBS/inv', 'PUBS/promos', 'PUBS/rpts', 'Rpts', 'Setup'];
     // Typically it's only the billing group that shouldn't have GIS folders.  In which case, gis must be set to true.
     if(gis) {
         let gisDirs = ['GIS/Data', 'GIS/drafts', 'GIS/InOut', 'GIS/ProProject', 'GIS/Project Info'];
