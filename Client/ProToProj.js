@@ -633,7 +633,7 @@ function preparePost() {
         retainAmnt = Number(retainAmnt);
     }
 
-    let waived = (retainer == 'Waived by X') ? 'Waived by X' + waiver:"NULL";
+    let waived = (retainer == 'Waived by X') ? waiver:"NULL";
 
     if(autoCad != true && autoCad != false) {
         alert('An invalid value has been detected for AutoCAD Job: ' + autoCad);
@@ -750,7 +750,7 @@ function preparePost() {
     '"RetainerPaid":"'+ retainAmnt + '",' +
     '"WaivedBy":"'+ format(waived) + '",' +
     '"ProfileCode":"'+ profCode + '",' +
-    '"ProfileCodeName":"'+ profCodeName + '",' +
+    '"ProfileCodeName":"'+ format(profCodeName) + '",' +
     '"ContractType":"'+ contactType + '",' +
     '"contactTypeName":"'+contactTypeName + '",'+
     '"InvoiceID":"'+ invoiceFormat + '",'+
