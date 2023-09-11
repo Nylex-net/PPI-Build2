@@ -1211,7 +1211,7 @@ function submitBilling() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const json = JSON.parse(xhr.response);
             if(json.hasOwnProperty('Status')) {
-                document.getElementById('submitter').innerHTML = 'Success! <button type="button" onclick="submit();">Start Over</button> or <a href="Project_initiation_home.html">Back to Home</a>';
+                document.getElementById('submitter').innerHTML = 'Success! <button type="button" onclick="submit();">Start Over</button> or <a href="index.html">Back to Home</a>';
             }
             else{
                 document.getElementById('submitter').innerHTML = 'Submission unsuccessful.  Try again or get help.<br><button type="button" onclick="goBack(3)">Back</button><button type="button" onclick="submitBilling()">Submit</button>';

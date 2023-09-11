@@ -802,7 +802,7 @@ function preparePost() {
             var json = JSON.parse(xhr.responseText);
             console.log(json);
             if(json.hasOwnProperty('Status')) {
-                document.getElementById('sending').innerHTML = '<p id="submitStat">Your form has submitted! Project number: '+ json.Status +'<br><button type="button" onclick="submit()">Start Over</button> or <a href="Project_Initiation_home.html">Back to Home</a></p>';
+                document.getElementById('sending').innerHTML = '<p id="submitStat">Your form has submitted! Project number: '+ json.Status +'<br><button type="button" onclick="submit()">Start Over</button> or <a href="index.html">Back to Home</a></p>';
             }
             else{
                 document.getElementById('sending').innerHTML = document.getElementById('sending').innerHTML = '<p id="submitStat">Something went wrong. Try again or contact help.<br/><button type="button" onclick="goBack(6)">Back</button><button type="button" onclick="preparePost()">Submit</button></p>';
