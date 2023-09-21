@@ -86,6 +86,10 @@ let contactTypeName;
 let invoiceName;
 let selectedPromo;
 let activeUser = '';
+let workPhoneInput;
+let homePhoneInput;
+let cellPhoneInput;
+let faxInput;
 
 function findPromos() {
     document.getElementById('results').innerHTML = 'Searching...';
@@ -257,7 +261,7 @@ function getKeysByName() {
     };
     console.log(jsonString);
     try{
-        xhr.send(jsonString);  // an error message typically looks like "{process: {…}, exitCode: 0}" in the console.
+        xhr.send(jsonString);
     }
     catch(bruh) {
         document.getElementById('inserter').innerHTML = '<p id="submitStat">Could not connect.</p>';
@@ -1058,9 +1062,9 @@ function page5() {
             '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
             '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
             '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="20" required></div>'+
-            '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="20"></div>'+
-            '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="20"></div>'+
-            '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="20"></div>'+
+            '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
+            '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
+            '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
             '<div class="grid-item"><label for="email">Email<span class="astrick">*</span></label></div><div class="grid-item"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" required></div>'
     + '</div>';
 }
@@ -1811,6 +1815,55 @@ function getPage(currPage) { // Parameter currPage is the page to format and be 
 
         document.getElementById('projForm').innerHTML = page5() + '<div class="buttons"><button type="button" onclick="goBack(4)">Back</button><button type="button" onclick="reqField(5)">Next</button></div>';
 
+        workPhoneInput = document.getElementById('WP');
+        homePhoneInput = document.getElementById('HP');
+        cellPhoneInput = document.getElementById('cell');
+        faxInput = document.getElementById('fax');
+
+        workPhoneInput.addEventListener('input', function () {
+            // Remove any non-numeric characters
+            const cleanedValue = this.value.replace(/\D/g, '');
+
+            // Format the phone number with dashes
+            const formattedValue = formatPhoneNumber(cleanedValue);
+
+            // Set the formatted value back to the input field
+            this.value = formattedValue;
+        });
+
+        homePhoneInput.addEventListener('input', function () {
+            // Remove any non-numeric characters
+            const cleanedValue = this.value.replace(/\D/g, '');
+
+            // Format the phone number with dashes
+            const formattedValue = formatPhoneNumber(cleanedValue);
+
+            // Set the formatted value back to the input field
+            this.value = formattedValue;
+        });
+
+        cellPhoneInput.addEventListener('input', function () {
+            // Remove any non-numeric characters
+            const cleanedValue = this.value.replace(/\D/g, '');
+
+            // Format the phone number with dashes
+            const formattedValue = formatPhoneNumber(cleanedValue);
+
+            // Set the formatted value back to the input field
+            this.value = formattedValue;
+        });
+
+        faxInput.addEventListener('input', function () {
+            // Remove any non-numeric characters
+            const cleanedValue = this.value.replace(/\D/g, '');
+
+            // Format the phone number with dashes
+            const formattedValue = formatPhoneNumber(cleanedValue);
+
+            // Set the formatted value back to the input field
+            this.value = formattedValue;
+        });
+
         // Fill the page, since we don't have an API call.
 
         fillPage(5);
@@ -1831,4 +1884,18 @@ function getPage(currPage) { // Parameter currPage is the page to format and be 
 
         document.getElementById('projForm').innerHTML = page7() + '<div id="sending"><div class="buttons"><button type="button" onclick="goBack(6)">Back</button><button type="button" onclick="preparePost()">Submit</button></div></div>';
     }
+}
+
+/**
+ * 
+ * @param {String} phoneNumber 
+ * @returns String in phone number format.
+ */
+function formatPhoneNumber(phoneNumber) {
+    const match = phoneNumber.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+    if (match) {
+        const parts = match.slice(1).filter(Boolean);
+        return parts.join('-');
+    }
+    return phoneNumber;
 }

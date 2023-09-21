@@ -24,6 +24,10 @@ let clientRelation = '';
 let openHouse = false;
 let xmas = false;
 let activeUser = '';
+let workPhoneInput;
+let homePhoneInput;
+let cellPhoneInput;
+let faxInput;
 
 /**
  * Loads the first page.
@@ -194,6 +198,55 @@ function manager(currPage) {
             document.getElementById('cell').value = (userData[0].cell == undefined || userData[0].cell == null)?'':userData[0].cell;
             document.getElementById('fax').value = (userData[0].fax == undefined || userData[0].fax == null)?'':userData[0].fax;
             document.getElementById('email').value = userData[0].email;
+
+            workPhoneInput = document.getElementById('WP');
+            homePhoneInput = document.getElementById('HP');
+            cellPhoneInput = document.getElementById('cell');
+            faxInput = document.getElementById('fax');
+    
+            workPhoneInput.addEventListener('input', function () {
+                // Remove any non-numeric characters
+                const cleanedValue = this.value.replace(/\D/g, '');
+    
+                // Format the phone number with dashes
+                const formattedValue = formatPhoneNumber(cleanedValue);
+    
+                // Set the formatted value back to the input field
+                this.value = formattedValue;
+            });
+    
+            homePhoneInput.addEventListener('input', function () {
+                // Remove any non-numeric characters
+                const cleanedValue = this.value.replace(/\D/g, '');
+    
+                // Format the phone number with dashes
+                const formattedValue = formatPhoneNumber(cleanedValue);
+    
+                // Set the formatted value back to the input field
+                this.value = formattedValue;
+            });
+    
+            cellPhoneInput.addEventListener('input', function () {
+                // Remove any non-numeric characters
+                const cleanedValue = this.value.replace(/\D/g, '');
+    
+                // Format the phone number with dashes
+                const formattedValue = formatPhoneNumber(cleanedValue);
+    
+                // Set the formatted value back to the input field
+                this.value = formattedValue;
+            });
+    
+            faxInput.addEventListener('input', function () {
+                // Remove any non-numeric characters
+                const cleanedValue = this.value.replace(/\D/g, '');
+    
+                // Format the phone number with dashes
+                const formattedValue = formatPhoneNumber(cleanedValue);
+    
+                // Set the formatted value back to the input field
+                this.value = formattedValue;
+            });
         }
     }
     else if(currPage === 5 && !isBillingGroup) {
@@ -215,6 +268,55 @@ function manager(currPage) {
             document.getElementById('cell').value = (userData[0].cell == undefined || userData[0].cell == null)?'':userData[0].cell;
             document.getElementById('fax').value = (userData[0].fax == undefined || userData[0].fax == null)?'':userData[0].fax;
             document.getElementById('email').value = userData[0].email;
+
+            workPhoneInput = document.getElementById('WP');
+            homePhoneInput = document.getElementById('HP');
+            cellPhoneInput = document.getElementById('cell');
+            faxInput = document.getElementById('fax');
+    
+            workPhoneInput.addEventListener('input', function () {
+                // Remove any non-numeric characters
+                const cleanedValue = this.value.replace(/\D/g, '');
+    
+                // Format the phone number with dashes
+                const formattedValue = formatPhoneNumber(cleanedValue);
+    
+                // Set the formatted value back to the input field
+                this.value = formattedValue;
+            });
+    
+            homePhoneInput.addEventListener('input', function () {
+                // Remove any non-numeric characters
+                const cleanedValue = this.value.replace(/\D/g, '');
+    
+                // Format the phone number with dashes
+                const formattedValue = formatPhoneNumber(cleanedValue);
+    
+                // Set the formatted value back to the input field
+                this.value = formattedValue;
+            });
+    
+            cellPhoneInput.addEventListener('input', function () {
+                // Remove any non-numeric characters
+                const cleanedValue = this.value.replace(/\D/g, '');
+    
+                // Format the phone number with dashes
+                const formattedValue = formatPhoneNumber(cleanedValue);
+    
+                // Set the formatted value back to the input field
+                this.value = formattedValue;
+            });
+    
+            faxInput.addEventListener('input', function () {
+                // Remove any non-numeric characters
+                const cleanedValue = this.value.replace(/\D/g, '');
+    
+                // Format the phone number with dashes
+                const formattedValue = formatPhoneNumber(cleanedValue);
+    
+                // Set the formatted value back to the input field
+                this.value = formattedValue;
+            });
         }
         else {
             document.getElementById('binder').value = (userData[0].binder_size == undefined || userData[0].binder_size == null || userData[0].binder_size == 'NULL')? 'NULL':userData[0].binder_size;
@@ -330,6 +432,21 @@ function limit(element)
     if(element.value.length > max_chars) {
         element.value = element.value.substr(0, max_chars);
     }
+}
+
+/**
+ * 
+ * @param {String} phoneNumber 
+ * @returns String in phone number format.
+ */
+
+function formatPhoneNumber(phoneNumber) {
+    const match = phoneNumber.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+    if (match) {
+        const parts = match.slice(1).filter(Boolean);
+        return parts.join('-');
+    }
+    return phoneNumber;
 }
 
 /**
@@ -520,10 +637,10 @@ function getPage(num) {
             getTextField('City', 'city', userData[0].city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
             '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="20" required></div>'+
-            '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="20"></div>'+
-            '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="20"></div>'+
-            '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="20"></div>'+
+            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="12" required></div>'+
+            '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
+            '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
+            '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
             '<div class="grid-item"><label for="email">Email<span class="astrick">*</span></label></div><div class="grid-item"><input type="email" id="email" name="email" maxlength="75" required></div>'
             + '</div>';
         }
@@ -625,10 +742,10 @@ function getPage(num) {
             getTextField('City', 'city', userData[0].city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
             '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="20" required></div>'+
-            '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="20"></div>'+
-            '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="20"></div>'+
-            '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="20"></div>'+
+            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="12" required></div>'+
+            '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
+            '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
+            '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
             '<div class="grid-item"><label for="email">Email<span class="astrick">*</span></label></div><div class="grid-item"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" required></div>'
             + '</div>';
         }
