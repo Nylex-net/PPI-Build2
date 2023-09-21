@@ -521,7 +521,8 @@ app.post('/updater', jsonParser, (req, res) => {
     // If latitude and/or longitude aren't numbers, don't bother inserting them into the database.
 
     // query += (req.body.Projectid != null && req.body.Projectid != undefined && req.body.Projectid.length >=6 && !isNaN(req.body.Projectid))?' WHERE Projectid = \'' + req.body.Projectid + '\'':' WHERE PromoId = \'' + req.body.PromoId + '\'';
-    console.log(query);
+    //console.log(query);
+    const mydate = new Date().toString();
 
     pool.query(query, (err, foo) => {
         if(err) {
@@ -561,7 +562,7 @@ app.post('/updater', jsonParser, (req, res) => {
                     ["Billing Instructions", req.body.special_billing_instructions,'-','-'],
                     ["AutoCAD Project", (req.body.autoCAD == 1)?'Yes':'No','-','-'],
                     ["GIS Project", (req.body.GIS == 1)?'Yes':'No','-','-'],
-                    ["Binder Size", (req.body.binder_size == "NULL" || req.body.binder_size == null?"None":req.body.BinderSize + " inch"),'Updated on',new Date().toString()],
+                    ["Binder Size", (req.body.binder_size == "NULL" || req.body.binder_size == null?"None":req.body.BinderSize + " inch"),'Updated on',mydate.toString()],
                     ["Description of Services", req.body.description_service,'Updated By',req.body.CreatedBy]
                 ];
                 head = ["Billing", "Input", "Project", "Info"];
@@ -597,7 +598,7 @@ app.post('/updater', jsonParser, (req, res) => {
                     ["See Also", (req.body.see_also == 'NULL' || req.body.see_also == null?'None':req.body.see_also),'-','-'],
                     ["AutoCAD", (req.body.autoCAD == 1)?'Yes':'No','-','-'],
                     ["GIS Job", (req.body.GIS == 1)?'Yes':'No','-','-'],
-                    ["Project Specifications", (req.body.project_specifications == 1)?'Yes':'No','Updated on',new Date().toString()],
+                    ["Project Specifications", (req.body.project_specifications == 1)?'Yes':'No','Updated on',mydate.toString()],
                     ["Description of Services", (req.body.description_service),'Updated By',(req.body.CreatedBy)]
                 ];
                 head = ["Name", "User Input", "Client", "Info"];
@@ -623,7 +624,7 @@ app.post('/updater', jsonParser, (req, res) => {
                     ["Profile Code", req.body.ProfileCode, "Fax", (req.body.fax == 'NULL' || req.body.fax == null ?'None':req.body.fax)],
                     ['-', '-', "Email", req.body.email],
                     ['-', '-', "Binder Size", (req.body.binder_size == 'NULL' || req.body.binder_size == null ?'None':req.body.binder_size)],
-                    ['-', '-', 'Updated On', new Date().toString()],
+                    ['-', '-', 'Updated On', mydate.toString()],
                     ["Description of Service",req.body.description_service,'Updated By', req.body.CreatedBy]
                 ];
                 head = ["Name", "User Input", "Client", "Info"];
@@ -687,6 +688,19 @@ app.post('/updater', jsonParser, (req, res) => {
                 // });
                 // done!
                 doc.end();
+                
+                // Append the content to the file
+                fs.appendFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + '\n', (err) => {
+                    if (err) {
+                        console.error('Error appending to the file to '+dir + '/log.txt'+':', err);
+                        // Write the content to the file
+                        fs.writeFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + '\n', (err) => {
+                            if (err) {
+                            console.error('Error creating the file to '+dir + '/log.txt'+':', err);
+                            }
+                        });
+                    }
+                });
             })();
             // doc.end();
             res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));

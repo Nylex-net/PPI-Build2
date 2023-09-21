@@ -399,7 +399,7 @@ app.post('/result', jsonParser, (req, res) => {
                 doc.end();
 
                 // Create the directories for Project.
-                createDirectories(dir, true);
+                createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
             
                 // Start of array of who to notify of this creation.
                 const admins = jsonData.email.admins;
@@ -672,7 +672,7 @@ app.post('/promo', jsonParser, (req, res) => {
                 doc.end();
     
                 // Create directories for Promo folder.
-                createDirectories(dir, true);
+                createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
     
                 // Array to store contacts of who to notify of this creation.
                 const admins = jsonData.email.admins;
@@ -879,7 +879,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                     }
                 });
             }
-            createDirectories(dir, true);
+            createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
     
             let removeA = projnum;
             if(projnum.length > 6 && projnum[6] == 'A') {
@@ -963,7 +963,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                     doc.end();
     
                     // Create the directories for Project.
-                    createDirectories(dir, true);
+                    createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
     
                     // Start of array of who to notify of this creation.
                     const admins = jsonData.email.admins;
@@ -1195,7 +1195,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
                     });
                 }
                 // console.log("Directory is " + dir);
-                createDirectories(dir, false);
+                createDirectories(dir, false, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
                 const doc = new PDFDocument();
                 doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
                 // Content of PDF.
@@ -1535,7 +1535,7 @@ function removeEscapeQuote(SQLFormat) {
  * Parameter "root" is the single folder where all the directories will live.
  */
 
-function createDirectories(root, gis) {
+function createDirectories(root, gis, userLog) {
     // All directories needed.
     const dir = ['Corr', 'Data/MatLab', 'Data/RefDocs', 'Data/SafetyMeetingForms', 'Dwgs/BY-OTHERS', 'Dwgs/PDF', 'Dwgs/RECORD-DRAWINGS', 'Figs', 'Inv', 'Photos', 'Promos', 'PUBS/agr', 'PUBS/Corr', 'PUBS/data', 'PUBS/inv', 'PUBS/promos', 'PUBS/rpts', 'Rpts', 'Setup'];
     // Typically it's only the billing group that shouldn't have GIS folders.  In which case, gis must be set to true.
@@ -1597,6 +1597,12 @@ function createDirectories(root, gis) {
             }
         });
     }
+    // Write the content to the file
+    fs.writeFile(root + '/log.txt', userLog + '\n', (err) => {
+        if (err) {
+        console.error('Error creating the log file in '+root+':', err);
+        }
+    });
 }
 
 /**
