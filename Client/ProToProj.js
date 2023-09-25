@@ -56,6 +56,7 @@ let city = ''; // required
 let state = 'CA'; // required
 let zip = ''; // required
 let workPhone = ''; // required
+let ext = '';
 let homePhone = '';
 let cell = '';
 let fax = '';
@@ -204,6 +205,7 @@ function starter(res) {
     state = chosenJson.state;
     zip = chosenJson.zip_code;
     workPhone = chosenJson.work_phone;
+    ext = chosenJson.ext;
     homePhone = chosenJson.home_phone;
     cell = chosenJson.cell;
     fax = chosenJson.fax;
@@ -781,6 +783,7 @@ function preparePost() {
     '"State1":"'+ state + '",'+
     '"Zip1":"'+ zip + '",'+
     '"PhoneW1":"'+ format(workPhone) + '",'+
+    '"Ext":"'+ format((ext == '' || ext == undefined?'NULL':ext)) + '",'+
     '"PhoneH1":"'+ format(homePhone) + '",'+
     '"Cell1":"'+ format(cell) + '",'+
     '"Fax1":"'+ format(fax) + '",'+
@@ -1061,7 +1064,7 @@ function page5() {
     getTextField('City', 'city', city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
             '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="20" required></div>'+
+            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="20" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
             '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
             '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
             '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
@@ -1206,7 +1209,7 @@ function page7() {
     '<div class="grid-item">Zip' + '</div>'
     + '<div class="grid-item">' + zip + '</div>'+
     '<div class="grid-item">Work Phone' + '</div>'
-    + '<div class="grid-item">' + workPhone + '</div>'+
+    + '<div class="grid-item">' + workPhone + (ext != ''?' Ext: ' + ext:'') + '</div>'+
     '<div class="grid-item">Home Phone' + '</div>'
     + '<div class="grid-item">' + homePhone + '</div>'+
     '<div class="grid-item">Cell' + '</div>'
@@ -1314,6 +1317,7 @@ function saveChoices(currPage) {
         state = document.getElementById('state').value;
         zip = document.getElementById('zip').value;
         workPhone = document.getElementById('WP').value.trim();
+        ext = document.getElementById('ext').value.trim();
         homePhone = document.getElementById('HP').value.trim();
         cell = document.getElementById('cell').value.trim();
         fax = document.getElementById('fax').value.trim();
@@ -1678,6 +1682,7 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         document.getElementById('state').value = state;
         document.getElementById('zip').value = zip;
         document.getElementById('WP').value = workPhone;
+        document.getElementById('ext').value = ext;
         document.getElementById('HP').value = homePhone;
         document.getElementById('cell').value = cell;
         document.getElementById('fax').value = fax;
