@@ -194,6 +194,7 @@ function manager(currPage) {
             document.getElementById('state').value = userData[0].state;
             document.getElementById('zip').value = userData[0].zip_code;
             document.getElementById('WP').value = userData[0].work_phone;
+            document.getElementById('ext').value = userData[0].ext;
             document.getElementById('HP').value = (userData[0].home_phone == undefined || userData[0].home_phone == null)?'':userData[0].home_phone;
             document.getElementById('cell').value = (userData[0].cell == undefined || userData[0].cell == null)?'':userData[0].cell;
             document.getElementById('fax').value = (userData[0].fax == undefined || userData[0].fax == null)?'':userData[0].fax;
@@ -264,6 +265,7 @@ function manager(currPage) {
             document.getElementById('state').value = userData[0].state;
             document.getElementById('zip').value = userData[0].zip_code;
             document.getElementById('WP').value = userData[0].work_phone;
+            document.getElementById('ext').value = userData[0].ext;
             document.getElementById('HP').value = (userData[0].home_phone == undefined || userData[0].home_phone == null)?'':userData[0].home_phone;
             document.getElementById('cell').value = (userData[0].cell == undefined || userData[0].cell == null)?'':userData[0].cell;
             document.getElementById('fax').value = (userData[0].fax == undefined || userData[0].fax == null)?'':userData[0].fax;
@@ -637,7 +639,7 @@ function getPage(num) {
             getTextField('City', 'city', userData[0].city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
             '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="12" required></div>'+
+            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
             '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
             '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
             '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
@@ -742,7 +744,7 @@ function getPage(num) {
             getTextField('City', 'city', userData[0].city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
             '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="12" required></div>'+
+            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
             '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
             '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
             '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
@@ -846,7 +848,7 @@ function getPage(num) {
         '<div class="grid-item">Zip' + '</div>'
         + '<div class="grid-item">' + userData[0].zip_code + '</div>'+
         '<div class="grid-item">Work Phone' + '</div>'
-        + '<div class="grid-item">' + userData[0].work_phone + '</div>'+
+        + '<div class="grid-item">' + userData[0].work_phone + (userData[0].ext != null && userData[0].ext != 'NULL' && userData[0].ext != undefined && userData[0].ext != '' ? ' Ext: ' + userData[0].ext : '') + '</div>'+
         '<div class="grid-item">Home Phone' + '</div>'
         + '<div class="grid-item">' + userData[0].home_phone + '</div>'+
         '<div class="grid-item">Cell Phone' + '</div>'
@@ -1003,7 +1005,7 @@ function getPage(num) {
         '<div class="grid-item">Zip' + '</div>'
         + '<div class="grid-item">' + userData[0].zip + '</div>'+
         '<div class="grid-item">Work Phone' + '</div>'
-        + '<div class="grid-item">' + userData[0].work_phone + '</div>'+
+        + '<div class="grid-item">' + userData[0].work_phone + (userData[0].ext != null && userData[0].ext != 'NULL' && userData[0].ext != undefined && userData[0].ext != '' ? ' Ext: ' + userData[0].ext : '')  + '</div>'+
         '<div class="grid-item">Home Phone' + '</div>'
         + '<div class="grid-item">' + userData[0].home_phone + '</div>'+
         '<div class="grid-item">Cell' + '</div>'
@@ -1325,8 +1327,8 @@ function fillAfterLoad(currPage) {
         // For-loops to select the checkboxes from previous user selections, if any.
         // The loops tests checkboxes based on the checkbox IDs stored in variable Projkeywords.
         
-        for(let check of Projkeywords) {
-            for(let ischeck of nuts) {
+        for(check of Projkeywords) {
+            for(ischeck of nuts) {
                 if(check == ischeck.id) {
                     document.getElementById(ischeck.id).checked = true;
                     break;
@@ -1362,7 +1364,7 @@ function saveChoices(currPage) {
         let prevkeys = document.querySelectorAll('input[name="key"]:checked');
         Projkeywords = [];
         keyNames = [];
-        for(let key of prevkeys) {
+        for(key of prevkeys) {
             if(key.checked) {
                 Projkeywords.push(key.id);
                 keyNames.push(key.placeholder);
@@ -1370,7 +1372,7 @@ function saveChoices(currPage) {
         }
         let others = document.getElementsByName("Otherkey");
         otherKeys = [];
-        for(let other of others) {
+        for(other of others) {
             if(other.value.trim() != '') {
                 otherKeys.push(other.value.trim());
             }
@@ -1458,6 +1460,7 @@ function saveChoices(currPage) {
             userData[0].state = document.getElementById('state').value;
             userData[0].zip = document.getElementById('zip').value.trim();
             userData[0].work_phone = document.getElementById('WP').value.trim();
+            userData[0].ext = document.getElementById('ext').value.trim();
             userData[0].home_phone = document.getElementById('HP').value.trim();
             userData[0].cell = document.getElementById('cell').value.trim();
             userData[0].fax = document.getElementById('fax').value.trim();
@@ -1494,6 +1497,7 @@ function saveChoices(currPage) {
             userData[0].state = document.getElementById('state').value;
             userData[0].zip = document.getElementById('zip').value.trim();
             userData[0].work_phone = document.getElementById('WP').value.trim();
+            userData[0].ext = document.getElementById('ext').value.trim();
             userData[0].home_phone = document.getElementById('HP').value.trim();
             userData[0].cell = document.getElementById('cell').value.trim();
             userData[0].fax = document.getElementById('fax').value.trim();
@@ -1940,6 +1944,10 @@ function preparePost() {
 
     if(userData[0].address2 == '') {
         userData[0].address2 = 'NULL';
+    }
+
+    if(userData[0].ext == '') {
+        userData[0].ext = 'NULL';
     }
 
     if(userData[0].home_phone == '') {

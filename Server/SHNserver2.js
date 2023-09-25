@@ -454,6 +454,7 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'state = \'' + req.body.state.replace(/'/gi, "''") + '\', ';
         query += 'zip_code = \'' + req.body.zip_code.replace(/'/gi, "''") + '\', ';
         query += 'work_phone = \'' + req.body.work_phone.replace(/'/gi, "''") + '\', ';
+        query += 'ext = ' + (req.body.ext == 'NULL' || req.body.ext == null ?'NULL':'\'' + req.body.ext.replace(/'/gi, "''") + '\'') + ', ';
         query += 'home_phone = ' + (req.body.home_phone == 'NULL' || req.body.home_phone == null ?'NULL':'\'' + req.body.home_phone.replace(/'/gi, "''") + '\'') + ', ';
         query += 'cell = ' + (req.body.cell == 'NULL' || req.body.cell == null ?'NULL':'\'' + req.body.cell.replace(/'/gi, "''") + '\'') + ', ';
         query += 'fax = ' + (req.body.fax == 'NULL' || req.body.fax == null?'NULL':'\'' + req.body.fax.replace(/'/gi, "''") + '\'') + ', ';
@@ -498,6 +499,7 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'state = \'' + req.body.state.replace(/'/gi, "''") + '\', ';
         query += 'zip_code = \'' + req.body.zip_code.replace(/'/gi, "''") + '\', ';
         query += 'work_phone = \'' + req.body.work_phone.replace(/'/gi, "''") + '\', ';
+        query += 'ext = ' + (req.body.ext == 'NULL' || req.body.ext == null ?'NULL':'\'' + req.body.ext.replace(/'/gi, "''") + '\'') + ', ';
         query += 'home_phone = ' + (req.body.home_phone == 'NULL' || req.body.home_phone == null ?'NULL':'\'' + req.body.home_phone.replace(/'/gi, "''") + '\'') + ', ';
         query += 'cell = ' + (req.body.cell == 'NULL' || req.body.cell == null ?'NULL':'\'' + req.body.cell.replace(/'/gi, "''") + '\'') + ', ';
         query += 'fax = ' + (req.body.fax == 'NULL' || req.body.fax == null?'NULL':'\'' + req.body.fax.replace(/'/gi, "''") + '\'') + ', ';

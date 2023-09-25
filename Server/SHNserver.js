@@ -254,7 +254,7 @@ app.post('/result', jsonParser, (req, res) => {
     const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, closed, start_date, close_date, project_location, latitude, longitude, ' +
             'SHNOffice_ID, service_area, total_contract, exempt_agreement, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup,'+
             'prevailing_wage, agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, '+
-            'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, fax, email, '+
+            'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, '+
             'binder_size, binder_location, description_service, created'+
             ') VALUES (' + '\''+ projnum + '\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
             req.body.StartDate + '\', \''+ req.body.CloseDate +'\', \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
@@ -263,7 +263,7 @@ app.post('/result', jsonParser, (req, res) => {
             (req.body.SEEALSO != 'NULL'?'\''+req.body.SEEALSO+'\'':req.body.SEEALSO) +', '+ req.body.AutoCAD_Project + ', '+ req.body.GIS_Project + ', ' + req.body.Project_Specifications + ', \'' +
             req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL'?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', ' + (req.body.OfficeMailingLists1 != 'NULL'?'\''+req.body.OfficeMailingLists1 +'\'':req.body.OfficeMailingLists1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
             (req.body.ClientRelation != 'NULL'?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL'?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
-            req.body.PhoneW1 + '\', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
+            req.body.PhoneW1 + '\', ' +(req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
             req.body.DescriptionService + '\', \''+ myDate +'\'' +
             ')';
 
@@ -348,7 +348,7 @@ app.post('/result', jsonParser, (req, res) => {
                         ["Latitude", removeEscapeQuote(req.body.Latitude).toString(),"City", removeEscapeQuote(req.body.City1).toString()],
                         ["Longitude", removeEscapeQuote(req.body.Longitude).toString(), "State", req.body.State1],
                         ["Keywords", req.body.ProjectKeywords, "Zip", req.body.Zip1],
-                        ["SHN Office", req.body.SHNOffice, "Work Phone", removeEscapeQuote(req.body.PhoneW1).toString()],
+                        ["SHN Office", req.body.SHNOffice, "Work Phone", removeEscapeQuote(req.body.PhoneW1).toString() + (req.body.Ext != 'NULL' && req.body.Ext != null?' Ext: ' + removeEscapeQuote(req.body.Ext).toString() : '')],
                         ["Service Area", req.body.ServiceArea, "Home Phone", removeEscapeQuote(req.body.PhoneH1).toString()],
                         ["Total Contract", req.body.TotalContract, "Cell Phone", removeEscapeQuote(req.body.Cell1).toString()],
                         ["Service Agreement", req.body.ServiceAgreement, "Fax", removeEscapeQuote(req.body.Fax1).toString()],
@@ -530,14 +530,14 @@ app.post('/promo', jsonParser, (req, res) => {
     // Begin making SQL query.
     const query = 'INSERT INTO Promos (is_project, proj_ID, promo_id, promo_type, promo_title, manager_ID, qaqc_person_ID, closed, start_date, close_date, promo_location, latitude, longitude, ' +
     'SHNOffice_ID, service_area, profile_code_id, client_company, client_abbreviation, '+
-    'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, fax, email, '+
+    'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, '+
     'binder_size, description_service, created'+
     ') VALUES (0, NULL,' + '\''+ projnum + '\', \''+req.body.AlternateTitle+'\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
     req.body.StartDate + '\', \''+ req.body.CloseDate +'\', \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
     '' + req.body.officeID + ', \''+ req.body.ServiceArea + '\', '+ req.body.ProfileCode + ', \'' +
     req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL'?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
     (req.body.ClientRelation != 'NULL' && req.body.ClientRelation != null && req.body.ClientRelation != undefined ?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL'?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
-    req.body.PhoneW1 + '\', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', \''+
+    req.body.PhoneW1 + '\', ' + (req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', \''+
     req.body.DescriptionService + '\', \''+ myDate +'\'' +
     ')';
 
