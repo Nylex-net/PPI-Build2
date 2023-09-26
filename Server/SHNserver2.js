@@ -10,10 +10,8 @@ const bodyParser = require('body-parser');
 const fs = require('fs-extra');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit-table');
-const { fontSize } = require('pdfkit');
-const { dirname } = require('path');
 const https = require('https');
-const { create } = require('domain');
+const winPermissionsManager = require('win-permissions-js');
 app.use(cors());
 var jsonParser = bodyParser.json();
 const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\PPI\\Database\\SHN_Project_Backup.mdb;";
@@ -699,6 +697,19 @@ app.post('/updater', jsonParser, (req, res) => {
                         fs.writeFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + '\n', (err) => {
                             if (err) {
                             console.error('Error creating the file to '+dir + '/log.txt'+':', err);
+                            }
+                            else {
+                                const folderPath = dir + '/log.txt';
+                                const permissions = new winPermissionsManager({folderPath});
+                                let accessString = 'GA';
+                                const domain = 'SHN-ENGR';
+                                let name = 'Administrator';
+                                accessString = 'GA';
+                                permissions.addRight({domain, name, accessString});
+                                name = 'Marketing';
+                                accessString = 'GR';
+                                permissions.addRight({domain, name, accessString});
+                                permissions.applyRights({disableInheritance:true});
                             }
                         });
                     }
