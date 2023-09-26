@@ -890,6 +890,31 @@ app.post('/getPath', jsonParser, (req, res) => {
     }
 });
 
+/**
+ * Verifies if the user logging into the edit page has the privileges to edit.
+ */
+app.post('/verify', jsonParser, (req, res) => {
+    const query = 'SELECT * FROM Staff WHERE Active = 1 AND MS_account_ID = \'' + req.body.ID + '\';';
+    pool.query(query, (err, data) => {
+        if(err) {
+            console.error(err);
+            res.send(JSON.parse(JSON.stringify(err)));
+        }
+        else if(data.length < 1) {
+            res.send(JSON.parse(JSON.stringify({result:false})));
+        }
+        else {
+            const binary = data[0].permission.toString(2);
+            if(binary[binary.length - 1] == 1 || binary[binary.length - 2] == 1) {
+                res.send(JSON.parse(JSON.stringify({result:true})));
+            }
+            else {
+                res.send(JSON.parse(JSON.stringify({result:false})));
+            }
+        }
+    });
+});
+
 /*
 app.post('/delete', jsonParser, (req, res) => {
     let dir = PATH;

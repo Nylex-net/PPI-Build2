@@ -35,23 +35,40 @@ let faxInput;
 
 async function starter(res) {
     activeUser = res.account.name;
-    userData = await fetchInfo();
-    if(isProject && !isBillingGroup) {
-        openHouse = userData[0].mailing_list != null?(userData[0].mailing_list.includes("Open")?true:false):false;
-        xmas = userData[0].mailing_list != null?(userData[0].mailing_list.includes("mas")?true:false):false;
-    }
-    document.getElementsByTagName("h1")[0].innerHTML = (isProject)?((isBillingGroup)?userData[0].group_number + ' in ' + userData[0].project_id:userData[0].project_id):userData[0].promo_id;
-    for(let id of userData) {
-        if(id.hasOwnProperty('keyword_id') && !Projkeywords.includes(id.keyword_id)) {
-            Projkeywords.push(id.keyword_id);
+    const isAdmin = (await verify(res.account.homeAccountId.split('.')[0])).result;
+    if(isAdmin) {
+        userData = await fetchInfo();
+        if(isProject && !isBillingGroup) {
+            openHouse = userData[0].mailing_list != null?(userData[0].mailing_list.includes("Open")?true:false):false;
+            xmas = userData[0].mailing_list != null?(userData[0].mailing_list.includes("mas")?true:false):false;
         }
-        if(id.hasOwnProperty('member_id') && !teamMem.includes(id.member_id)) {
-            teamMem.push(id.member_id);
+        document.getElementsByTagName("h1")[0].innerHTML = (isProject)?((isBillingGroup)?userData[0].group_number + ' in ' + userData[0].project_id:userData[0].project_id):userData[0].promo_id;
+        for(let id of userData) {
+            if(id.hasOwnProperty('keyword_id') && !Projkeywords.includes(id.keyword_id)) {
+                Projkeywords.push(id.keyword_id);
+            }
+            if(id.hasOwnProperty('member_id') && !teamMem.includes(id.member_id)) {
+                teamMem.push(id.member_id);
+            }
         }
+        userData[0].start_date = userData[0].start_date.substring(0, userData[0].start_date.indexOf('T'));
+        userData[0].close_date = userData[0].close_date.substring(0, userData[0].close_date.indexOf('T'))
+        manager(1);
     }
-    userData[0].start_date = userData[0].start_date.substring(0, userData[0].start_date.indexOf('T'));
-    userData[0].close_date = userData[0].close_date.substring(0, userData[0].close_date.indexOf('T'))
-    manager(1);
+    else {
+        document.getElementsByTagName("h1")[0].innerHTML = "You need to have admin privileges to edit.";
+    }
+}
+
+async function verify(id) {
+    const response = await fetch('https://e-hv-ppi.shn-engr.com:3001/verify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ID:id})
+    });
+    return await response.json();
 }
 
 async function fetchInfo() {
