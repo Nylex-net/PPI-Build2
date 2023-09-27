@@ -3,6 +3,7 @@
 const myMSALObj = new msal.PublicClientApplication(msalConfig);
 
 let username = "";
+let sessionTimer;
 
 function selectAccount() {
 
@@ -35,6 +36,7 @@ function handleResponse(response) {
         showWelcomeMessage(response.account.name);
         document.getElementById('loginButton').innerHTML = "Sign Out";
         document.getElementById('loginButton').onclick = function() {signOut();};
+        startSessionTimer();
         starter(response); // Have every site include a starter function to properly load what page is needed to load.
     } else {
         selectAccount();
@@ -105,5 +107,27 @@ function seeProfile() {
             console.error(error);
         });
 }
+
+/**
+ * Custom session functions if user isn't active.
+ */
+function startSessionTimer() {
+    // Define the session timeout duration in milliseconds (e.g., 15 minutes).
+    const sessionTimeout = 1 * 60 * 1000; // 1 hour in milliseconds
+  
+    // Clear the existing timer if it exists.
+    clearTimeout(sessionTimer);
+  
+    // Start a new session timer.
+    sessionTimer = setTimeout(signOut, sessionTimeout);
+}
+
+function resetSessionTimer() {
+    // Reset the session timer when the user performs an action.
+    startSessionTimer();
+}
+
+document.addEventListener('mousemove', resetSessionTimer);
+document.addEventListener('keydown', resetSessionTimer);
 
 selectAccount();
