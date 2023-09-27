@@ -113,21 +113,24 @@ function seeProfile() {
  */
 function startSessionTimer() {
     // Define the session timeout duration in milliseconds (e.g., 15 minutes).
-    const sessionTimeout = 1 * 60 * 1000; // 1 hour in milliseconds
+    const sessionTimeout = 60 * 60 * 1000; // 1 hour in milliseconds
   
     // Clear the existing timer if it exists.
     clearTimeout(sessionTimer);
   
+    // Add listeners upon sign in.
+    document.addEventListener('mousemove', resetSessionTimer);
+    document.addEventListener('keydown', resetSessionTimer);
+
     // Start a new session timer.
     sessionTimer = setTimeout(signOut, sessionTimeout);
 }
 
 function resetSessionTimer() {
     // Reset the session timer when the user performs an action.
+    document.getElementById('projForm').innerHTML = '<h2>Your session is over.</h2><button type="button" onclick="window.reload();">Restart</button>';
     startSessionTimer();
 }
 
-document.addEventListener('mousemove', resetSessionTimer);
-document.addEventListener('keydown', resetSessionTimer);
 
 selectAccount();
