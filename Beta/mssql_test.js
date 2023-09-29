@@ -6,7 +6,7 @@ const config = {
     password: jsonData.mssql.password,
     server: jsonData.mssql.server,
     database: jsonData.mssql.database,
-    domain: jsonData.mssql.domain,
+    // domain: jsonData.mssql.domain,
     options : jsonData.mssql.options
 };
 // const pool = new msnodesqlv8.Pool({
