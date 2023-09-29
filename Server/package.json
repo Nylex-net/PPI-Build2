@@ -4,7 +4,7 @@
   "description": "",
   "main": "SHNserver.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "concurrently \"node SHNserver.js\" \"node SHNserver2.js\""
   },
   "keywords": [],
   "author": "",
@@ -21,5 +21,8 @@
     "nodemailer": "^6.9.3",
     "pdfkit-table": "^0.1.99",
     "win-permissions-js": "^1.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1"
   }
 }
