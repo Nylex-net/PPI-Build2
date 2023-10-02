@@ -26,12 +26,13 @@ sql.connect(config, function (err) {
     var request = new sql.Request();
        
     // query to the database and get the records
-    request.query('SELECT * from Staff', function (err, recordset) {
+    request.query('SELECT * from Inventory', function (err, recordset) {
         
-        if (err) console.log(err)
+        if (err) {console.log(err);}
+        else {console.log(recordset);}
 
         // send records as a response
-        res.send(recordset);
+        
         
     });
     }
