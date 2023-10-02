@@ -23,17 +23,17 @@ sql.connect(config, function (err) {
     else {
         console.log("Success!");
         // create Request object
-    var request = new sql.Request();
-       
-    // query to the database and get the records
-    request.query('SELECT * from Inventory', function (err, recordset) {
+        var request = new sql.Request();
         
-        if (err) {console.log(err);}
-        else {console.log(recordset);}
+        // query to the database and get the records
+        request.query('SELECT * from Inventory', function (err, recordset) {
+            
+            if (err) {console.log(err);}
+            else {console.log(recordset);}
 
-        // send records as a response
-        
-        
-    });
+            // send records as a response
+            
+            
+        });
     }
 });
