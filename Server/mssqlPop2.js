@@ -231,7 +231,7 @@ function populateProjects() {
                         console.error(err);
                     }
                 });
-                const filteredBoi = billBoi.filter(group => !billBoi.project_id.includes(rows.recordsets[0].project_id));
+                const filteredBoi = billBoi.filter(group => !billBoi.project_id != rows.recordsets[0].project_id);
                 // console.log(billBoi);
                 console.log(filteredBoi);
                 // populateBillingGroups(filteredBoi);
