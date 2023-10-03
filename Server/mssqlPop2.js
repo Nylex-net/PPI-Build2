@@ -7,6 +7,8 @@ const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\SHN_Project_Backup.m
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 const jsonData = require('./config.json');
 const codeMap = new Map();
+const teamMap = new Map();
+const keyMap = new Map();
 let request;
 
 const pool = new sql.ConnectionPool({
@@ -182,7 +184,6 @@ function populateProjects() {
         });
         pool.query(query, (err, row) => {
             if(err) {
-                console.log(query);
                 console.error(err);
             }
             else { // We assume the max ID is the last Project to be inserted.
