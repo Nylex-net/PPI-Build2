@@ -201,7 +201,6 @@ function populateProjects() {
             }
             else { // Link the team member IDs and the Keywords to each project.
                 let linkQuery = '';
-                console.log(rows.recordsets);
                 rows.recordsets.forEach((row) => {
                     if(members.get(row.project_id) != null && members.get(row.project_id) != "NULL" && members.get(row.project_id) != "") {
                         var memberArray = members.get(row.project_id).split(',').filter((id) => {
@@ -226,12 +225,13 @@ function populateProjects() {
                         }
                     }
                 });
+                console.log(linkQuery);
                 pool.query(linkQuery, (err) => {
                     if(err) {
                         console.error(err);
                     }
                 });
-                const filteredBoi = billBoi.filter(group => !billBoi.project_id != rows.recordsets[0].project_id);
+                filteredBoi = rows.recordset.filter(group => !billBoi.includes(group[0].project_id));
                 // console.log(billBoi);
                 console.log(filteredBoi);
                 // populateBillingGroups(filteredBoi);
