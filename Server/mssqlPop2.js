@@ -187,7 +187,7 @@ function populateProjects() {
                 console.error(err);
             }
             else { // We assume the max ID is the last Project to be inserted.
-                
+                console.log(row);
             }
         });
     }).catch((err) => {
