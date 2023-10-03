@@ -192,7 +192,7 @@ function populateProjects() {
                 }
             }
             else if(typeof element.BillGrp == 'string') {
-                billBoi.push(element);
+                billBoi.push(element.Projectid);
             }
         });
         pool.query(query, (err, rows) => {
@@ -231,9 +231,9 @@ function populateProjects() {
                         console.error(err);
                     }
                 });
-                filteredBoi = rows.recordset.filter(group => !billBoi.includes(group[0].project_id));
+                filteredBoi = rows.recordset.filter(group => !billBoi.includes(group.project_id));
                 // console.log(billBoi);
-                console.log(filteredBoi);
+                // console.log(filteredBoi);
                 // populateBillingGroups(filteredBoi);
             }
         });
