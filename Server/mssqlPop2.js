@@ -2,7 +2,7 @@ const sql = require('mssql');
 const ADODB = require('node-adodb')
 // const Pool = require('generic-pool');
 // const config = require('./config.json');
-const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\SHN_Project_Backup.mdb;";
+const DATABASE_PATH = "C:\\Users\\henry\\Documents\\SHN_Project_Backup.mdb;";
 // const query = "SELECT * FROM master.dbo.Staff";
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 const jsonData = require('./config.json');
@@ -81,6 +81,7 @@ function populateKeywords() {
                 rows.recordsets.forEach((row) => {
                     keyMap.set(row[0].Keyword, row[0].ID)
                 });
+                console.log(keyMap);
             }
         });
     }).catch(err => {
