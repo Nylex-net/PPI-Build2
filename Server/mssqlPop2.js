@@ -81,7 +81,6 @@ function populateKeywords() {
                 rows.recordsets.forEach((row) => {
                     keyMap.set(row[0].Keyword, row[0].ID)
                 });
-                console.log(keyMap);
             }
         });
     }).catch(err => {
@@ -202,39 +201,38 @@ function populateProjects() {
             }
             else { // Link the team member IDs and the Keywords to each project.
                 let linkQuery = '';
-                rows.recordsets.forEach((row) => {
-                    if(members.get(row.project_id) != null && members.get(row.project_id) != "NULL" && members.get(row.project_id) != "") {
-                        var memberArray = members.get(row.project_id).split(',').filter((id) => {
+                for (const row of rows.recordsets) {
+                    if(members.get(row[0].project_id) != null && members.get(row[0].project_id) != "NULL" && members.get(row[0].project_id) != "") {
+                        var memberArray = members.get(row[0].project_id).split(',').filter((id) => {
                             return !isNaN(id);
                         });
                         if(memberArray.length > 0) {
                             memberArray.forEach((member) => {
-                                linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row.ID + ", " + member + "); END TRY BEGIN CATCH END CATCH;";
+                                linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + member + "); END TRY BEGIN CATCH END CATCH;";
                             });
                         }
                     }
-                    if(keywordMap.get(row.project_id) != null && keywordMap.get(row.project_id) != "NULL" && keywordMap.get(row.project_id) != "") {
-                        var keyArray = keywordMap.get(row.project_id).split(',').filter((id) => {
+                    if(keywordMap.get(row[0].project_id) != null && keywordMap.get(row[0].project_id) != "NULL" && keywordMap.get(row[0].project_id) != "") {
+                        var keyArray = keywordMap.get(row[0].project_id).split(',').filter((id) => {
                             return !isNaN(id);
                         });
                         if(keyArray.length > 0) {
                             keyArray.forEach((key) => {
                                 if(keyMap.has(key)) {
-                                    linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row.ID + ", " + keyMap.get(key) + ");END TRY BEGIN CATCH END CATCH;";
+                                    linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + keyMap.get(key) + ");END TRY BEGIN CATCH END CATCH;";
                                 }
                             });
                         }
                     }
-                });
-                console.log(linkQuery);
+                };
                 pool.query(linkQuery, (err) => {
                     if(err) {
                         console.error(err);
                     }
                 });
-                filteredBoi = rows.recordset.filter(group => !billBoi.includes(group.project_id));
+                filteredBoi = rows.recordset.filter(group => !billBoi.includes(group[0].project_id));
                 // console.log(billBoi);
-                // console.log(filteredBoi);
+                console.log(filteredBoi);
                 // populateBillingGroups(filteredBoi);
             }
         });
