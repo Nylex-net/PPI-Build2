@@ -7,7 +7,6 @@ const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\SHN_Project_Backup.m
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 const jsonData = require('./config.json');
 const codeMap = new Map();
-const teamMap = new Map();
 const keyMap = new Map();
 let request;
 
@@ -71,16 +70,18 @@ function populateKeywords() {
     connection.query('SELECT ID, Keyword, Group1 FROM Keywords').then(data => {
         let query = '';
         data.forEach((element) => {
-            query += "INSERT INTO Keywords VALUES ("+element.ID+", '" +element.Keyword.replace(/'/gi, "''")+"', "+((element.Group1 == null || element.Group1 == '')?'NULL':"'"+element.Group1.replace(/'/gi, "''")+"'")+");";
+            query += "INSERT INTO Keywords OUTPUT inserted.* VALUES ("+element.ID+", '" +element.Keyword.replace(/'/gi, "''")+"', "+((element.Group1 == null || element.Group1 == '')?'NULL':"'"+element.Group1.replace(/'/gi, "''")+"'")+");";
         });
         pool.query(query, (err, rows) => {
             if(err) {
                 console.log(query);
                 console.error(err);
             }
-            // else {
-            //     console.log(rows);
-            // }
+            else {
+                rows.recordsets.forEach((row) => {
+                    keyMap.set(row[0].Keyword, row[0].ID)
+                });
+            }
         });
     }).catch(err => {
         console.error(err);
@@ -118,6 +119,10 @@ function populateProjects() {
         const now = new Date();
         const currDate = (now.getMonth() + 1).toString() + "/" + now.getDate().toString() +"/"+ now.getFullYear().toString();
         let query = '';
+        let billingQuery = '';
+        const billBoi = new Array();
+        const members = new Map();
+        const keywordMap = new Map();
         data.forEach((element) => {
                 var stamper = (element.DTStamp != null && element.DTStamp != '' && !isNaN(Date.parse(element.DTStamp)) && new Date(element.DTStamp) instanceof Date)?new Date(element.DTStamp):new Date((element.StartDate != null && element.StartDate != ''&& !isNaN(Date.parse(element.StartDate)) && new Date(element.StartDate) instanceof Date)?element.StartDate:Date.now());
                 var dtstamp = (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
@@ -177,24 +182,66 @@ function populateProjects() {
                 (element.Email1==null || element.Email1=="NULL" || element.Email1==""?"none":element.Email1.replace(/'/gi, "''"))+"', "+
                 (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", "+
                 (element.BinderLocation==null || element.BinderLocation=="NULL"||element.BinderLocation=="undefined"||element.BinderLocation==""?"NULL":"'"+element.BinderLocation.replace(/'/gi, "''")+"'")+", '"+
-                (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+"'); END TRY BEGIN CATCH END CATCH;";
+                (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+"');END TRY BEGIN CATCH END CATCH;";
                 // console.log(query);
-                // query += "SELECT ID FROM Projects WHERE project_id = '" + element.Projectid + "';";
+                if(!members.has(element.Projectid)) {
+                    members.set(element.Projectid, element.TeamMembers);
+                }
+                if(!keywordMap.has(element.Projectid)) {
+                    keywordMap.set(element.Projectid, element.ProjectKeywords);
+                }
+            }
+            else if(typeof element.BillGrp == 'string') {
+                billBoi.push(element);
             }
         });
-        pool.query(query, (err, row) => {
+        pool.query(query, (err, rows) => {
             if(err) {
                 console.error(err);
             }
-            else { // We assume the max ID is the last Project to be inserted.
-                // console.log(row.recordsets);
+            else { // Link the team member IDs and the Keywords to each project.
+                let linkQuery = '';
+                rows.recordsets.forEach((row) => {
+                    if(members.get(row[0].project_id) != null && members.get(row[0].project_id) != "NULL" && members.get(row[0].project_id) != "") {
+                        var memberArray = members.get(row[0].project_id).split(',').filter((id) => {
+                            return !isNaN(id);
+                        });
+                        if(memberArray.length > 0) {
+                            memberArray.forEach((member) => {
+                                linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + member + "); END TRY BEGIN CATCH END CATCH;";
+                            });
+                        }
+                    }
+                    if(keywordMap.get(row[0].project_id) != null && keywordMap.get(row[0].project_id) != "NULL" && keywordMap.get(row[0].project_id) != "") {
+                        var keyArray = keywordMap.get(row[0].project_id).split(',').filter((id) => {
+                            return !isNaN(id);
+                        });
+                        if(keyArray.length > 0) {
+                            keyArray.forEach((key) => {
+                                if(keyMap.has(key)) {
+                                    linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + keyMap.get(key) + ");END TRY BEGIN CATCH END CATCH;";
+                                }
+                            });
+                        }
+                    }
+                });
+                pool.query(linkQuery, (err) => {
+                    if(err) {
+                        console.error(err);
+                    }
+                });
+                const filteredBoi = billBoi.filter(group => !billBoi.project_id == rows.recordsets[0].project_id);
+                console.log(billBoi);
+                console.log(filteredBoi);
+                // populateBillingGroups(filteredBoi);
             }
         });
+
     }).catch((err) => {
         console.error(err);
     });
 }
 
-function populateBillingGroups() {
+function populateBillingGroups(bill) {
 
 }
