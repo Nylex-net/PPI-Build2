@@ -209,7 +209,7 @@ function populateProjects() {
                         });
                         if(memberArray.length > 0) {
                             memberArray.forEach((member) => {
-                                linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + member + "); END TRY BEGIN CATCH END CATCH;";
+                                linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row.ID + ", " + member + "); END TRY BEGIN CATCH END CATCH;";
                             });
                         }
                     }
@@ -220,7 +220,7 @@ function populateProjects() {
                         if(keyArray.length > 0) {
                             keyArray.forEach((key) => {
                                 if(keyMap.has(key)) {
-                                    linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + keyMap.get(key) + ");END TRY BEGIN CATCH END CATCH;";
+                                    linkQuery += "BEGIN TRY INSERT INTO ProjectTeam VALUES ("+ row.ID + ", " + keyMap.get(key) + ");END TRY BEGIN CATCH END CATCH;";
                                 }
                             });
                         }
@@ -231,8 +231,8 @@ function populateProjects() {
                         console.error(err);
                     }
                 });
-                const filteredBoi = billBoi.filter(group => !billBoi.project_id == rows.recordsets[0].project_id);
-                console.log(billBoi);
+                const filteredBoi = billBoi.filter(group => !billBoi.project_id.includes(rows.recordsets[0].project_id));
+                // console.log(billBoi);
                 console.log(filteredBoi);
                 // populateBillingGroups(filteredBoi);
             }
