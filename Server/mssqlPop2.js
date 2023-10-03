@@ -7,46 +7,42 @@ const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\SHN_Project_Backup.m
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 const jsonData = require('./config.json');
 const codeMap = new Map();
+let request;
 
-const config = {
+const pool = new sql.ConnectionPool({
     user: jsonData.mssql.user,
     password: jsonData.mssql.password,
     server: jsonData.mssql.server,
     database: jsonData.mssql.database,
-    options : jsonData.mssql.options
-};
+    options : jsonData.mssql.options,
+    requestTimeout: 600000
+    // pool: {
+    //     idleTimeoutMills: 
+    // }
+});
 
 // connect to your database
-sql.connect(config, function (err) {
-    
-    if (err) {
-        console.log(err);
-        process.exit();
+pool.connect(err => {
+    if(err) {
+        console.error(err);
     }
     else {
-        console.log("Success!");
+        console.log("Connected!");
         // create Request object
-        var request = new sql.Request();
-        
         // query to the database and get the records
-        request.query('USE PPI;', function (err, recordset) {
-            
+        pool.query('USE PPI;SET XACT_ABORT OFF;', function (err, recordset) {
+                
             if (err) {
                 console.log(err);
+                pool.close();
                 process.exit();
             }
             else {
-                (async () => {
-                    populateStaff();
-                    populateKeywords();
-                    populateProfileCodes();
-                })();
-                (async () => {
-                    populateProjects();
-                })();
-                
+                populateStaff();
+                populateKeywords();
+                populateProfileCodes();
+                populateProjects();
             }
-
         });
     }
 });
@@ -54,13 +50,13 @@ sql.connect(config, function (err) {
 function populateStaff() {
     // Populates Staff.
     connection.query('SELECT ID, Active, First, Last, Email, PM FROM Contacts').then(data => {
+        let query = '';
         data.forEach((element) => {
-            let query = '';
-            query += "INSERT INTO Staff VALUES ("+element.ID+", "+((element.Active == 'Yes')?1:0)+", '"+element.First.replace(/'/gi, "''")+"', '"+element.Last.replace(/'/gi, "''")+"', '"+element.Email+"', "+(element.PM==-1?1:0)+", 0);";
+            query += "INSERT INTO Staff VALUES ("+element.ID+", "+((element.Active == 'Yes')?1:0)+", '"+element.First.replace(/'/gi, "''")+"', '"+element.Last.replace(/'/gi, "''")+"', '"+element.Email+"', "+(element.PM==-1?1:0)+", 0, NULL);";
         });
-        request.query(query, (err, rows) => {
+        pool.query(query, (err, rows) => {
             if(err) {
-                console.log("Error for entry ID: " + element.ID)
+                console.log(query);
                 console.error(err);
             }
         });
@@ -71,13 +67,13 @@ function populateStaff() {
 
 function populateKeywords() {
     connection.query('SELECT ID, Keyword, Group1 FROM Keywords').then(data => {
+        let query = '';
         data.forEach((element) => {
-            let query = '';
             query += "INSERT INTO Keywords VALUES ("+element.ID+", '" +element.Keyword.replace(/'/gi, "''")+"', "+((element.Group1 == null || element.Group1 == '')?'NULL':"'"+element.Group1.replace(/'/gi, "''")+"'")+");";
         });
-        request.query(query, (err, rows) => {
+        pool.query(query, (err, rows) => {
             if(err) {
-                console.log("Error for entry ID: " + element.ID)
+                console.log(query);
                 console.error(err);
             }
             // else {
@@ -91,18 +87,20 @@ function populateKeywords() {
 
 function populateProfileCodes() {
     connection.query('SELECT id, Code, CodeDescription, Active FROM ProfileCodes').then(data => {
+        let query ='';
         data.forEach((element) => {
-            let query ='';
-            query += "INSERT INTO ProfileCodes VALUES ("+element.id+", '"+element.Code+"', '" +element.CodeDescription.replace(/'/gi, "''")+"', "+((element.Active == -1)?1:0)+");";
+            query += "INSERT INTO ProfileCodes OUTPUT inserted.* VALUES ("+element.id+", '"+element.Code+"', '" +element.CodeDescription.replace(/'/gi, "''")+"', "+((element.Active == -1)?1:0)+");";
             // codeMap.set(element.Code, element.id); // If you uncomment the above msnodesqlv8 INSERT query, comment this line out.
         });
-        request.query(query, (err, rows) => {
+        pool.query(query, (err, rows) => {
             if(err) {
-                console.log("Error for ID: " + element.id)
                 console.error(err);
             }
             else {
-                codeMap.set(element.Code, element.id);
+                for (const row of rows.recordsets) {
+                    codeMap.set(row[0].Code, row[0].ID);
+                    // console.log(`ID: ${row[0].ID}, Code: ${row[0].Code}`);
+                  }
             }
         });
     }).catch(err => {
@@ -119,14 +117,14 @@ function populateProjects() {
         const currDate = (now.getMonth() + 1).toString() + "/" + now.getDate().toString() +"/"+ now.getFullYear().toString();
         let query = '';
         data.forEach((element) => {
-                var stamper = (element.DTStamp != null && element.DTStamp != '' && !isNaN(Date.parse(element.DTStamp)))?new Date(element.DTStamp):new Date((element.StartDate != null && element.StartDate != ''&& !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
+                var stamper = (element.DTStamp != null && element.DTStamp != '' && !isNaN(Date.parse(element.DTStamp)) && new Date(element.DTStamp) instanceof Date)?new Date(element.DTStamp):new Date((element.StartDate != null && element.StartDate != ''&& !isNaN(Date.parse(element.StartDate)) && new Date(element.StartDate) instanceof Date)?element.StartDate:Date.now());
                 var dtstamp = (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
-                var starty = new Date((element.StartDate != null && element.StartDate != '' && !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
+                var starty = new Date((element.StartDate != null && element.StartDate != '' && !isNaN(Date.parse(element.StartDate)) && new Date(element.StartDate) instanceof Date)?element.StartDate:Date.now());
                 var start = (starty.getMonth() + 1).toString() + "/" + starty.getDate().toString() +"/"+ starty.getFullYear().toString();
-                var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)))?element.CloseDate:Date.now());
+                var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)) && new Date(element.CloseDate) instanceof Date)?element.CloseDate:Date.now());
                 var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
             if(element.BillGrp == null || element.BillGrp == 'NULL' || (typeof element.BillGrp == 'string' && element.BillGrp.trim() == '')) {
-                query += "IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"') BEGIN INSERT INTO Projects "+
+                query += "IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"') BEGIN TRY INSERT INTO Projects "+
                 "(project_id, project_title, project_manager_ID, qaqc_person_ID, closed, created, start_date, close_date, project_location, latitude, longitude, SHNOffice_ID, service_area, "+
                 "total_contract, exempt_agreement, why, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, prevailing_wage, "+
                 "agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, first_name, last_name, relationship, "+
@@ -177,17 +175,18 @@ function populateProjects() {
                 (element.Email1==null || element.Email1=="NULL" || element.Email1==""?"none":element.Email1.replace(/'/gi, "''"))+"', "+
                 (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", "+
                 (element.BinderLocation==null || element.BinderLocation=="NULL"||element.BinderLocation=="undefined"||element.BinderLocation==""?"NULL":"'"+element.BinderLocation.replace(/'/gi, "''")+"'")+", '"+
-                (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+"'); END;";
+                (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+"'); END TRY BEGIN CATCH END CATCH;";
                 // console.log(query);
                 // query += "SELECT ID FROM Projects WHERE project_id = '" + element.Projectid + "';";
             }
         });
-        request.query(query, (err, row) => {
+        pool.query(query, (err, row) => {
             if(err) {
+                console.log(query);
                 console.error(err);
             }
             else { // We assume the max ID is the last Project to be inserted.
-                console.log(row);
+                // console.log(row.recordsets);
             }
         });
     }).catch((err) => {
