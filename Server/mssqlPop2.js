@@ -201,9 +201,10 @@ function populateProjects() {
             }
             else { // Link the team member IDs and the Keywords to each project.
                 let linkQuery = '';
+                console.log(rows.recordsets);
                 rows.recordsets.forEach((row) => {
-                    if(members.get(row[0].project_id) != null && members.get(row[0].project_id) != "NULL" && members.get(row[0].project_id) != "") {
-                        var memberArray = members.get(row[0].project_id).split(',').filter((id) => {
+                    if(members.get(row.project_id) != null && members.get(row.project_id) != "NULL" && members.get(row.project_id) != "") {
+                        var memberArray = members.get(row.project_id).split(',').filter((id) => {
                             return !isNaN(id);
                         });
                         if(memberArray.length > 0) {
@@ -212,8 +213,8 @@ function populateProjects() {
                             });
                         }
                     }
-                    if(keywordMap.get(row[0].project_id) != null && keywordMap.get(row[0].project_id) != "NULL" && keywordMap.get(row[0].project_id) != "") {
-                        var keyArray = keywordMap.get(row[0].project_id).split(',').filter((id) => {
+                    if(keywordMap.get(row.project_id) != null && keywordMap.get(row.project_id) != "NULL" && keywordMap.get(row.project_id) != "") {
+                        var keyArray = keywordMap.get(row.project_id).split(',').filter((id) => {
                             return !isNaN(id);
                         });
                         if(keyArray.length > 0) {
