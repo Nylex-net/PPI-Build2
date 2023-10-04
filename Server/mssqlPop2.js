@@ -195,6 +195,7 @@ function populateProjects() {
                 billBoi.push(element.Projectid);
             }
         });
+        console.log(billBoi);
         pool.query(query, (err, rows) => {
             if(err) {
                 console.error(err);
@@ -215,13 +216,12 @@ function populateProjects() {
                             }
                         }
                         if(keywordMap.get(row[0].project_id) != null && keywordMap.get(row[0].project_id) != "NULL" && keywordMap.get(row[0].project_id) != "") {
-                            var keyArray = keywordMap.get(row[0].project_id).split(',').filter((id) => {
-                                return !isNaN(id);
-                            });
+                            var keyArray = keywordMap.get(row[0].project_id).split(/,| \|\| /g);
                             if(keyArray.length > 0) {
                                 keyArray.forEach((key) => {
-                                    if(keyMap.has(key)) {
-                                        linkQuery += "INSERT INTO ProjectKeywords VALUES ("+ row[0].ID + ", " + keyMap.get(key) + ");";
+                                    var trimmed = key.trim();
+                                    if(keyMap.has(trimmed)) {
+                                        linkQuery += "INSERT INTO ProjectKeywords VALUES ("+ row[0].ID + ", " + keyMap.get(trimmed) + ");";
                                     }
                                 });
                             }
@@ -233,10 +233,10 @@ function populateProjects() {
                         console.error(err);
                     }
                 });
-                const filteredBoi = rows.recordset.filter(group => billBoi.includes(group.project_id));
+                const filteredBoi = rows.recordset.filter(none => {return none[0] != undefined}).filter(group => {return billBoi.includes(group[0].project_id)});
                 // console.log(linkQuery);
-                // console.log(filteredBoi);
-                populateBillingGroups(filteredBoi);
+                console.log(filteredBoi);
+                // populateBillingGroups(filteredBoi);
             }
         });
 
