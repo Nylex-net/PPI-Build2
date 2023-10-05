@@ -39,9 +39,9 @@ pool.connect(err => {
                 process.exit();
             }
             else {
-                populateStaff();
-                populateKeywords();
-                populateProfileCodes();
+                // populateStaff();
+                // populateKeywords();
+                // populateProfileCodes();
                 populateProjects();
             }
         });
@@ -260,11 +260,11 @@ function populateBillingGroups(bills, idMap) {
         var daBillBruh = ((element.BillGrp.trim().length == 4)?element.BillGrp.substring(1):element.BillGrp); // Bruh
 
         // Build query string.
-        query += "IF NOT EXISTS (SELECT 1 FROM BillingGroups WHERE project_ID = "+(idMap.get(element.project_id))+" AND group_number = '"+((element.BillGrp.trim().length == 4)?element.BillGrp.substring(1):element.BillGrp)+"') "+
-        "BEGIN INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, "+
+        query += "IF NOT EXISTS (SELECT 1 FROM BillingGroups WHERE project_ID = "+(idMap.get(element.Projectid))+" AND group_number = '"+((element.BillGrp.trim().length == 4)?element.BillGrp.substring(1):element.BillGrp)+"') "+
+        "BEGIN TRY INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, "+
         "group_location, latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_id, invoice_format, " +
         "client_contract_PO, outside_markup, prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service"+") OUTPUT inserted.* VALUES (" +
-        idMap.get(element.project_id) + ", " + daBillBruh + ", " +
+        idMap.get(element.Projectid) + ", " + daBillBruh + ", " +
         (element.BillingTitle == null || element.BillingTitle == "NULL" || element.BillingTitle == ""?"[NO TITLE]":element.BillingTitle.replace(/'/gi, "''"))+"', "+
         (element.AutoCAD_Project == -1?1:0)+", "+
         (element.GIS_Project == -1?1:0)+", "+
@@ -290,23 +290,26 @@ function populateBillingGroups(bills, idMap) {
         ((element.SpecialBillingInstructins == null || element.SpecialBillingInstructins == "NULL" || element.SpecialBillingInstructins == "")?"NULL":"'"+element.SpecialBillingInstructins.replace(/'/gi, "''")+"'")+", "+
         (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
         (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+
-        "'); END";
+        "'); END TRY BEGIN CATCH END CATCH;";
 
         // Because we don't have a unique identifier for Billing groups, Project IDs will have an array of associated billing groups as .
-        if(!members.has(element.Projectid)) {
-            members.set(element.Projectid, new Map());
-            members.get(element.Projectid).set(daBillBruh, element.TeamMembers.split(','));
+        if(element.TeamMembers != null && element.TeamMembers != 'NULL' && element.TeamMembers != '' && element.TeamMembers != undefined) {
+            if(!members.has(idMap.get(element.Projectid))) {
+                members.set(idMap.get(element.Projectid), new Map());
+                members.get(idMap.get(element.Projectid)).set(daBillBruh, element.TeamMembers.split(/,| \|\| | /).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
+            }
+            else if(!members.get(idMap.get(element.Projectid)).has(daBillBruh)) {
+                members.get(idMap.get(element.Projectid)).set(daBillBruh, element.TeamMembers.split(/,| \|\| | /).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
+            }
         }
-        else if(!members.get(element.Projectid).includes(daBillBruh)) {
-            members.get(element.Projectid).set(daBillBruh, element.TeamMembers.split(','));
-        }
-
-        if(!keywordMap.has(element.Projectid)) {
-            keywordMap.set(element.Projectid, new Map());
-            keywordMap.get(element.Projectid).set(daBillBruh, element.ProjectKeywords.split(/,|  \|\| /g));
-        }
-        else if(!keywordMap.get(element.Projectid).includes(daBillBruh)) {
-            keywordMap.get(element.Projectid).set(daBillBruh, element.ProjectKeywords.split(/,|  \|\| /g));
+        if(element.ProjectKeywords != null && element.ProjectKeywords != 'NULL' && element.ProjectKeywords != '' && element.ProjectKeywords != undefined) {
+            if(!keywordMap.has(idMap.get(element.Projectid))) {
+                keywordMap.set(idMap.get(element.Projectid), new Map());
+                keywordMap.get(idMap.get(element.Projectid)).set(daBillBruh, element.ProjectKeywords.split(/,| \|\| | /).filter(mem => {return mem.trim() != ''}));
+            }
+            else if(!keywordMap.get(idMap.get(element.Projectid)).has(daBillBruh)) {
+                keywordMap.get(idMap.get(element.Projectid)).set(daBillBruh, element.ProjectKeywords.split(/,| \|\| | /).filter(mem => {return mem.trim() != ''}));
+            }
         }
     });
     // execution of query.
@@ -319,7 +322,14 @@ function populateBillingGroups(bills, idMap) {
             // console.log(rows);
             for (const row of rows.recordsets) {
                 if(row[0] != undefined) {
-                    linkQuery += "INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ idMap.get() +")"
+                    for(const member of members.get(row[0].project_ID)) {
+                        linkQuery += "BEGIN TRY INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ member +"); END TRY BEGIN CATCH END CATCH;";
+                    }
+                    for(const key of keywordMap.get(row[0].project_ID)) {
+                        if(keyMap.has(key)) {
+                            linkQuery += "BEGIN TRY INSERT INTO BillingGroupKeywords VALUES("+row[0].ID + ", "+ keyMap.get(key) +");END TRY BEGIN CATCH END CATCH;";
+                        }
+                    }
                 }
             }
             pool.query(linkQuery, (err) => {
