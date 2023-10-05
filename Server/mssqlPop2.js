@@ -119,7 +119,6 @@ function populateProjects() {
         const now = new Date();
         const currDate = (now.getMonth() + 1).toString() + "/" + now.getDate().toString() +"/"+ now.getFullYear().toString();
         let query = '';
-        let billingQuery = '';
         const billBoi = new Array();
         const members = new Map();
         const keywordMap = new Map();
@@ -228,7 +227,7 @@ function populateProjects() {
                             }
                         }
                     }
-                };
+                }
                 pool.query(linkQuery, (err) => {
                     if(err) {
                         console.error(err);
@@ -247,13 +246,25 @@ function populateProjects() {
 }
 
 function populateBillingGroups(bills, idMap) {
+    const members = new Map();
+    const keywordMap = new Map();
     let query = '';
     bills.forEach((element) => {
+        // Date Formatting.
+        var stamper = (element.DTStamp != null && element.DTStamp != '' && !isNaN(Date.parse(element.DTStamp)) && new Date(element.DTStamp) instanceof Date)?new Date(element.DTStamp):new Date((element.StartDate != null && element.StartDate != ''&& !isNaN(Date.parse(element.StartDate)) && new Date(element.StartDate) instanceof Date)?element.StartDate:Date.now());
+        var dtstamp = (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
+        var starty = new Date((element.StartDate != null && element.StartDate != '' && !isNaN(Date.parse(element.StartDate)) && new Date(element.StartDate) instanceof Date)?element.StartDate:Date.now());
+        var start = (starty.getMonth() + 1).toString() + "/" + starty.getDate().toString() +"/"+ starty.getFullYear().toString();
+        var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)) && new Date(element.CloseDate) instanceof Date)?element.CloseDate:Date.now());
+        var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
+        var daBillBruh = ((element.BillGrp.trim().length == 4)?element.BillGrp.substring(1):element.BillGrp); // Bruh
+
+        // Build query string.
         query += "IF NOT EXISTS (SELECT 1 FROM BillingGroups WHERE project_ID = "+(idMap.get(element.project_id))+" AND group_number = '"+((element.BillGrp.trim().length == 4)?element.BillGrp.substring(1):element.BillGrp)+"') "+
         "BEGIN INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, "+
         "group_location, latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_id, invoice_format, " +
-        "client_contract_PO, outside_markup, prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service"+") VALUES (" +
-        idMap.get(element.project_id) + ", " + ((element.BillGrp.trim().length == 4)?element.BillGrp.substring(1):element.BillGrp) + ", " +
+        "client_contract_PO, outside_markup, prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service"+") OUTPUT inserted.* VALUES (" +
+        idMap.get(element.project_id) + ", " + daBillBruh + ", " +
         (element.BillingTitle == null || element.BillingTitle == "NULL" || element.BillingTitle == ""?"[NO TITLE]":element.BillingTitle.replace(/'/gi, "''"))+"', "+
         (element.AutoCAD_Project == -1?1:0)+", "+
         (element.GIS_Project == -1?1:0)+", "+
@@ -279,6 +290,43 @@ function populateBillingGroups(bills, idMap) {
         ((element.SpecialBillingInstructins == null || element.SpecialBillingInstructins == "NULL" || element.SpecialBillingInstructins == "")?"NULL":"'"+element.SpecialBillingInstructins.replace(/'/gi, "''")+"'")+", "+
         (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
         (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+
-        "'); END";;
+        "'); END";
+
+        // Because we don't have a unique identifier for Billing groups, Project IDs will have an array of associated billing groups as .
+        if(!members.has(element.Projectid)) {
+            members.set(element.Projectid, new Map());
+            members.get(element.Projectid).set(daBillBruh, element.TeamMembers.split(','));
+        }
+        else if(!members.get(element.Projectid).includes(daBillBruh)) {
+            members.get(element.Projectid).set(daBillBruh, element.TeamMembers.split(','));
+        }
+
+        if(!keywordMap.has(element.Projectid)) {
+            keywordMap.set(element.Projectid, new Map());
+            keywordMap.get(element.Projectid).set(daBillBruh, element.ProjectKeywords.split(/,|  \|\| /g));
+        }
+        else if(!keywordMap.get(element.Projectid).includes(daBillBruh)) {
+            keywordMap.get(element.Projectid).set(daBillBruh, element.ProjectKeywords.split(/,|  \|\| /g));
+        }
+    });
+    // execution of query.
+    pool.query(query, (err, rows) => {
+        if(err) {
+            console.error(err);
+        }
+        else {
+            let linkQuery = '';
+            // console.log(rows);
+            for (const row of rows.recordsets) {
+                if(row[0] != undefined) {
+                    linkQuery += "INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ idMap.get() +")"
+                }
+            }
+            pool.query(linkQuery, (err) => {
+                if(err) {
+                    console.error(err);
+                }
+            });
+        }
     });
 }
