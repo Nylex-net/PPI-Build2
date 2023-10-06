@@ -265,7 +265,7 @@ function populateBillingGroups(bills, idMap) {
             "BEGIN TRY INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, "+
             "group_location, latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_id, invoice_format, " +
             "client_contract_PO, outside_markup, prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service"+") OUTPUT inserted.* VALUES (" +
-            idMap.get(element.Projectid) + ", " + billCosby + ", " +
+            idMap.get(element.Projectid) + ", " + billCosby + ", '" +
             (element.BillingTitle == null || element.BillingTitle == "NULL" || element.BillingTitle == ""?"[NO TITLE]":element.BillingTitle.replace(/'/gi, "''"))+"', "+
             (element.AutoCAD_Project == -1?1:0)+", "+
             (element.GIS_Project == -1?1:0)+", "+
@@ -292,37 +292,6 @@ function populateBillingGroups(bills, idMap) {
             (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
             (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+
             "'); END TRY BEGIN CATCH END CATCH;";
-            console.log("IF NOT EXISTS (SELECT 1 FROM BillingGroups WHERE project_ID = "+(idMap.get(element.Projectid))+" AND group_number = '"+(billCosby)+"') "+
-            "BEGIN TRY INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, "+
-            "group_location, latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_id, invoice_format, " +
-            "client_contract_PO, outside_markup, prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service"+") OUTPUT inserted.* VALUES (" +
-            idMap.get(element.Projectid) + ", " + billCosby + ", " +
-            (element.BillingTitle == null || element.BillingTitle == "NULL" || element.BillingTitle == ""?"[NO TITLE]":element.BillingTitle.replace(/'/gi, "''"))+"', "+
-            (element.AutoCAD_Project == -1?1:0)+", "+
-            (element.GIS_Project == -1?1:0)+", "+
-            ((isNaN(element.ProjectMgr) || element.ProjectMgr == null || element.ProjectMgr == "NULL" || element.ProjectMgr == "")?53:element.ProjectMgr) +", "+
-            ((isNaN(element.QA_QCPerson) || element.QA_QCPerson == null || element.QA_QCPerson == "NULL" || element.QA_QCPerson == "")?53:element.QA_QCPerson)+", '"+
-            ((dtstamp == NaN)?currDate:dtstamp)+"', '"+
-            ((start == NaN)?currDate:start)+"', '"+
-            ((close == NaN)?currDate:close)+"', '"+
-            ((element.ProjectLoation == null || element.ProjectLoation == "NULL" || element.ProjectLoation == "")?"SHN":element.ProjectLoation.replace(/'/gi, "''"))+"', "+
-            (isNaN(element.Lattitude) || element.Lattitude == null || element.Lattitude == "NULL" ||(element.Lattitude > 90 || element.Lattitude < -90)?40.868928:element.Lattitude)+", "+
-            (isNaN(element.Longitude)|| element.Longitude == null || element.Longitude == "NULL" ||(element.Longitude > 180 || element.Longitude < -180)?-123.988061:element.Longitude)+", '"+
-            // ((element.SHNOffice == "Eureka" || element.SHNOffice == "Arcata")?0:(element.SHNOffice == "Klamath Falls" || element.SHNOffice == "KFalls")?2:(element.SHNOffice == "Willits")?4:(element.SHNOffice == "Redding")?5:6)+", '"+
-            ((element.ServiceArea == null || element.ServiceArea == "NULL" || element.ServiceArea == "")?"Civil":element.ServiceArea)+"', "+
-            ((element.ToatlContract == null || element.ToatlContract == "NULL" || element.ToatlContract == "")?0:((isNaN(element.ToatlContract[0]) && element.ToatlContract.length > 1))?(isNaN(element.ToatlContract.substring(1))?0:Number(element.ToatlContract.substring(1))):0) +", '"+
-            ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid != "")?element.RetainerPaid.replace(/'/gi, "''"):"NA")+"', "+
-            ((element.RetainerPaid == null || element.RetainerPaid == "NULL" || element.RetainerPaid == "")?0:(isNaN(element.RetainerPaid.substring(1))?"NULL":Number(element.RetainerPaid.substring(1))))+", "+
-            ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid.includes("Waived by"))?"'"+element.RetainerPaid.substring(10).replace(/'/gi, "''")+"'":"NULL")+", "+
-            (codeMap.get(element.ProfileCode)==undefined?167:codeMap.get(element.ProfileCode))+", "+
-            ((isNaN(element.ContractType) || element.ContractType == null || element.ContractType == "NULL")?1:(element.ContractType.includes("10")?10:(isNaN(element.ContractType[0])?1:element.ContractType[0]))) +", "+
-            (/n\\a|na|null|none/gi.test(element.InvoiceFormat)?"NULL":(element.InvoiceFormat.length <= 0?"NULL":"'"+element.InvoiceFormat[0]+"'"))+", 'NA', "+
-            ((isNaN(element.OutsideMarkup) || element.OutsideMarkup == null || element.OutsideMarkup == "NULL" || element.OutsideMarkup == "")?15:element.OutsideMarkup) +", "+
-            ((element.PREVAILING_WAGE == 1 || element.PREVAILING_WAGE == "Yes")?1:0)+", NULL, "+
-            ((element.SpecialBillingInstructins == null || element.SpecialBillingInstructins == "NULL" || element.SpecialBillingInstructins == "")?"NULL":"'"+element.SpecialBillingInstructins.replace(/'/gi, "''")+"'")+", "+
-            (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
-            (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+
-            "'); END TRY BEGIN CATCH END CATCH;\n");
 
             // Because we don't have a unique identifier for Billing groups, Project IDs will have an array of associated billing groups as .
             if(element.TeamMembers != null && element.TeamMembers != 'NULL' && element.TeamMembers != '' && element.TeamMembers != undefined) {
@@ -355,12 +324,20 @@ function populateBillingGroups(bills, idMap) {
             // console.log(rows);
             for (const row of rows.recordsets) {
                 if(row[0] != undefined) {
-                    for(const member of members.get(row[0].project_ID)) {
-                        linkQuery += "BEGIN TRY INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ member +"); END TRY BEGIN CATCH END CATCH;";
+                    if(typeof members.get(row[0].project_ID) == 'object') {
+                        if(typeof members.get(row[0].project_ID).get(row[0].group_number) == 'object') {
+                            for(const member of members.get(row[0].project_ID).get(row[0].group_number)) {
+                                linkQuery += "BEGIN TRY INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ member +"); END TRY BEGIN CATCH END CATCH;";
+                            };
+                        }
                     }
-                    for(const key of keywordMap.get(row[0].project_ID)) {
-                        if(keyMap.has(key)) {
-                            linkQuery += "BEGIN TRY INSERT INTO BillingGroupKeywords VALUES("+row[0].ID + ", "+ keyMap.get(key) +");END TRY BEGIN CATCH END CATCH;";
+                    if(typeof keywordMap.get(row[0].project_ID) == 'object') {
+                        if(keywordMap.get(row[0].project_ID).get(row[0].group_number) == 'object') { // Separate if to avoid error.
+                            for(const key of keywordMap.get(row[0].project_ID).get(row[0].group_number)) {
+                                if(keyMap.has(key)) {
+                                    linkQuery += "BEGIN TRY INSERT INTO BillingGroupKeywords VALUES("+row[0].ID + ", "+ keyMap.get(key) +");END TRY BEGIN CATCH END CATCH;";
+                                }
+                            }
                         }
                     }
                 }
