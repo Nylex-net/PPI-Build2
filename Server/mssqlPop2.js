@@ -87,7 +87,7 @@ function populateKeywords() {
             }
             else {
                 rows.recordsets.forEach((row) => {
-                    keyMap.set(row[0].Keyword, row[0].ID)
+                    keyMap.set(row[0].Keyword.toLowerCase().trim(), row[0].ID);
                 });
             }
         });
@@ -198,11 +198,11 @@ function populateData() {
                 (element.BinderLocation==null || element.BinderLocation=="NULL"||element.BinderLocation=="undefined"||element.BinderLocation==""?"NULL":"'"+element.BinderLocation.replace(/'/gi, "''")+"'")+", '"+
                 (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"None":element.DescriptionService.replace(/'/gi, "''"))+"');END TRY BEGIN CATCH END CATCH;";
                 // console.log(query);
-                if(!members.has(element.Projectid)) {
+                if(!members.has(element.Projectid) && element.TeamMembers != null && element.TeamMembers != '') {
                     members.set(element.Projectid, element.TeamMembers);
                 }
-                if(!keywordMap.has(element.Projectid)) {
-                    keywordMap.set(element.Projectid, element.ProjectKeywords);
+                if(!keywordMap.has(element.Projectid) && element.ProjectKeywords != null && element.ProjectKeywords != '') {
+                    keywordMap.set(element.Projectid, element.ProjectKeywords.toLowerCase());
                 }
             }
             else if(typeof element.BillGrp == 'string' && ((element.BillGrp.length == 3 && !isNaN(element.BillGrp)) || (element.BillGrp.length == 4 && element.BillGrp[0] == '.' && !isNaN(element.BillGrp.substring(1))))) {
@@ -317,19 +317,19 @@ function populateBillingGroups(bills, idMap) {
             if(element.TeamMembers != null && element.TeamMembers != 'NULL' && element.TeamMembers != '' && element.TeamMembers != undefined) {
                 if(!members.has(idMap.get(element.Projectid))) {
                     members.set(idMap.get(element.Projectid), new Map());
-                    members.get(idMap.get(element.Projectid)).set(billCosby, element.TeamMembers.split(/,| \|\| | /gi).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
+                    members.get(idMap.get(element.Projectid)).set(billCosby, element.TeamMembers.split(/,| \|\| | /).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
                 }
                 else if(!members.get(idMap.get(element.Projectid)).has(billCosby)) {
-                    members.get(idMap.get(element.Projectid)).set(billCosby, element.TeamMembers.split(/,| \|\| | /gi).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
+                    members.get(idMap.get(element.Projectid)).set(billCosby, element.TeamMembers.split(/,| \|\| | /).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
                 }
             }
             if(element.ProjectKeywords != null && element.ProjectKeywords != 'NULL' && element.ProjectKeywords != '' && element.ProjectKeywords != undefined) {
                 if(!keywordMap.has(idMap.get(element.Projectid))) {
                     keywordMap.set(idMap.get(element.Projectid), new Map());
-                    keywordMap.get(idMap.get(element.Projectid)).set(billCosby, element.ProjectKeywords.split(/,| \|\| |/gi).filter(mem => {return mem.trim() != ''}));
+                    keywordMap.get(idMap.get(element.Projectid)).set(billCosby, element.ProjectKeywords.toLowerCase().split(/,| \|\| |/).filter(key => {return key.trim() != ''}));
                 }
                 else if(!keywordMap.get(idMap.get(element.Projectid)).has(billCosby)) {
-                    keywordMap.get(idMap.get(element.Projectid)).set(billCosby, element.ProjectKeywords.split(/,| \|\| |/gi).filter(mem => {return mem.trim() != ''}));
+                    keywordMap.get(idMap.get(element.Projectid)).set(billCosby, element.ProjectKeywords.toLowerCase().split(/,| \|\| |/).filter(key => {return key.trim() != ''}));
                 }
             }
         }
@@ -341,22 +341,23 @@ function populateBillingGroups(bills, idMap) {
         }
         else {
             let linkQuery = '';
-            // console.log(rows);
+            // console.log(keywordMap);
             for (const row of rows.recordsets) {
                 if(row[0] != undefined) {
-                    if(typeof members.get(row[0].project_ID) == 'object') {
+                    if(typeof members.get(row[0].project_ID) === 'object' && members.get(row[0].project_ID) !== null) {
                         // Separate if statement to avoid error, in case we try to get a value that's undefined.
                         if(typeof members.get(row[0].project_ID).get(row[0].group_number) == 'object') {
                             for(const member of members.get(row[0].project_ID).get(row[0].group_number)) {
-                                linkQuery += "BEGIN TRY INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ member +"); END TRY BEGIN CATCH END CATCH;";
+                                linkQuery += "BEGIN TRY INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ member +");END TRY BEGIN CATCH END CATCH;";
                             };
                         }
                     }
-                    if(typeof keywordMap.get(row[0].project_ID) == 'object') {
+                    if(typeof keywordMap.get(row[0].project_ID) === 'object' && keywordMap.get(row[0].project_ID) !== null) {
                         // Separate if statement to avoid error, in case we try to get a value that's undefined.
-                        if(typeof keywordMap.get(row[0].project_ID).get(row[0].group_number) == 'object') {
+                        if(keywordMap.get(row[0].project_ID).get(row[0].group_number) == 'object') {
                             for(const key of keywordMap.get(row[0].project_ID).get(row[0].group_number)) {
                                 if(keyMap.has(key.trim())) {
+                                    console.log(key.trim());
                                     linkQuery += "BEGIN TRY INSERT INTO BillingGroupKeywords VALUES("+row[0].ID + ", "+ keyMap.get(key.trim()) +");END TRY BEGIN CATCH END CATCH;";
                                 }
                             }
@@ -392,7 +393,7 @@ function populatePromos(idMap) {
             "(is_project, " + (idMap.has(element.Projectid)?"proj_ID, ":"") +"promo_id, promo_type, promo_title, manager_id, qaqc_person_ID, closed, created, start_date, close_date, promo_location, latitude, longitude, SHNOffice_ID, service_area, "+
             "profile_code_id, " + "client_company, client_abbreviation, first_name, last_name, relationship, "+
             "job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, binder_size, description_service) OUTPUT inserted.* "+
-            "VALUES ("+ (idMap.has(element.Projectid) ? 1:0) + ", " + (idMap.has(element.Projectid)?idMap.get(element.Projectid)+ ", '":"") + element.PromoId+"', '" + ((element.AlternateTitle == "on-going" || element.AlternateTitle == "letter" || element.AlternateTitle == "soq" || element.AlternateTitle == "ProPri" || element.AlternateTitle == "ProSub")?element.AlternateTitle:"on-going") + "', '" +
+            "VALUES ("+ (idMap.has(element.Projectid) ? 1:0) + ", " + (idMap.has(element.Projectid)?idMap.get(element.Projectid)+ ", ":"") + "'" + element.PromoId+"', '" + ((element.AlternateTitle == "on-going" || element.AlternateTitle == "letter" || element.AlternateTitle == "soq" || element.AlternateTitle == "ProPri" || element.AlternateTitle == "ProSub")?element.AlternateTitle:"on-going") + "', '" +
             ((element.ProjectTitle == null || element.ProjectTitle == "NULL" || element.ProjectTitle == "")?"None":element.ProjectTitle.replace(/'/gi, "''"))+"', "+
             ((isNaN(element.ProjectMgr) || element.ProjectMgr == null || element.ProjectMgr == "NULL" || element.ProjectMgr == "")?53:element.ProjectMgr) +", "+
             ((isNaN(element.QA_QCPerson) || element.QA_QCPerson == null || element.QA_QCPerson == "NULL" || element.QA_QCPerson == "")?53:element.QA_QCPerson)+", "+
@@ -424,11 +425,11 @@ function populatePromos(idMap) {
             (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
             (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"":element.DescriptionService.replace(/'/gi, "''"))+"') END;";
 
-            if(!members.has(element.PromoId)) {
-                members.set(element.PromoId, element.TeamMembers);
+            if(!members.has(element.PromoId) && element.TeamMembers != null) {
+                members.set(element.PromoId, element.TeamMembers.split(/,| \|\| /).filter(mem => {return mem.trim() != ''}));
             }
-            if(!keywordMap.has(element.PromoId)) {
-                keywordMap.set(element.PromoId, element.ProjectKeywords);
+            if(!keywordMap.has(element.PromoId) && element.ProjectKeywords != null) {
+                keywordMap.set(element.PromoId, element.ProjectKeywords.toLowerCase().split(/,| \|\| /).filter(mem => {return mem.trim() != ''}));
             }
         });
         pool.query(query, (err, rows) => {
@@ -440,7 +441,7 @@ function populatePromos(idMap) {
                 for (const row of rows.recordsets) {
                     if(row[0] != undefined) {
                         if(members.get(row[0].promo_id) != null && members.get(row[0].promo_id) != "NULL" && members.get(row[0].promo_id) != "") {
-                            var memberArray = members.get(row[0].promo_id).split(',').filter((id) => {
+                            var memberArray = members.get(row[0].promo_id).split(/,| \|\| /g).filter((id) => {
                                 return !isNaN(id);
                             });
                             if(memberArray.length > 0) {
