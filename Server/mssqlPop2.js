@@ -42,11 +42,15 @@ pool.connect(err => {
                 // populateStaff();
                 // populateKeywords();
                 // populateProfileCodes();
-                populateProjects();
+                populateData();
             }
         });
     }
 });
+
+/**
+ * Populates the new database with staff members.
+ */
 
 function populateStaff() {
     // Populates Staff.
@@ -65,6 +69,10 @@ function populateStaff() {
         console.error(err);
     });
 }
+
+/**
+ * Populates the new database with the old Keywords.
+ */
 
 function populateKeywords() {
     connection.query('SELECT ID, Keyword, Group1 FROM Keywords').then(data => {
@@ -88,6 +96,10 @@ function populateKeywords() {
     });
 }
 
+/**
+ * Populates the new database with the old profile codes.
+ */
+
 function populateProfileCodes() {
     connection.query('SELECT id, Code, CodeDescription, Active FROM ProfileCodes').then(data => {
         let query ='';
@@ -110,11 +122,14 @@ function populateProfileCodes() {
         console.error(err);
     });
 }
+
 /**
- * Populates the projects and billing groups tables.
- * The billing groups need to be linked to their associated project.
+ * Populates the projects, billing groups, and promos tables.
+ * The billing groups are executed by this function because they need to be linked to their associated project.
+ * So are promos to make use of this function's internal idToId object.
  */
-function populateProjects() {
+
+function populateData() {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
         const now = new Date();
         const currDate = (now.getMonth() + 1).toString() + "/" + now.getDate().toString() +"/"+ now.getFullYear().toString();
@@ -237,6 +252,7 @@ function populateProjects() {
                 // // console.log(linkQuery);
                 // console.log(filteredBoi);
                 populateBillingGroups(billBoi, idToId);
+                populatePromos(idToId);
             }
         });
 
@@ -244,6 +260,13 @@ function populateProjects() {
         console.error(err);
     });
 }
+
+/**
+ * Populates the billing groups tables.
+ * The populateProjects() function calls this method so it can link the billing groups to the projects.
+ * @param {object} bills is an array of project entries with an associated billing group.
+ * @param {object} idMap is a Map object whose keys are SHN's traditional project ID system, and the values are the projects' associated database ID.
+ */
 
 function populateBillingGroups(bills, idMap) {
     const members = new Map();
@@ -325,6 +348,7 @@ function populateBillingGroups(bills, idMap) {
             for (const row of rows.recordsets) {
                 if(row[0] != undefined) {
                     if(typeof members.get(row[0].project_ID) == 'object') {
+                        // Separate if statement to avoid error, in case we try to get a value that's undefined.
                         if(typeof members.get(row[0].project_ID).get(row[0].group_number) == 'object') {
                             for(const member of members.get(row[0].project_ID).get(row[0].group_number)) {
                                 linkQuery += "BEGIN TRY INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ member +"); END TRY BEGIN CATCH END CATCH;";
@@ -332,10 +356,11 @@ function populateBillingGroups(bills, idMap) {
                         }
                     }
                     if(typeof keywordMap.get(row[0].project_ID) == 'object') {
-                        if(keywordMap.get(row[0].project_ID).get(row[0].group_number) == 'object') { // Separate if to avoid error.
+                        // Separate if statement to avoid error, in case we try to get a value that's undefined.
+                        if(typeof keywordMap.get(row[0].project_ID).get(row[0].group_number) == 'object') {
                             for(const key of keywordMap.get(row[0].project_ID).get(row[0].group_number)) {
-                                if(keyMap.has(key)) {
-                                    linkQuery += "BEGIN TRY INSERT INTO BillingGroupKeywords VALUES("+row[0].ID + ", "+ keyMap.get(key) +");END TRY BEGIN CATCH END CATCH;";
+                                if(keyMap.has(key.trim())) {
+                                    linkQuery += "BEGIN TRY INSERT INTO BillingGroupKeywords VALUES("+row[0].ID + ", "+ keyMap.get(key.trim()) +");END TRY BEGIN CATCH END CATCH;";
                                 }
                             }
                         }
@@ -348,5 +373,69 @@ function populateBillingGroups(bills, idMap) {
                 }
             });
         }
+    });
+}
+
+function populatePromos(idMap) {
+    connection.query("SELECT * FROM Projects WHERE PromoId IS NOT NULL AND PromoId <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
+        const now = new Date();
+        const currDate = (now.getMonth() + 1).toString() + "/" + now.getDate().toString() +"/"+ now.getFullYear().toString();
+        const members = new Map();
+        const keywordMap = new Map();
+        let query = '';
+        data.forEach((element) => {
+            var stamper = (element.DTStamp != null && element.DTStamp != '' && !isNaN(Date.parse(element.DTStamp)))?new Date(element.DTStamp):new Date((element.StartDate != null && element.StartDate != ''&& !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
+            var dtstamp = (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
+            var starty = new Date((element.StartDate != null && element.StartDate != '' && !isNaN(Date.parse(element.StartDate)))?element.StartDate:Date.now());
+            var start = (starty.getMonth() + 1).toString() + "/" + starty.getDate().toString() +"/"+ starty.getFullYear().toString();
+            var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)))?element.CloseDate:Date.now());
+            var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
+
+            query += "IF NOT EXISTS (SELECT 1 FROM Promos WHERE promo_id = '"+element.PromoId+"') BEGIN INSERT INTO Promos "+
+            "(is_project, " + (idMap.has(element.Projectid)?"proj_ID, ":"") +"promo_id, promo_type, promo_title, manager_id, qaqc_person_ID, closed, created, start_date, close_date, promo_location, latitude, longitude, SHNOffice_ID, service_area, "+
+            "profile_code_id, " + "client_company, client_abbreviation, first_name, last_name, relationship, "+
+            "job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, binder_size, description_service) OUTPUT inserted.* "+
+            "VALUES ("+ (idMap.has(element.Projectid) ? 1:0) + ", " + (idMap.has(element.Projectid)?idMap.get(element.Projectid)+ ", '":"") + element.PromoId+"', '" + ((element.AlternateTitle == "on-going" || element.AlternateTitle == "letter" || element.AlternateTitle == "soq" || element.AlternateTitle == "ProPri" || element.AlternateTitle == "ProSub")?element.AlternateTitle:"on-going") + "', '" +
+            ((element.ProjectTitle == null || element.ProjectTitle == "NULL" || element.ProjectTitle == "")?"None":element.ProjectTitle.replace(/'/gi, "''"))+"', "+
+            ((isNaN(element.ProjectMgr) || element.ProjectMgr == null || element.ProjectMgr == "NULL" || element.ProjectMgr == "")?53:element.ProjectMgr) +", "+
+            ((isNaN(element.QA_QCPerson) || element.QA_QCPerson == null || element.QA_QCPerson == "NULL" || element.QA_QCPerson == "")?53:element.QA_QCPerson)+", "+
+            (element.Closed_by_PM===-1?1:0)+", '"+
+            ((dtstamp == NaN)?currDate:dtstamp)+"', '"+
+            ((start == NaN)?currDate:start)+"', '"+
+            ((close == NaN)?currDate:close)+"', '"+
+            ((element.ProjectLoation == null || element.ProjectLoation == "NULL" || element.ProjectLoation == "")?"SHN":element.ProjectLoation.replace(/'/gi, "''"))+"', "+
+            (isNaN(element.Lattitude) || element.Lattitude == null || element.Lattitude == "NULL" || element.Lattitude == "" ||(element.Lattitude > 90 || element.Lattitude < -90)?40.868928:element.Lattitude)+", "+
+            (isNaN(element.Longitude)|| element.Longitude == null || element.Longitude == "NULL" || element.Longitude == "" ||(element.Longitude > 180 || element.Longitude < -180)?-123.988061:element.Longitude)+", "+
+            ((element.SHNOffice == "Eureka" || element.SHNOffice == "Arcata")?0:(element.SHNOffice == "Klamath Falls" || element.SHNOffice == "KFalls")?2:(element.SHNOffice == "Willits")?4:(element.SHNOffice == "Redding")?5:6)+", '"+
+            ((element.ServiceArea == null || element.ServiceArea == "NULL" || element.ServiceArea == "")?"Civil":element.ServiceArea)+"', "+
+            (codeMap.get(element.ProfileCode)==undefined?167:codeMap.get(element.ProfileCode))+", '"+
+            ((element.ClientCompany1 == null || element.ClientCompany1 == "NULL" || element.ClientCompany1 == "")?"SHN":element.ClientCompany1.replace(/'/gi, "''"))+"', "+
+            ((element.ClientAbbrev1 == null || element.ClientAbbrev1 == "NULL" || element.ClientAbbrev1 == "")?"NULL":"'"+element.ClientAbbrev1.replace(/'/gi, "''")+"'")+", '"+
+            ((element.ClientContactFirstName1 == null || element.ClientContactFirstName1 == "NULL" || element.ClientContactFirstName1 == "")?"?":element.ClientContactFirstName1.replace(/'/gi, "''"))+"', '"+
+            ((element.ClientContactLastName1 == null || element.ClientContactLastName1 == "NULL" || element.ClientContactLastName1 == "")?"?":element.ClientContactLastName1.replace(/'/gi, "''"))+"', NULL, "+
+            ((element.Title1 == null || element.Title1 == "NULL" || element.Title1 == "")?"NULL":"'"+element.Title1.replace(/'/gi, "''")+"'")+", '"+
+            (element.Address1_1==null || element.Address1_1=="NULL" || element.Address1_1=="" ?"812 W. Wabash Ave.":element.Address1_1.replace(/'/gi, "''"))+"', "+
+            (element.Address2_1==null || element.Address2_1=="NULL" || element.Address2_1==""?"NULL":"'"+element.Address2_1.replace(/'/gi, "''")+"'")+", '"+
+            ((element.City1==null || element.City1=="NULL" || element.City1=="")?"Eureka":element.City1.replace(/'/gi, "''"))+"', '"+
+            ((element.State1==null||element.State1=="NULL"||element.State1=="")?"CA":element.State1.replace(/'/gi, "''"))+"', '"+
+            ((element.Zip1==null||element.Zip1=="NULL"||element.Zip1=="")?"95501":element.Zip1.replace(/'/gi, "''"))+"', '"+
+            ((element.PhoneW1==null || element.PhoneW1=="NULL" || element.PhoneW1=="")?"(000)000-0000":element.PhoneW1.replace(/'/gi, "''"))+"', NULL, "+
+            (element.PhoneH1==null || element.PhoneH1=="NULL"|| element.PhoneH1==""?"NULL":"'"+element.PhoneH1.replace(/'/gi, "''")+"'")+", "+
+            (element.Cell1==null || element.Cell1=="NULL" || element.Cell1==""?"NULL":"'"+element.Cell1.replace(/'/gi, "''")+"'")+", "+
+            (element.Fax1==null || element.Fax1=="NULL"|| element.Fax1==""?"NULL":"'"+element.Fax1.replace(/'/gi, "''")+"'")+", '"+
+            (element.Email1==null || element.Email1=="NULL" || element.Email1==""?"nobody@shn-engr.com":element.Email1.replace(/'/gi, "''"))+"', "+
+            (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
+            (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"":element.DescriptionService.replace(/'/gi, "''"))+"') END;";
+
+            if(!members.has(element.Projectid)) {
+                members.set(element.Projectid, element.TeamMembers);
+            }
+            if(!keywordMap.has(element.Projectid)) {
+                keywordMap.set(element.Projectid, element.ProjectKeywords);
+            }
+
+        });
+    }).catch((err) => {
+        console.error(err);
     });
 }

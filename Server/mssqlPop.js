@@ -364,7 +364,7 @@ function promos() {
             var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)))?element.CloseDate:Date.now());
             var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
     
-            var query = "IF NOT EXISTS (SELECT 1 FROM Promos WHERE promo_id = '"+element.PromoId+"') BEGIN INSERT INTO master.dbo.Promos "+
+            var query = "IF NOT EXISTS (SELECT 1 FROM Promos WHERE promo_id = '"+element.PromoId+"') BEGIN INSERT INTO Promos "+
             "(is_project, promo_id, promo_type, promo_title, manager_id, qaqc_person_ID, closed, created, start_date, close_date, promo_location, latitude, longitude, SHNOffice_ID, service_area, "+
             "profile_code_id, " + "client_company, client_abbreviation, first_name, last_name, relationship, "+
             "job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, binder_size, description_service) "+
