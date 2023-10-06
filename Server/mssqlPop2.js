@@ -39,9 +39,9 @@ pool.connect(err => {
                 process.exit();
             }
             else {
-                // populateStaff();
-                // populateKeywords();
-                // populateProfileCodes();
+                populateStaff();
+                populateKeywords();
+                populateProfileCodes();
                 populateData();
             }
         });
@@ -248,9 +248,6 @@ function populateData() {
                         console.error(err);
                     }
                 });
-                // const filteredBoi = rows.recordset.filter(none => {return none[0] != undefined}).filter(group => {return billBoi.includes(group[0].project_id)});
-                // // console.log(linkQuery);
-                // console.log(filteredBoi);
                 populateBillingGroups(billBoi, idToId);
                 populatePromos(idToId);
             }
@@ -427,13 +424,50 @@ function populatePromos(idMap) {
             (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
             (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"":element.DescriptionService.replace(/'/gi, "''"))+"') END;";
 
-            if(!members.has(element.Projectid)) {
-                members.set(element.Projectid, element.TeamMembers);
+            if(!members.has(element.PromoId)) {
+                members.set(element.PromoId, element.TeamMembers);
             }
-            if(!keywordMap.has(element.Projectid)) {
-                keywordMap.set(element.Projectid, element.ProjectKeywords);
+            if(!keywordMap.has(element.PromoId)) {
+                keywordMap.set(element.PromoId, element.ProjectKeywords);
             }
-
+        });
+        pool.query(query, (err, rows) => {
+            if(err) {
+                console.error(err);
+            }
+            else { // Link the team member IDs and the Keywords to each promo.
+                let linkQuery = '';
+                for (const row of rows.recordsets) {
+                    if(row[0] != undefined) {
+                        if(members.get(row[0].promo_id) != null && members.get(row[0].promo_id) != "NULL" && members.get(row[0].promo_id) != "") {
+                            var memberArray = members.get(row[0].promo_id).split(',').filter((id) => {
+                                return !isNaN(id);
+                            });
+                            if(memberArray.length > 0) {
+                                memberArray.forEach((member) => {
+                                    linkQuery += "INSERT INTO PromoTeam VALUES ("+ row[0].ID + ", " + member + ");";
+                                });
+                            }
+                        }
+                        if(keywordMap.get(row[0].promo_id) != null && keywordMap.get(row[0].promo_id) != "NULL" && keywordMap.get(row[0].promo_id) != "") {
+                            var keyArray = keywordMap.get(row[0].promo_id).split(/,| \|\| /g);
+                            if(keyArray.length > 0) {
+                                keyArray.forEach((key) => {
+                                    var trimmed = key.trim();
+                                    if(keyMap.has(trimmed)) {
+                                        linkQuery += "INSERT INTO PromoKeywords VALUES ("+ row[0].ID + ", " + keyMap.get(trimmed) + ");";
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+                pool.query(linkQuery, (err) => {
+                    if(err) {
+                        console.error(err);
+                    }
+                });
+            }
         });
     }).catch((err) => {
         console.error(err);
