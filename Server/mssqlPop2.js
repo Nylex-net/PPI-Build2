@@ -231,7 +231,7 @@ function populateData() {
                             }
                         }
                         if(keywordMap.get(row[0].project_id) != null && keywordMap.get(row[0].project_id) != "NULL" && keywordMap.get(row[0].project_id) != "") {
-                            var keyArray = keywordMap.get(row[0].project_id).split(/,| \|\| /g);
+                            var keyArray = keywordMap.get(row[0].project_id).split(/,| \|\| /);
                             if(keyArray.length > 0) {
                                 keyArray.forEach((key) => {
                                     var trimmed = key.trim();
@@ -317,19 +317,19 @@ function populateBillingGroups(bills, idMap) {
             if(element.TeamMembers != null && element.TeamMembers != 'NULL' && element.TeamMembers != '' && element.TeamMembers != undefined) {
                 if(!members.has(idMap.get(element.Projectid))) {
                     members.set(idMap.get(element.Projectid), new Map());
-                    members.get(idMap.get(element.Projectid)).set(billCosby, element.TeamMembers.split(/,| \|\| | /).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
+                    members.get(idMap.get(element.Projectid)).set(billCosby, element.TeamMembers.split(/,| \|\| /).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
                 }
                 else if(!members.get(idMap.get(element.Projectid)).has(billCosby)) {
-                    members.get(idMap.get(element.Projectid)).set(billCosby, element.TeamMembers.split(/,| \|\| | /).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
+                    members.get(idMap.get(element.Projectid)).set(billCosby, element.TeamMembers.split(/,| \|\| /).filter(mem => {return mem.trim() != '' && !isNaN(mem);}));
                 }
             }
             if(element.ProjectKeywords != null && element.ProjectKeywords != 'NULL' && element.ProjectKeywords != '' && element.ProjectKeywords != undefined) {
                 if(!keywordMap.has(idMap.get(element.Projectid))) {
                     keywordMap.set(idMap.get(element.Projectid), new Map());
-                    keywordMap.get(idMap.get(element.Projectid)).set(billCosby, element.ProjectKeywords.toLowerCase().split(/,| \|\| |/).filter(key => {return key.trim() != ''}));
+                    keywordMap.get(idMap.get(element.Projectid)).set(billCosby, element.ProjectKeywords.toLowerCase().split(/,| \|\| /).filter(key => {return key.trim() != ''}));
                 }
                 else if(!keywordMap.get(idMap.get(element.Projectid)).has(billCosby)) {
-                    keywordMap.get(idMap.get(element.Projectid)).set(billCosby, element.ProjectKeywords.toLowerCase().split(/,| \|\| |/).filter(key => {return key.trim() != ''}));
+                    keywordMap.get(idMap.get(element.Projectid)).set(billCosby, element.ProjectKeywords.toLowerCase().split(/,| \|\| /).filter(key => {return key.trim() != ''}));
                 }
             }
         }
@@ -344,22 +344,16 @@ function populateBillingGroups(bills, idMap) {
             // console.log(keywordMap);
             for (const row of rows.recordsets) {
                 if(row[0] != undefined) {
-                    if(typeof members.get(row[0].project_ID) === 'object' && members.get(row[0].project_ID) !== null) {
-                        // Separate if statement to avoid error, in case we try to get a value that's undefined.
-                        if(typeof members.get(row[0].project_ID).get(row[0].group_number) == 'object') {
-                            for(const member of members.get(row[0].project_ID).get(row[0].group_number)) {
-                                linkQuery += "BEGIN TRY INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ member +");END TRY BEGIN CATCH END CATCH;";
-                            };
-                        }
+                    if(typeof members.get(row[0].project_ID) === 'object' && members.get(row[0].project_ID) !== null && Array.isArray(members.get(row[0].project_ID).get(row[0].group_number))) {
+                        for(const member of members.get(row[0].project_ID).get(row[0].group_number)) {
+                            linkQuery += "BEGIN TRY INSERT INTO BillingGroupTeam VALUES("+row[0].ID + ", "+ member +");END TRY BEGIN CATCH END CATCH;";
+                        };
                     }
-                    if(typeof keywordMap.get(row[0].project_ID) === 'object' && keywordMap.get(row[0].project_ID) !== null) {
-                        // Separate if statement to avoid error, in case we try to get a value that's undefined.
-                        if(keywordMap.get(row[0].project_ID).get(row[0].group_number) == 'object') {
-                            for(const key of keywordMap.get(row[0].project_ID).get(row[0].group_number)) {
-                                if(keyMap.has(key.trim())) {
-                                    console.log(key.trim());
-                                    linkQuery += "BEGIN TRY INSERT INTO BillingGroupKeywords VALUES("+row[0].ID + ", "+ keyMap.get(key.trim()) +");END TRY BEGIN CATCH END CATCH;";
-                                }
+                    if(typeof keywordMap.get(row[0].project_ID) === 'object' && keywordMap.get(row[0].project_ID) !== null && Array.isArray(keywordMap.get(row[0].project_ID).get(row[0].group_number))) {
+                        for(const key of keywordMap.get(row[0].project_ID).get(row[0].group_number)) {
+                            if(keyMap.has(key.trim())) {
+                                // console.log(key.trim());
+                                linkQuery += "BEGIN TRY INSERT INTO BillingGroupKeywords VALUES("+row[0].ID + ", "+ keyMap.get(key.trim()) +");END TRY BEGIN CATCH END CATCH;";
                             }
                         }
                     }
@@ -438,25 +432,26 @@ function populatePromos(idMap) {
             }
             else { // Link the team member IDs and the Keywords to each promo.
                 let linkQuery = '';
+                console.log(rows.recordsets);
                 for (const row of rows.recordsets) {
                     if(row[0] != undefined) {
-                        if(members.get(row[0].promo_id) != null && members.get(row[0].promo_id) != "NULL" && members.get(row[0].promo_id) != "") {
-                            var memberArray = members.get(row[0].promo_id).split(/,| \|\| /g).filter((id) => {
+                        if(typeof members.get(row[0].promo_id) === 'object' && members.get(row[0].promo_id) !== null && Array.isArray(members.get(row[0].promo_id))) {
+                            var memberArray = members.get(row[0].promo_id).filter((id) => {
                                 return !isNaN(id);
                             });
                             if(memberArray.length > 0) {
                                 memberArray.forEach((member) => {
-                                    linkQuery += "INSERT INTO PromoTeam VALUES ("+ row[0].ID + ", " + member + ");";
+                                    linkQuery += "BEGIN TRY INSERT INTO PromoTeam VALUES ("+ row[0].ID + ", " + member + ");END TRY BEGIN CATCH END CATCH;";
                                 });
                             }
                         }
-                        if(keywordMap.get(row[0].promo_id) != null && keywordMap.get(row[0].promo_id) != "NULL" && keywordMap.get(row[0].promo_id) != "") {
-                            var keyArray = keywordMap.get(row[0].promo_id).split(/,| \|\| /g);
-                            if(keyArray.length > 0) {
-                                keyArray.forEach((key) => {
+                        if(typeof keywordMap.get(row[0].promo_id) === 'object' && keywordMap.get(row[0].promo_id) !== null && Array.isArray(keywordMap.get(row[0].promo_id))) {
+                            // var keyArray = keywordMap.get(row[0].promo_id).split(/,| \|\| /);
+                            if(keywordMap.get(row[0].promo_id).length > 0) {
+                                keywordMap.get(row[0].promo_id).forEach((key) => {
                                     var trimmed = key.trim();
                                     if(keyMap.has(trimmed)) {
-                                        linkQuery += "INSERT INTO PromoKeywords VALUES ("+ row[0].ID + ", " + keyMap.get(trimmed) + ");";
+                                        linkQuery += "BEGIN TRY INSERT INTO PromoKeywords VALUES ("+ row[0].ID + ", " + keyMap.get(trimmed) + ");END TRY BEGIN CATCH END CATCH;";
                                     }
                                 });
                             }
