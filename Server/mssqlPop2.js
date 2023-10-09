@@ -383,7 +383,7 @@ function populatePromos(idMap) {
             var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)))?element.CloseDate:Date.now());
             var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
 
-            query += "IF NOT EXISTS (SELECT 1 FROM Promos WHERE promo_id = '"+element.PromoId+"') BEGIN INSERT INTO Promos "+
+            query += "IF NOT EXISTS (SELECT 1 FROM Promos WHERE promo_id = '"+element.PromoId+"') BEGIN TRY INSERT INTO Promos "+
             "(is_project, " + (idMap.has(element.Projectid)?"proj_ID, ":"") +"promo_id, promo_type, promo_title, manager_id, qaqc_person_ID, closed, created, start_date, close_date, promo_location, latitude, longitude, SHNOffice_ID, service_area, "+
             "profile_code_id, " + "client_company, client_abbreviation, first_name, last_name, relationship, "+
             "job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, binder_size, description_service) OUTPUT inserted.* "+
@@ -417,7 +417,7 @@ function populatePromos(idMap) {
             (element.Fax1==null || element.Fax1=="NULL"|| element.Fax1==""?"NULL":"'"+element.Fax1.replace(/'/gi, "''")+"'")+", '"+
             (element.Email1==null || element.Email1=="NULL" || element.Email1==""?"nobody@shn-engr.com":element.Email1.replace(/'/gi, "''"))+"', "+
             (element.BinderSize == "NA" || element.BinderSize == "NULL" || element.BinderSize == null || element.BinderSize == ""?"NULL":(element.BinderSize == "1/2"?0.5:(element.BinderSize==1?1:(element.BinderSize==1.5?1.5:(element.BinderSize==2?2:3)))))+", '"+
-            (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"":element.DescriptionService.replace(/'/gi, "''"))+"') END;";
+            (element.DescriptionService==null || element.DescriptionService=="NULL"||element.DescriptionService=="undefined"||element.DescriptionService==""?"":element.DescriptionService.replace(/'/gi, "''"))+"') END TRY BEGIN CATCH END CATCH;";
 
             if(!members.has(element.PromoId) && element.TeamMembers != null) {
                 members.set(element.PromoId, element.TeamMembers.split(/,| \|\| /).filter(mem => {return mem.trim() != ''}));
@@ -432,7 +432,7 @@ function populatePromos(idMap) {
             }
             else { // Link the team member IDs and the Keywords to each promo.
                 let linkQuery = '';
-                console.log(rows.recordsets);
+                // console.log(rows.recordsets);
                 for (const row of rows.recordsets) {
                     if(row[0] != undefined) {
                         if(typeof members.get(row[0].promo_id) === 'object' && members.get(row[0].promo_id) !== null && Array.isArray(members.get(row[0].promo_id))) {
