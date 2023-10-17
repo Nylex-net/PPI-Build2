@@ -16,6 +16,7 @@ app.use(cors());
 var jsonParser = bodyParser.json();
 const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\PPI\\Database\\SHN_Project_Backup.mdb;";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
+const jsonData = require('./config.json');
 
 // Directory for production environment.
 // process.chdir("P:\\");
@@ -30,12 +31,12 @@ const options = {
 };
 
 // Zoho configuration
-const CODE = '1000.74ac8598be2ddda0847d4d316a3974ab.ffc1708ead5f638b4fba52cce801a802'; // Create code from self client in Zoho API console.
-const CLIENT_ID = '1000.BMWLJD6EZ3F422X5L2WGRSGCNUBTKH';
-const CLIENT_SECRET = '9b75b877a09cba213c7b7c00910e13e6822d2a042e';
-const REFRESH_TOKEN = '1000.cc5330476c8f51620721394af2f1193d.1c8fba0d22fbcf52f10e23383a8135e9'; // Replace with refresh token if available. Otherwise, set to null.
-const SCOPE = 'desk.tickets.CREATE';
-const ORG_ID = "749689656";
+const CODE = jsonData.ZohoAPI.code; // Create code from self client in Zoho API console.
+const CLIENT_ID = jsonData.ZohoAPI.client_id;
+const CLIENT_SECRET = jsonData.ZohoAPI.client_secret;
+const REFRESH_TOKEN = jsonData.ZohoAPI.refresh_token; // Replace with refresh token if available. Otherwise, set to null in config.json file.
+const SCOPE = jsonData.ZohoAPI.scope;
+const ORG_ID = jsonData.ZohoAPI.org_id;
 let ZOHO = {};
 oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
     ZOHO = data;
