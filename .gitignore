@@ -2,3 +2,4 @@ authConfig.js
 config.json
 *.docx
 *.sql
+.env
