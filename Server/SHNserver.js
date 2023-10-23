@@ -1625,7 +1625,7 @@ function emailPersonel(pdfName, pathway, message, mailList, subjectLine) {
     });
  
     const mailOptions = { // Change values for SHN's system.
-        from: '"Initiation TEST" <'+jsonData.email.user+'>',
+        from: '"Initiation Notice" <'+jsonData.email.user+'>',
         to: mailList,
         subject: subjectLine,
         html: '<p>'+ message +'</p>',
