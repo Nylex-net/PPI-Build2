@@ -102,7 +102,7 @@ function getTextField(label, newID, value, required) { // i.e. getTextField('Pro
         myReq = 'required';
         myLabel = myLabel + '<span class="astrick">*</span>';
     }
-    return '<div class="col-md-6"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-md-6"><input type="text" id="'+ newID +'" name="'+ newID +'" maxlength="240" value="'+ value +'" '+ myReq +'></div>';
+    return '<div class="col-lg-4"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-lg-8"><input type="text" id="'+ newID +'" name="'+ newID +'" maxlength="240" value="'+ value +'" '+ myReq +'></div>';
 }
 
 // Inserts a Label and number field for the table-based format the form has.
@@ -122,7 +122,7 @@ function getNumberField(label, newID, value, step, min, max, required) {
     if(max != -1) {
         myMax = 'max="' + max + '"';
     }
-    return '<div class="col-md-6"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-md-6"><input type="number" id="'+ newID +'" name="'+ newID + myStep +' min="' + min + '" '+ myMax +' onkeypress="limit(this);" value="'+ value +'" '+ myReq +'></div>';
+    return '<div class="col-lg-4"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-lg-8"><input type="number" id="'+ newID +'" name="'+ newID + myStep +' min="' + min + '" '+ myMax +' onkeypress="limit(this);" value="'+ value +'" '+ myReq +'></div>';
 }
 
 // Inserts a Label and checkbox for the table-based format the form has.
@@ -806,82 +806,82 @@ They simply return the html syntax to create the table with the needed options.
 */
 
 function page1() {
-    return '<div class="container">' + getTextField('Project Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', projTitle, true) +
-    '<div class="col-md-6"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
-    '<div class="col-md-6" id="projFiller">Loading managers...</div>'+
-    '<div class="col-md-6"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
-    '<div class="col-md-6" id="qaqcFill">Loading QA QC people...</div>'+
-    '<div class="col-md-6"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
-    '<div class="col-md-6" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
-    '<div class="col-md-6"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
-    '<div class="col-md-6"><input type="date" id="start" value="start" required></div>'+
-    '<div class="col-md-6"><label for="end">End Date<span class="astrick">*</span></label></div>'+
-    '<div class="col-md-6"><input type="date" id="end" value="end" required></div>'
+    return '<div class="row">' + getTextField('Project Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', projTitle, true) +
+    '<div class="col-lg-4"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8" id="projFiller">Loading managers...</div>'+
+    '<div class="col-lg-4"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8" id="qaqcFill">Loading QA QC people...</div>'+
+    '<div class="col-lg-4"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
+    '<div class="col-lg-8" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
+    '<div class="col-lg-4"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><input type="date" id="start" value="start" required></div>'+
+    '<div class="col-lg-4"><label for="end">End Date<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><input type="date" id="end" value="end" required></div>'
     +'</div>';
 }
 
 function page2() {
-    return '<div class="container">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
+    return '<div class="row">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
     getNumberField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, -1, -90, 90, true) +
     getNumberField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, -1, -90, 90, true)
-    + '<div class="col-md-6"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
-    '<div class="col-md-6"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
+    + '<div class="col-lg-4"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
+    '<div class="col-lg-8"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
     +'</div>';
 }
 
 function page3() {
-    return '<div class="container">'+
-    '<div class="col-md-6"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="col-md-6"><select name="office" id="office" title="Office Location" required><option value="-1" selected>-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
-    '<div class="col-md-6"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
-    '<div class="col-md-6"><select name="service" id="service" title="Service Area" required><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
+    return '<div class="row">'+
+    '<div class="col-lg-4"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="office" id="office" title="Office Location" required><option value="-1" selected>-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
+    '<div class="col-lg-4"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><select name="service" id="service" title="Service Area" required><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
     getNumberField('Total Contract', 'contract', 'contract', 1, 0, -1, true) +
-    '<div class="col-md-6"><label for="projExempt">Is this project exempt from having a Service Agreement?<span class="astrick">*</span></label></div><div class="col-md-6"><input type="radio" name="projExempt" id="yesAgreement" value="Yes" title="projExempt" onchange="expandWhy()">Yes<input type="radio" name="projExempt" value="No" title="projExempt" onchange="expandWhy()" checked>No<div id="justWhy"></div></div>'+
-    '<div class="col-md-6"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
-    '<div class="col-md-6"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
-    '<div class="col-md-6"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-md-6" id="codeFill">Loading profile codes...</div>'
+    '<div class="col-lg-4"><label for="projExempt">Is this project exempt from having a Service Agreement?<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="radio" name="projExempt" id="yesAgreement" value="Yes" title="projExempt" onchange="expandWhy()">Yes<input type="radio" name="projExempt" value="No" title="projExempt" onchange="expandWhy()" checked>No<div id="justWhy"></div></div>'+
+    '<div class="col-lg-4"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
+    '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'
     +'</div>';
 }
 
 function page4() {
-    return '<div class="container">' +
-    '<div class="col-md-6"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
-    '<div class="col-md-6"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
-    '<div class="col-md-6"><label for="invoiceFormat">Invoice Format</label></div>'+
-    '<div class="col-md-6"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
+    return '<div class="row">' +
+    '<div class="col-lg-4"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
+    '<div class="col-lg-4"><label for="invoiceFormat">Invoice Format</label></div>'+
+    '<div class="col-lg-8"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
     getTextField('Client Contract/PO #', 'PO', contractPONum, true) +
-    '<div class="col-md-6"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
-    '<div class="col-md-6"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-    '<div class="col-md-6"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="col-md-6"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
-    '<div class="col-md-6"><label for="billInst">Special Billing Instructions</label></div><div class="col-md-6"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
-    '<div class="col-md-6"><label for="seeAlso">See Also</label></div><div class="col-md-6"><textarea id="seeAlso" name="seeAlso" rows="5" cols="50" maxlength="200"></textarea></div>'+
-    '<div class="col-md-6"><label for="autocad">AutoCAD Job</label></div><div class="col-md-6"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
-    '<div class="col-md-6"><label for="gis">GIS Job</label></div><div class="col-md-6"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div><div class="col-md-6"><label for="ProjSpecs">Project Specifications</label></div><div class="col-md-6"><input type="radio" id="ProjSpecs" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications"> Yes <input type="radio" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications" checked> No</div>'
+    '<div class="col-lg-4"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
+    '<div class="col-lg-4"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
+    '<div class="col-lg-4"><label for="billInst">Special Billing Instructions</label></div><div class="col-lg-8"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
+    '<div class="col-lg-4"><label for="seeAlso">See Also</label></div><div class="col-lg-8"><textarea id="seeAlso" name="seeAlso" rows="5" cols="50" maxlength="200"></textarea></div>'+
+    '<div class="col-lg-4"><label for="autocad">AutoCAD Job</label></div><div class="col-lg-8"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
+    '<div class="col-lg-4"><label for="gis">GIS Job</label></div><div class="col-lg-8"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div><div class="col-lg-4"><label for="ProjSpecs">Project Specifications</label></div><div class="col-lg-8"><input type="radio" id="ProjSpecs" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications"> Yes <input type="radio" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications" checked> No</div>'
     + '</div>';
 }
 
 function page5() {
-    return '<div class="container">' + getTextField('Client Company', 'clientComp', clientComp, true) + 
-    '<div class="col-md-6"><label for="mail">Mail Lists</label></div><div class="col-md-6"><input type="checkbox" id="openHouse" name="mail" title="openHouse" placeholder="Open House"> Open House<input type="checkbox" id="christmas" name="mail" title="christmas" placeholder="Christmas"> Christmas</div>' +
+    return '<div class="row">' + getTextField('Client Company', 'clientComp', clientComp, true) + 
+    '<div class="col-lg-6"><label for="mail">Mail Lists</label></div><div class="col-lg-6"><input type="checkbox" id="openHouse" name="mail" title="openHouse" placeholder="Open House"> Open House<input type="checkbox" id="christmas" name="mail" title="christmas" placeholder="Christmas"> Christmas</div>' +
     getTextField('Client Abbreviation', 'clientAbbr', clientAbbr, false) + 
     getTextField('Client First Name', 'cFirst', clientFirst, true) + getTextField('Client Last Name', 'cLast', clientLast, true) + 
-    '<div class="col-md-6"><label for="relation">Client Relationship</label></div><div class="col-md-6"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
+    '<div class="col-lg-6"><label for="relation">Client Relationship</label></div><div class="col-lg-6"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
     getTextField('Title', 'title', title, false) + getTextField("Address 1", 'addy1', addr1, true) + getTextField('Address 2', 'addy2', addr2, false) + 
-    getTextField('City', 'city', city, true) + '<div class="col-md-6"><label for="state">State<span class="astrick">*</span></label></div>'+
-    '<div class="col-md-6"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
-    '<div class="col-md-6"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="col-md-6"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-    '<div class="col-md-6"><label for="WP">Work Phone<span class="astrick">*</span><br>(Extension optional)</label></div><div class="col-md-6"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
-    '<div class="col-md-6"><label for="HP">Home Phone</label></div><div class="col-md-6"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
-    '<div class="col-md-6"><label for="cell">Cell</label></div><div class="col-md-6"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
-    '<div class="col-md-6"><label for="fax">Fax</label></div><div class="col-md-6"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
-    '<div class="col-md-6"><label for="email">Email<span class="astrick">*</span></label></div><div class="col-md-6"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" required></div>'+
+    getTextField('City', 'city', city, true) + '<div class="col-lg-6"><label for="state">State<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-6"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
+    '<div class="col-lg-6"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="col-lg-6"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
+    '<div class="col-lg-6"><label for="WP">Work Phone<span class="astrick">*</span><br>(Extension optional)</label></div><div class="col-lg-6"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
+    '<div class="col-lg-6"><label for="HP">Home Phone</label></div><div class="col-lg-6"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
+    '<div class="col-lg-6"><label for="cell">Cell</label></div><div class="col-lg-6"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
+    '<div class="col-lg-6"><label for="fax">Fax</label></div><div class="col-lg-6"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
+    '<div class="col-lg-6"><label for="email">Email<span class="astrick">*</span></label></div><div class="col-lg-6"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" required></div>'+
     '</div>';
 }
 
 function page6() {
-    return '<div class="container">' +
-    '<div class="col-md-6"><label for="binder">Binder Size</label></div><div class="col-md-6"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
-    '<div class="col-md-6"><label for="bindLoc">Binder Location</label></div><div class="col-md-6"><input type="text" id="bindLoc" name="bindLoc"></div>' +
-    '<div class="col-md-6"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="col-md-6"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div></div>';
+    return '<div class="row">' +
+    '<div class="col-lg-4"><label for="binder">Binder Size</label></div><div class="col-lg-8"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+    '<div class="col-lg-4"><label for="bindLoc">Binder Location</label></div><div class="col-lg-8"><input type="text" id="bindLoc" name="bindLoc"></div>' +
+    '<div class="col-lg-4"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="col-lg-8"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div></div>';
 }
 
 function page7() {
@@ -935,107 +935,107 @@ function page7() {
 
     let waiver = (retainer == 'Waived by X') ? 'Waived by ' + senior:retainer;
 
-    return '<div class="container">' +
-    '<div class="col-md-6">Project Title' + '</div>'
-    + '<div class="col-md-6">' + projTitle + '</div>'+
-    '<div class="col-md-6">Project Manager' + '</div>'
-    + '<div class="col-md-6">' + mgrName + '</div>'+
-    '<div class="col-md-6">QAQC Person' + '</div>'
-    + '<div class="col-md-6">' + qaqcName + '</div>'+
-    '<div class="col-md-6">Team Members' + '</div>'
-    + '<div class="col-md-6">' + formatMem + '</div>'+
-    '<div class="col-md-6">Start Date' + '</div>'
-    + '<div class="col-md-6">' + formatStartDate + '</div>'+
-    '<div class="col-md-6">End Date' + '</div>'
-    + '<div class="col-md-6">' + formatCloseDate + '</div>'+
-    '<div class="col-md-6">Project Location Descriptor' + '</div>'
-    + '<div class="col-md-6">' + projLoc + '</div>'+
-    '<div class="col-md-6">Project Latitude' + '</div>'
-    + '<div class="col-md-6">' + latitude + '</div>'+
-    '<div class="col-md-6">Project Longitude' + '</div>'
-    + '<div class="col-md-6">' + longitude + '</div>'+
-    '<div class="col-md-6">Project Keywords' + '</div>'
-    + '<div class="col-md-6">' + formatKeys + '</div>'+
-    '<div class="col-md-6">Other Keywords' + '</div>'
-    + '<div class="col-md-6">' + otherKeys + '</div>'+
-    '<div class="col-md-6">SHN Office' + '</div>'
-    + '<div class="col-md-6">' + officeName1 + '</div>'+
-    '<div class="col-md-6">Service Area' + '</div>'
-    + '<div class="col-md-6">' + servName + '</div>'+
-    '<div class="col-md-6">Total Contract' + '</div>'
-    + '<div class="col-md-6">' + totalContract + '</div>'+
-    '<div class="col-md-6">Exempt from Service Agreement?' + '</div>'
-    + '<div class="col-md-6">' + ServiceAgreement + '</div>'+
-    '<div class="col-md-6">If yes, why?' + '</div>'
-    + '<div class="col-md-6">' + ifYesWhy + '</div>'+
-    '<div class="col-md-6">Retainer' + '</div>'
-    + '<div class="col-md-6">' + waiver + '</div>'+
-    '<div class="col-md-6">Enter Amount' + '</div>'
-    + '<div class="col-md-6">' + retainAmnt + '</div>'+
-    '<div class="col-md-6">Profile Code' + '</div>'
-    + '<div class="col-md-6">' + profCodeName + '</div>'+
-    '<div class="col-md-6">Contract Type' + '</div>'
-    + '<div class="col-md-6">' + contactTypeName + '</div>'+
-    '<div class="col-md-6">Invoice Format' + '</div>'
-    + '<div class="col-md-6">' + invoiceName + '</div>'+
-    '<div class="col-md-6">Client Contract/PO #' + '</div>'
-    + '<div class="col-md-6">' + contractPONum + '</div>'+
-    '<div class="col-md-6">Outside Markup' + '</div>'
-    + '<div class="col-md-6">' + outsideMarkup + '</div>'+
-    '<div class="col-md-6">Prevailige Wage' + '</div>'
-    + '<div class="col-md-6">' + prevWage + '</div>'+
-    '<div class="col-md-6">Agency' + '</div>'
-    + '<div class="col-md-6">' + agency_name + '</div>'+
-    '<div class="col-md-6">Special Billing Instructions' + '</div>'
-    + '<div class="col-md-6">' + specBillInstr + '</div>'+
-    '<div class="col-md-6">See Also' + '</div>'
-    + '<div class="col-md-6">' + seeAlso + '</div>'+
-    '<div class="col-md-6">AutoCAD Job' + '</div>'
-    + '<div class="col-md-6">' + autoCadName + '</div>'+
-    '<div class="col-md-6">GIS Job' + '</div>'
-    + '<div class="col-md-6">' + gisName + '</div>'+
-    '<div class="col-md-6">Project Specifications' + '</div>'
-    + '<div class="col-md-6">' + speccy + '</div>'+
-    '<div class="col-md-6">Client Company' + '</div>'
-    + '<div class="col-md-6">' + clientComp + '</div>'+
-    '<div class="col-md-6">Mail Lists' + '</div>'
-    + '<div class="col-md-6">' + (mailList == 'NULL'?'None':mailList) + '</div>'+
-    '<div class="col-md-6">Client Abbreviation' + '</div>'
-    + '<div class="col-md-6">' + clientAbbr + '</div>'+
-    '<div class="col-md-6">Client First Name' + '</div>'
-    + '<div class="col-md-6">' + clientFirst + '</div>'+
-    '<div class="col-md-6">Client Last Name' + '</div>'
-    + '<div class="col-md-6">' + clientLast + '</div>'+
-    '<div class="col-md-6">Client Relationship' + '</div>'
-    + '<div class="col-md-6">' + clientRelation + '</div>'+
-    '<div class="col-md-6">Title' + '</div>'
-    + '<div class="col-md-6">' + title + '</div>'+
-    '<div class="col-md-6">Address 1' + '</div>'
-    + '<div class="col-md-6">' + addr1 + '</div>'+
-    '<div class="col-md-6">Address 2' + '</div>'
-    + '<div class="col-md-6">' + addr2 + '</div>'+
-    '<div class="col-md-6">City' + '</div>'
-    + '<div class="col-md-6">' + city + '</div>'+
-    '<div class="col-md-6">State' + '</div>'
-    + '<div class="col-md-6">' + state + '</div>'+
-    '<div class="col-md-6">Zip' + '</div>'
-    + '<div class="col-md-6">' + zip + '</div>'+
-    '<div class="col-md-6">Work Phone' + '</div>'
-    + '<div class="col-md-6">' + workPhone + (ext != ''?' Ext: ' + ext:'') + '</div>'+
-    '<div class="col-md-6">Home Phone' + '</div>'
-    + '<div class="col-md-6">' + homePhone + '</div>'+
-    '<div class="col-md-6">Cell' + '</div>'
-    + '<div class="col-md-6">' + cell + '</div>'+
-    '<div class="col-md-6">Fax' + '</div>'
-    + '<div class="col-md-6">' + fax + '</div>'+
-    '<div class="col-md-6">Email' + '</div>'
-    + '<div class="col-md-6">' + email + '</div>'+
-    '<div class="col-md-6">Binder Size' + '</div>'
-    + '<div class="col-md-6">' + (binderSize == 'NULL'?'N/A':binderSize + ' inch') + '</div>'+
-    '<div class="col-md-6">Binder Location' + '</div>'
-    + '<div class="col-md-6">' + binderLoc + '</div>'+
-    '<div class="col-md-6">Description of Services' + '</div>'
-    + '<div class="col-md-6">' + breakedDesc + '</div>'+
+    return '<div class="row">' +
+    '<div class="col-lg-6">Project Title' + '</div>'
+    + '<div class="col-lg-6">' + projTitle + '</div>'+
+    '<div class="col-lg-6">Project Manager' + '</div>'
+    + '<div class="col-lg-6">' + mgrName + '</div>'+
+    '<div class="col-lg-6">QAQC Person' + '</div>'
+    + '<div class="col-lg-6">' + qaqcName + '</div>'+
+    '<div class="col-lg-6">Team Members' + '</div>'
+    + '<div class="col-lg-6">' + formatMem + '</div>'+
+    '<div class="col-lg-6">Start Date' + '</div>'
+    + '<div class="col-lg-6">' + formatStartDate + '</div>'+
+    '<div class="col-lg-6">End Date' + '</div>'
+    + '<div class="col-lg-6">' + formatCloseDate + '</div>'+
+    '<div class="col-lg-6">Project Location Descriptor' + '</div>'
+    + '<div class="col-lg-6">' + projLoc + '</div>'+
+    '<div class="col-lg-6">Project Latitude' + '</div>'
+    + '<div class="col-lg-6">' + latitude + '</div>'+
+    '<div class="col-lg-6">Project Longitude' + '</div>'
+    + '<div class="col-lg-6">' + longitude + '</div>'+
+    '<div class="col-lg-6">Project Keywords' + '</div>'
+    + '<div class="col-lg-6">' + formatKeys + '</div>'+
+    '<div class="col-lg-6">Other Keywords' + '</div>'
+    + '<div class="col-lg-6">' + otherKeys + '</div>'+
+    '<div class="col-lg-6">SHN Office' + '</div>'
+    + '<div class="col-lg-6">' + officeName1 + '</div>'+
+    '<div class="col-lg-6">Service Area' + '</div>'
+    + '<div class="col-lg-6">' + servName + '</div>'+
+    '<div class="col-lg-6">Total Contract' + '</div>'
+    + '<div class="col-lg-6">' + totalContract + '</div>'+
+    '<div class="col-lg-6">Exempt from Service Agreement?' + '</div>'
+    + '<div class="col-lg-6">' + ServiceAgreement + '</div>'+
+    '<div class="col-lg-6">If yes, why?' + '</div>'
+    + '<div class="col-lg-6">' + ifYesWhy + '</div>'+
+    '<div class="col-lg-6">Retainer' + '</div>'
+    + '<div class="col-lg-6">' + waiver + '</div>'+
+    '<div class="col-lg-6">Enter Amount' + '</div>'
+    + '<div class="col-lg-6">' + retainAmnt + '</div>'+
+    '<div class="col-lg-6">Profile Code' + '</div>'
+    + '<div class="col-lg-6">' + profCodeName + '</div>'+
+    '<div class="col-lg-6">Contract Type' + '</div>'
+    + '<div class="col-lg-6">' + contactTypeName + '</div>'+
+    '<div class="col-lg-6">Invoice Format' + '</div>'
+    + '<div class="col-lg-6">' + invoiceName + '</div>'+
+    '<div class="col-lg-6">Client Contract/PO #' + '</div>'
+    + '<div class="col-lg-6">' + contractPONum + '</div>'+
+    '<div class="col-lg-6">Outside Markup' + '</div>'
+    + '<div class="col-lg-6">' + outsideMarkup + '</div>'+
+    '<div class="col-lg-6">Prevailige Wage' + '</div>'
+    + '<div class="col-lg-6">' + prevWage + '</div>'+
+    '<div class="col-lg-6">Agency' + '</div>'
+    + '<div class="col-lg-6">' + agency_name + '</div>'+
+    '<div class="col-lg-6">Special Billing Instructions' + '</div>'
+    + '<div class="col-lg-6">' + specBillInstr + '</div>'+
+    '<div class="col-lg-6">See Also' + '</div>'
+    + '<div class="col-lg-6">' + seeAlso + '</div>'+
+    '<div class="col-lg-6">AutoCAD Job' + '</div>'
+    + '<div class="col-lg-6">' + autoCadName + '</div>'+
+    '<div class="col-lg-6">GIS Job' + '</div>'
+    + '<div class="col-lg-6">' + gisName + '</div>'+
+    '<div class="col-lg-6">Project Specifications' + '</div>'
+    + '<div class="col-lg-6">' + speccy + '</div>'+
+    '<div class="col-lg-6">Client Company' + '</div>'
+    + '<div class="col-lg-6">' + clientComp + '</div>'+
+    '<div class="col-lg-6">Mail Lists' + '</div>'
+    + '<div class="col-lg-6">' + (mailList == 'NULL'?'None':mailList) + '</div>'+
+    '<div class="col-lg-6">Client Abbreviation' + '</div>'
+    + '<div class="col-lg-6">' + clientAbbr + '</div>'+
+    '<div class="col-lg-6">Client First Name' + '</div>'
+    + '<div class="col-lg-6">' + clientFirst + '</div>'+
+    '<div class="col-lg-6">Client Last Name' + '</div>'
+    + '<div class="col-lg-6">' + clientLast + '</div>'+
+    '<div class="col-lg-6">Client Relationship' + '</div>'
+    + '<div class="col-lg-6">' + clientRelation + '</div>'+
+    '<div class="col-lg-6">Title' + '</div>'
+    + '<div class="col-lg-6">' + title + '</div>'+
+    '<div class="col-lg-6">Address 1' + '</div>'
+    + '<div class="col-lg-6">' + addr1 + '</div>'+
+    '<div class="col-lg-6">Address 2' + '</div>'
+    + '<div class="col-lg-6">' + addr2 + '</div>'+
+    '<div class="col-lg-6">City' + '</div>'
+    + '<div class="col-lg-6">' + city + '</div>'+
+    '<div class="col-lg-6">State' + '</div>'
+    + '<div class="col-lg-6">' + state + '</div>'+
+    '<div class="col-lg-6">Zip' + '</div>'
+    + '<div class="col-lg-6">' + zip + '</div>'+
+    '<div class="col-lg-6">Work Phone' + '</div>'
+    + '<div class="col-lg-6">' + workPhone + (ext != ''?' Ext: ' + ext:'') + '</div>'+
+    '<div class="col-lg-6">Home Phone' + '</div>'
+    + '<div class="col-lg-6">' + homePhone + '</div>'+
+    '<div class="col-lg-6">Cell' + '</div>'
+    + '<div class="col-lg-6">' + cell + '</div>'+
+    '<div class="col-lg-6">Fax' + '</div>'
+    + '<div class="col-lg-6">' + fax + '</div>'+
+    '<div class="col-lg-6">Email' + '</div>'
+    + '<div class="col-lg-6">' + email + '</div>'+
+    '<div class="col-lg-6">Binder Size' + '</div>'
+    + '<div class="col-lg-6">' + (binderSize == 'NULL'?'N/A':binderSize + ' inch') + '</div>'+
+    '<div class="col-lg-6">Binder Location' + '</div>'
+    + '<div class="col-lg-6">' + binderLoc + '</div>'+
+    '<div class="col-lg-6">Description of Services' + '</div>'
+    + '<div class="col-lg-6">' + breakedDesc + '</div>'+
     '</div>';
 }
 
