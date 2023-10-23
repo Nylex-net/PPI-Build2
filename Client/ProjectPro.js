@@ -76,7 +76,7 @@ function getTextField(label, newID, value, required) { // i.e. getTextField('Pro
         myReq = 'required';
         myLabel = myLabel + '<span class="astrick">*</span>';
     }
-    return '<div class="grid-item"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="grid-item"><input type="text" id="'+ newID +'" name="'+ newID +'" maxlength="240" value="'+ value +'" '+ myReq +'></div>';
+    return '<div class="col-lg-4"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-lg-8"><input type="text" id="'+ newID +'" name="'+ newID +'" maxlength="240" value="'+ value +'" '+ myReq +'></div>';
 }
 
 // Inserts a Label and number field for the table-based format the form has.
@@ -96,7 +96,7 @@ function getNumberField(label, newID, value, step, min, max, required) {
     if(max != -1) {
         myMax = 'max="' + max + '"';
     }
-    return '<div class="grid-item"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="grid-item"><input type="number" id="'+ newID +'" name="'+ newID + myStep +' min="' + min + '" '+ myMax +' onkeypress="limit(this);" value="'+ value +'" '+ myReq +'></div>';
+    return '<div class="col-lg-4"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-lg-8"><input type="number" id="'+ newID +'" name="'+ newID + myStep +' min="' + min + '" '+ myMax +' onkeypress="limit(this);" value="'+ value +'" '+ myReq +'></div>';
 }
 
 // Inserts a Label and checkbox for the table-based format the form has.
@@ -681,62 +681,61 @@ They simply return the html syntax to create the table with the needed options.
 */
 
 function page1() {
-    return '<div class="grid-container">' + getTextField('Promo Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', projTitle, true) +
-    '<div class="grid-item"><label for="promo-type">Type of Promo<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><select name="promo-type" id="promo-type" title="Promo" required><option value="" selected>-Select-</option><option value="on-going">On-going</option><option value="letter">Letter</option><option value="soq">SOQ</option><option value="ProPri">Proposal-Prime</option><option value="ProSub">Proposal-Sub</option></select></div>'+
-    '<div class="grid-item"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item" id="projFiller">Loading managers...</div>'+
-    '<div class="grid-item"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item" id="qaqcFill">Loading QA QC people...</div>'+
-    '<div class="grid-item"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
-    '<div class="grid-item" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
-    '<div class="grid-item"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><input type="date" id="start" value="start" required></div>'+
-    '<div class="grid-item"><label for="end">Close Date<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><input type="date" id="end" value="end" required></div>'
+    return '<div class="row">' + getTextField('Promo Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', projTitle, true) +
+    '<div class="col-lg-4"><label for="promo-type">Type of Promo<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><select name="promo-type" id="promo-type" title="Promo" required><option value="" selected>-Select-</option><option value="on-going">On-going</option><option value="letter">Letter</option><option value="soq">SOQ</option><option value="ProPri">Proposal-Prime</option><option value="ProSub">Proposal-Sub</option></select></div>'+
+    '<div class="col-lg-4"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8" id="projFiller">Loading managers...</div>'+
+    '<div class="col-lg-4"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8" id="qaqcFill">Loading QA QC people...</div>'+
+    '<div class="col-lg-4"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
+    '<div class="col-lg-8" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
+    '<div class="col-lg-4"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><input type="date" id="start" value="start" required></div>'+
+    '<div class="col-lg-4"><label for="end">End Date<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><input type="date" id="end" value="end" required></div>'
     +'</div>';
 }
 
 function page2() {
-    return '<div class="grid-container">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
+    return '<div class="row">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
     getNumberField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, -1, -90, 90, true) +
     getNumberField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, -1, -90, 90, true)
-    + '<div class="grid-item"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
-    '<div class="grid-item"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
+    + '<div class="col-lg-4"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
+    '<div class="col-lg-8"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
     +'</div>';
 }
 
 function page3() {
-    return '<div class="grid-container">'+
-    '<div class="grid-item"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="grid-item"><select name="office" id="office" title="Office Location" required><option value="-1" selected>-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
-    '<div class="grid-item"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><select name="service" id="service" title="Service Area" required><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
-    '<div class="grid-item"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="grid-item" id="codeFill">Loading profile codes...</div>'
+    return '<div class="row">'+
+    '<div class="col-lg-4"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="office" id="office" title="Office Location" required><option value="-1" selected>-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
+    '<div class="col-lg-4"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><select name="service" id="service" title="Service Area" required><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
+    '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'
     +'</div>';
 }
 
 function page4() {
-    return '<div class="grid-container">' + getTextField('Client Company', 'clientComp', clientComp, true) + getTextField('Client Abbreviation', 'clientAbbr', clientAbbr, false) + 
+    return '<div class="row">' + getTextField('Client Company', 'clientComp', clientComp, true) +
+    getTextField('Client Abbreviation', 'clientAbbr', clientAbbr, false) + 
     getTextField('Client First Name', 'cFirst', clientFirst, true) + getTextField('Client Last Name', 'cLast', clientLast, true) + 
-    '<div class="grid-item"><label for="relation">Client Relationship</label></div><div class="grid-item"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
-    getTextField('Title', 'title', title, false) +
-    getTextField('Address 1', 'addy1', addr1, true) +
-    getTextField('Address 2', 'addy2', addr2, false) + 
-    getTextField('City', 'city', city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
-    '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-    '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
-    '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
-    '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
-    '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
-    '<div class="grid-item"><label for="email">Email<span class="astrick">*</span></label></div><div class="grid-item"><input type="email" id="email" name="email" maxlength="75" required></div>'+
+    '<div class="col-lg-6"><label for="relation">Client Relationship</label></div><div class="col-lg-6"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
+    getTextField('Title', 'title', title, false) + getTextField("Address 1", 'addy1', addr1, true) + getTextField('Address 2', 'addy2', addr2, false) + 
+    getTextField('City', 'city', city, true) + '<div class="col-lg-6"><label for="state">State<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-6"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
+    '<div class="col-lg-6"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="col-lg-6"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
+    '<div class="col-lg-6"><label for="WP">Work Phone<span class="astrick">*</span><br>(Extension optional)</label></div><div class="col-lg-6"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
+    '<div class="col-lg-6"><label for="HP">Home Phone</label></div><div class="col-lg-6"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
+    '<div class="col-lg-6"><label for="cell">Cell</label></div><div class="col-lg-6"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
+    '<div class="col-lg-6"><label for="fax">Fax</label></div><div class="col-lg-6"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
+    '<div class="col-lg-6"><label for="email">Email<span class="astrick">*</span></label></div><div class="col-lg-6"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" required></div>'+
     '</div>';
 }
 
 function page5() {
-    return '<div class="grid-container">' +
-    '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="1/2">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
-    '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'
+    return '<div class="row">' +
+    '<div class="col-lg-4"><label for="binder">Binder Size</label></div><div class="col-lg-8"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+    '<div class="col-lg-4"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="col-lg-8"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'
     +'</div>';
 }
 
@@ -756,73 +755,73 @@ function page6() {
 
     let breakedDesc = descOfServ.replaceAll('\n', '<br>');
 
-    return '<div class="grid-container">' +
-    '<div class="grid-item">Project Title' + '</div>'
-    + '<div class="grid-item">' + projTitle + '</div>'+
-    '<div class="grid-item">Type of Promo' + '</div>'
-    + '<div class="grid-item">' + promoName + '</div>'+
-    '<div class="grid-item">Project Manager' + '</div>'
-    + '<div class="grid-item">' + mgrName + '</div>'+
-    '<div class="grid-item">QAQC Person' + '</div>'
-    + '<div class="grid-item">' + qaqcName + '</div>'+
-    '<div class="grid-item">Team Members' + '</div>'
-    + '<div class="grid-item">' + formatMem + '</div>'+
-    '<div class="grid-item">Start Date' + '</div>'
-    + '<div class="grid-item">' + formatStartDate + '</div>'+
-    '<div class="grid-item">Close Date' + '</div>'
-    + '<div class="grid-item">' + formatCloseDate + '</div>'+
-    '<div class="grid-item">Project Location Descriptor' + '</div>'
-    + '<div class="grid-item">' + projLoc + '</div>'+
-    '<div class="grid-item">Project Latitude' + '</div>'
-    + '<div class="grid-item">' + latitude + '</div>'+
-    '<div class="grid-item">Project Longitude' + '</div>'
-    + '<div class="grid-item">' + longitude + '</div>'+
-    '<div class="grid-item">Project Keywords' + '</div>'
-    + '<div class="grid-item">' + formatKeys + '</div>'+
-    '<div class="grid-item">Other Keywords' + '</div>'
-    + '<div class="grid-item">' + otherKeys + '</div>'+
-    '<div class="grid-item">SHN Office' + '</div>'
-    + '<div class="grid-item">' + officeName1 + '</div>'+
-    '<div class="grid-item">Service Area' + '</div>'
-    + '<div class="grid-item">' + servName + '</div>'+
-    '<div class="grid-item">Profile Code' + '</div>'
-    + '<div class="grid-item">' + profCodeName + '</div>'+
-    '<div class="grid-item">Client Company' + '</div>'
-    + '<div class="grid-item">' + clientComp + '</div>'+
-    '<div class="grid-item">Client Abbreviation' + '</div>'
-    + '<div class="grid-item">' + clientAbbr + '</div>'+
-    '<div class="grid-item">Client First Name' + '</div>'
-    + '<div class="grid-item">' + clientFirst + '</div>'+
-    '<div class="grid-item">Client Last Name' + '</div>'
-    + '<div class="grid-item">' + clientLast + '</div>'+
-    '<div class="grid-item">Client Relationship' + '</div>'
-    + '<div class="grid-item">' + clientRelation + '</div>'+
-    '<div class="grid-item">Title' + '</div>'
-    + '<div class="grid-item">' + title + '</div>'+
-    '<div class="grid-item">Address 1' + '</div>'
-    + '<div class="grid-item">' + addr1 + '</div>'+
-    '<div class="grid-item">Address 2' + '</div>'
-    + '<div class="grid-item">' + addr2 + '</div>'+
-    '<div class="grid-item">City' + '</div>'
-    + '<div class="grid-item">' + city + '</div>'+
-    '<div class="grid-item">State' + '</div>'
-    + '<div class="grid-item">' + state + '</div>'+
-    '<div class="grid-item">Zip' + '</div>'
-    + '<div class="grid-item">' + zip + '</div>'+
-    '<div class="grid-item">Work Phone' + '</div>'
-    + '<div class="grid-item">' + workPhone + (ext != ''?' Ext: ' + ext:'') + '</div>'+
-    '<div class="grid-item">Home Phone' + '</div>'
-    + '<div class="grid-item">' + homePhone + '</div>'+
-    '<div class="grid-item">Cell Phone' + '</div>'
-    + '<div class="grid-item">' + cell + '</div>'+
-    '<div class="grid-item">Fax' + '</div>'
-    + '<div class="grid-item">' + fax + '</div>'+
-    '<div class="grid-item">Email' + '</div>'
-    + '<div class="grid-item">' + email + '</div>'+
-    '<div class="grid-item">Binder Size' + '</div>'
-    + '<div class="grid-item">' + binderSize + '</div>'+
-    '<div class="grid-item">Description of Services' + '</div>'
-    + '<div class="grid-item">' + breakedDesc + '</div></div>';
+    return '<div class="row">' +
+    '<div class="col-lg-6">Project Title' + '</div>'
+    + '<div class="col-lg-6">' + projTitle + '</div>'+
+    '<div class="col-lg-6">Type of Promo' + '</div>'
+    + '<div class="col-lg-6">' + promoName + '</div>'+
+    '<div class="col-lg-6">Project Manager' + '</div>'
+    + '<div class="col-lg-6">' + mgrName + '</div>'+
+    '<div class="col-lg-6">QAQC Person' + '</div>'
+    + '<div class="col-lg-6">' + qaqcName + '</div>'+
+    '<div class="col-lg-6">Team Members' + '</div>'
+    + '<div class="col-lg-6">' + formatMem + '</div>'+
+    '<div class="col-lg-6">Start Date' + '</div>'
+    + '<div class="col-lg-6">' + formatStartDate + '</div>'+
+    '<div class="col-lg-6">Close Date' + '</div>'
+    + '<div class="col-lg-6">' + formatCloseDate + '</div>'+
+    '<div class="col-lg-6">Project Location Descriptor' + '</div>'
+    + '<div class="col-lg-6">' + projLoc + '</div>'+
+    '<div class="col-lg-6">Project Latitude' + '</div>'
+    + '<div class="col-lg-6">' + latitude + '</div>'+
+    '<div class="col-lg-6">Project Longitude' + '</div>'
+    + '<div class="col-lg-6">' + longitude + '</div>'+
+    '<div class="col-lg-6">Project Keywords' + '</div>'
+    + '<div class="col-lg-6">' + formatKeys + '</div>'+
+    '<div class="col-lg-6">Other Keywords' + '</div>'
+    + '<div class="col-lg-6">' + otherKeys + '</div>'+
+    '<div class="col-lg-6">SHN Office' + '</div>'
+    + '<div class="col-lg-6">' + officeName1 + '</div>'+
+    '<div class="col-lg-6">Service Area' + '</div>'
+    + '<div class="col-lg-6">' + servName + '</div>'+
+    '<div class="col-lg-6">Profile Code' + '</div>'
+    + '<div class="col-lg-6">' + profCodeName + '</div>'+
+    '<div class="col-lg-6">Client Company' + '</div>'
+    + '<div class="col-lg-6">' + clientComp + '</div>'+
+    '<div class="col-lg-6">Client Abbreviation' + '</div>'
+    + '<div class="col-lg-6">' + clientAbbr + '</div>'+
+    '<div class="col-lg-6">Client First Name' + '</div>'
+    + '<div class="col-lg-6">' + clientFirst + '</div>'+
+    '<div class="col-lg-6">Client Last Name' + '</div>'
+    + '<div class="col-lg-6">' + clientLast + '</div>'+
+    '<div class="col-lg-6">Client Relationship' + '</div>'
+    + '<div class="col-lg-6">' + clientRelation + '</div>'+
+    '<div class="col-lg-6">Title' + '</div>'
+    + '<div class="col-lg-6">' + title + '</div>'+
+    '<div class="col-lg-6">Address 1' + '</div>'
+    + '<div class="col-lg-6">' + addr1 + '</div>'+
+    '<div class="col-lg-6">Address 2' + '</div>'
+    + '<div class="col-lg-6">' + addr2 + '</div>'+
+    '<div class="col-lg-6">City' + '</div>'
+    + '<div class="col-lg-6">' + city + '</div>'+
+    '<div class="col-lg-6">State' + '</div>'
+    + '<div class="col-lg-6">' + state + '</div>'+
+    '<div class="col-lg-6">Zip' + '</div>'
+    + '<div class="col-lg-6">' + zip + '</div>'+
+    '<div class="col-lg-6">Work Phone' + '</div>'
+    + '<div class="col-lg-6">' + workPhone + (ext != ''?' Ext: ' + ext:'') + '</div>'+
+    '<div class="col-lg-6">Home Phone' + '</div>'
+    + '<div class="col-lg-6">' + homePhone + '</div>'+
+    '<div class="col-lg-6">Cell Phone' + '</div>'
+    + '<div class="col-lg-6">' + cell + '</div>'+
+    '<div class="col-lg-6">Fax' + '</div>'
+    + '<div class="col-lg-6">' + fax + '</div>'+
+    '<div class="col-lg-6">Email' + '</div>'
+    + '<div class="col-lg-6">' + email + '</div>'+
+    '<div class="col-lg-6">Binder Size' + '</div>'
+    + '<div class="col-lg-6">' + binderSize + '</div>'+
+    '<div class="col-lg-6">Description of Services' + '</div>'
+    + '<div class="col-lg-6">' + breakedDesc + '</div></div>';
 }
 
 /*
