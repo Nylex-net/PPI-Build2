@@ -113,7 +113,7 @@ function seeProfile() {
  */
 function startSessionTimer() {
     // Define the session timeout duration in milliseconds (e.g., 15 minutes).
-    const sessionTimeout = 60 * 60 * 1000; // 1 hour in milliseconds
+    const sessionTimeout = 3600000; // 1 hour in milliseconds
   
     // Clear the existing timer if it exists.
     clearTimeout(sessionTimer);
@@ -124,11 +124,11 @@ function startSessionTimer() {
 
     // Start a new session timer.
     sessionTimer = setTimeout(signOut, sessionTimeout);
+    document.getElementById('projForm').innerHTML = '<h2>Your session is over.</h2><button type="button" onclick="window.reload();">Restart</button>';
 }
 
 function resetSessionTimer() {
     // Reset the session timer when the user performs an action.
-    document.getElementById('projForm').innerHTML = '<h2>Your session is over.</h2><button type="button" onclick="window.reload();">Restart</button>';
     startSessionTimer();
 }
 
