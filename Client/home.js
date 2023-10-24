@@ -241,31 +241,31 @@ function gotPage(data) {
     projName = jsonMap[0].project_title;
     client = jsonMap[0].client_company;
 
-    return '<div class="grid-container">'+
-    '<div class="grid-item">Project</div>'+
-    '<div class="grid-item">'+ jsonMap[0].project_id +'</div>'+
-    '<div class="grid-item">Project Name</div>'+
-    '<div class="grid-item">'+ projName +'</div>'+
-    '<div class="grid-item">Project Manager</div>'+
-    '<div class="grid-item">'+ jsonMap[0].staff_last + ', ' + jsonMap[0].staff_first +'</div>'+
-    '<div class="grid-item">Client</div>'+
-    '<div class="grid-item">'+ client +'</div>'+
-    '<div class="grid-item"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><input type="text" id="newBillName" maxlength="255" required/></div>'+
-    '<div class="grid-item"><label for="groupNumb">Billing Group Number<br>(Only enter the 3 digits)<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><input type="text" id="newBillNum" maxlength="3" required/></div>'+
-    '<div class="grid-item"><label for="autocad">AutoCAD Job</label></div><div class="grid-item"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
-    '<div class="grid-item"><label for="gis">GIS Job</label></div><div class="grid-item"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div>'+
-    '<div class="grid-item"><label for="projMgr">Group Manager<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item" id="projFiller">Loading managers...</div>'+
-    '<div class="grid-item"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item" id="qaqcFill">Loading QA QC people...</div>'+
-    '<div class="grid-item"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
-    '<div class="grid-item" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
-    '<div class="grid-item"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><input type="date" id="start" value="start" required></div>'+
-    '<div class="grid-item"><label for="end">End Date<span class="astrick">*</span></label></div>'+
-    '<div class="grid-item"><input type="date" id="end" value="end" required></div>'+
+    return '<div class="row">'+
+    '<div class="col-lg-4">Project</div>'+
+    '<div class="col-lg-8">'+ jsonMap[0].project_id +'</div>'+
+    '<div class="col-lg-4">Project Name</div>'+
+    '<div class="col-lg-8">'+ projName +'</div>'+
+    '<div class="col-lg-4">Project Manager</div>'+
+    '<div class="col-lg-8">'+ jsonMap[0].staff_last + ', ' + jsonMap[0].staff_first +'</div>'+
+    '<div class="col-lg-4">Client</div>'+
+    '<div class="col-lg-8">'+ client +'</div>'+
+    '<div class="col-lg-4"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><input type="text" id="newBillName" maxlength="255" required/></div>'+
+    '<div class="col-lg-4"><label for="groupNumb">Billing Group Number<br>(Only enter the 3 digits)<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><input type="text" id="newBillNum" maxlength="3" required/></div>'+
+    '<div class="col-lg-4"><label for="autocad">AutoCAD Job</label></div><div class="col-lg-8"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
+    '<div class="col-lg-4"><label for="gis">GIS Job</label></div><div class="col-lg-8"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div>'+
+    '<div class="col-lg-4"><label for="projMgr">Group Manager<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8" id="projFiller">Loading managers...</div>'+
+    '<div class="col-lg-4"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8" id="qaqcFill">Loading QA QC people...</div>'+
+    '<div class="col-lg-4"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
+    '<div class="col-lg-8" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
+    '<div class="col-lg-4"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><input type="date" id="start" value="start" required></div>'+
+    '<div class="col-lg-4"><label for="end">End Date<span class="astrick">*</span></label></div>'+
+    '<div class="col-lg-8"><input type="date" id="end" value="end" required></div>'+
     '</div><div id="submitter"><button type="button" onclick="reqField(1)">Next</button></div>';
 }
 
@@ -332,63 +332,64 @@ function fillMe(page) {
 function nextPage(num) {
     scroll(0,0);
     if(num == 1) {
-        document.getElementById('projForm').innerHTML = '<div class="grid-container">'+
-        '<div class="grid-item">Project</div>'+
-        '<div class="grid-item">'+ jsonMap[0].project_id +'</div>'+
-        '<div class="grid-item">Project Name</div>'+
-        '<div class="grid-item">'+ projName +'</div>'+
-        '<div class="grid-item">Project Manager</div>'+
-        '<div class="grid-item">'+ jsonMap[0].staff_last + ', ' + jsonMap[0].staff_first +'</div>'+
-        '<div class="grid-item">Client</div>'+
-        '<div class="grid-item">'+ client +'</div>'+
-        '<div class="grid-item"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item"><input type="text" id="newBillName" maxlength="255" required/></div>'+
-        '<div class="grid-item"><label for="groupNumb">Billing Group Number<br>(Only enter the 3 digits)<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item"><input type="text" id="newBillNum" maxlength="3" required/></div>'+
-        '<div class="grid-item"><label for="autocad">AutoCAD Job</label></div><div class="grid-item"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
-        '<div class="grid-item"><label for="gis">GIS Job</label></div><div class="grid-item"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div>'+
-        '<div class="grid-item"><label for="projMgr">Group Manager<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item" id="projFiller">Loading managers...</div>'+
-        '<div class="grid-item"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item" id="qaqcFill">Loading QA QC people...</div>'+
-        '<div class="grid-item"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
-        '<div class="grid-item" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
-        '<div class="grid-item"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item"><input type="date" id="start" value="start" required></div>'+
-        '<div class="grid-item"><label for="end">End Date<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item"><input type="date" id="end" value="end" required></div>'+
+        document.getElementById('projForm').innerHTML = 
+        '<div class="row">'+
+        '<div class="col-lg-4">Project</div>'+
+        '<div class="col-lg-8">'+ jsonMap[0].project_id +'</div>'+
+        '<div class="col-lg-4">Project Name</div>'+
+        '<div class="col-lg-8">'+ projName +'</div>'+
+        '<div class="col-lg-4">Project Manager</div>'+
+        '<div class="col-lg-8">'+ jsonMap[0].staff_last + ', ' + jsonMap[0].staff_first +'</div>'+
+        '<div class="col-lg-4">Client</div>'+
+        '<div class="col-lg-8">'+ client +'</div>'+
+        '<div class="col-lg-4"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8"><input type="text" id="newBillName" maxlength="255" required/></div>'+
+        '<div class="col-lg-4"><label for="groupNumb">Billing Group Number<br>(Only enter the 3 digits)<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8"><input type="text" id="newBillNum" maxlength="3" required/></div>'+
+        '<div class="col-lg-4"><label for="autocad">AutoCAD Job</label></div><div class="col-lg-8"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
+        '<div class="col-lg-4"><label for="gis">GIS Job</label></div><div class="col-lg-8"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div>'+
+        '<div class="col-lg-4"><label for="projMgr">Group Manager<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8" id="projFiller">Loading managers...</div>'+
+        '<div class="col-lg-4"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8" id="qaqcFill">Loading QA QC people...</div>'+
+        '<div class="col-lg-4"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
+        '<div class="col-lg-8" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
+        '<div class="col-lg-4"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8"><input type="date" id="start" value="start" required></div>'+
+        '<div class="col-lg-4"><label for="end">End Date<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8"><input type="date" id="end" value="end" required></div>'+
         '</div><div id="submitter"><button type="button" onclick="reqField(1)">Next</button></div>';
         fillMe(1);
         getUsers(1);
     }
     else if(num == 2) {
-        document.getElementById('projForm').innerHTML = '<div class="grid-container">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
+        document.getElementById('projForm').innerHTML = '<div class="row">'+ getTextField('Project Street Address', 'LocDesc', projLoc, true) +
         getNumberField('Project Latitude<br/>(i.e. 40.868928)', 'lat', latitude, -1, -90, 90, true) +
         getNumberField('Project Longitude<br/>(i.e. -123.988061)', 'long', longitude, -1, -90, 90, true)
-        + '<div class="grid-item"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
-        '<div class="grid-item"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
+        + '<div class="col-lg-4"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
+        '<div class="col-lg-8"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
         +'</div><div id="submitter"><button type="button" onclick="goBack(1)">Back</button><button type="button" onclick="reqField(2)">Next</button></div>';
         fillMe(2);
         getUsers(2);
     }
     else if(num == 3) {
-        document.getElementById('projForm').innerHTML = '<div class="grid-container">'+
-        '<div class="grid-item"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="grid-item" id="codeFill">Loading profile codes...</div>'+
-        '<div class="grid-item"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
-        '<div class="grid-item"><label for="service">Service Area</label></div>'+
-        '<div class="grid-item"><select name="service" id="service" title="Service Area"><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
-        '<div class="grid-item"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
+        document.getElementById('projForm').innerHTML = '<div class="row">'+
+        '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'+
+        '<div class="col-lg-4"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
+        '<div class="col-lg-4"><label for="service">Service Area</label></div>'+
+        '<div class="col-lg-8"><select name="service" id="service" title="Service Area"><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
+        '<div class="col-lg-4"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
         getNumberField('Total Contract', 'contract', 'contract', 1, 0, -1, false) +
-        '<div class="grid-item"><label for="invoiceFormat">Invoice Format</label></div><div class="grid-item"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
+        '<div class="col-lg-4"><label for="invoiceFormat">Invoice Format</label></div><div class="col-lg-8"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
         getTextField('Client Contract/PO #', 'PO', contractPONum, false) +
-        '<div class="grid-item"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-        '<div class="grid-item"><label for="wage">Prevailing Wage</label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
-        '<div class="grid-item"><label for="billInst">Special Billing Instructions</label></div><div class="grid-item"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
-        '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
-        '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'+
+        '<div class="col-lg-4"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
+        '<div class="col-lg-4"><label for="wage">Prevailing Wage</label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
+        '<div class="col-lg-4"><label for="billInst">Special Billing Instructions</label></div><div class="col-lg-8"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
+        '<div class="col-lg-4"><label for="binder">Binder Size</label></div><div class="col-lg-8"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+        '<div class="col-lg-4"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="col-lg-8"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'+
         '</div><div id="submitter"><button type="button" onclick="goBack(2)">Back</button><button type="button" onclick="reqField(3)">Review</button></div>';
         fillMe(3);
         getUsers(3);
@@ -425,64 +426,64 @@ function nextPage(num) {
         let waiver = (retainer == 'Waived by X') ? 'Waived by ' + senior:retainer;
 
         document.getElementById('projForm').innerHTML = '<div class="grid-container">' +
-        '<div class="grid-item">Billing Name' + '</div>'
-        + '<div class="grid-item">' + projTitle + '</div>'+
-        '<div class="grid-item">Billing Number' + '</div>'
-        + '<div class="grid-item">' + BillingNum + '</div>'+
-        '<div class="grid-item">Project Manager' + '</div>'
-        + '<div class="grid-item">' + jsonMap[0].staff_last + ', ' + jsonMap[0].staff_first + '</div>'+
-        '<div class="grid-item">Billing Group Manager' + '</div>'
-        + '<div class="grid-item">' + mgrName + '</div>'+
-        '<div class="grid-item">QAQC Person' + '</div>'
-        + '<div class="grid-item">' + qaqcName + '</div>'+
-        '<div class="grid-item">Team Members' + '</div>'
-        + '<div class="grid-item">' + formatMem + '</div>'+
-        '<div class="grid-item">Start Date' + '</div>'
-        + '<div class="grid-item">' + formatStartDate + '</div>'+
-        '<div class="grid-item">End Date' + '</div>'
-        + '<div class="grid-item">' + formatCloseDate + '</div>'+
-        '<div class="grid-item">Project Location Descriptor' + '</div>'
-        + '<div class="grid-item">' + projLoc + '</div>'+
-        '<div class="grid-item">Project Latitude' + '</div>'
-        + '<div class="grid-item">' + latitude + '</div>'+
-        '<div class="grid-item">Project Longitude' + '</div>'
-        + '<div class="grid-item">' + longitude + '</div>'+
-        '<div class="grid-item">Project Keywords' + '</div>'
-        + '<div class="grid-item">' + formatKeys + '</div>'+
-        '<div class="grid-item">Other Keywords' + '</div>'
-        + '<div class="grid-item">' + otherKeys + '</div>'+
-        '<div class="grid-item">Profile Code' + '</div>'
-        + '<div class="grid-item">' + profCodeName + '</div>'+
-        '<div class="grid-item">Contract Type' + '</div>'
-        + '<div class="grid-item">' + contactTypeName + '</div>'+
-        '<div class="grid-item">Service Area' + '</div>'
-        + '<div class="grid-item">' + servName + '</div>'+
-        '<div class="grid-item">Total Contract' + '</div>'
-        + '<div class="grid-item">' + totalContract + '</div>'+
-        '<div class="grid-item">Invoice Format' + '</div>'
-        + '<div class="grid-item">' + invoiceName + '</div>'+
-        '<div class="grid-item">Retainer' + '</div>'
-        + '<div class="grid-item">' + waiver + '</div>'+
-        '<div class="grid-item">Retainer amount' + '</div>'
-        + '<div class="grid-item">' + myAmount + '</div>'+
-        '<div class="grid-item">Client Contract/PO #' + '</div>'
-        + '<div class="grid-item">' + contractPONum + '</div>'+
-        '<div class="grid-item">Outside Markup' + '</div>'
-        + '<div class="grid-item">' + outsideMarkup + '</div>'+
-        '<div class="grid-item">Prevailige Wage' + '</div>'
-        + '<div class="grid-item">' + (prevWage == 1?"Yes":"No") + '</div>'+
-        '<div class="grid-item">Agency' + '</div>'
-        + '<div class="grid-item">' + (prevWage == 1?agency_name:"N/A") + '</div>'+
-        '<div class="grid-item">Special Billing Instructions' + '</div>'
-        + '<div class="grid-item">' + specBillInstr + '</div>'+
-        '<div class="grid-item">AutoCAD Job' + '</div>'
-        + '<div class="grid-item">' + autoCadName + '</div>'+
-        '<div class="grid-item">GIS Job' + '</div>'
-        + '<div class="grid-item">' + gisName + '</div>'+
-        '<div class="grid-item">Binder Size' + '</div>'
-        + '<div class="grid-item">' + (binderSize == "NULL"?"N/A":binderSize) + '</div>'+
-        '<div class="grid-item">Description of Services' + '</div>'
-        + '<div class="grid-item">' + breakedDesc + '</div>'+
+        '<div class="col-lg-6">Billing Name' + '</div>'
+        + '<div class="col-lg-6">' + projTitle + '</div>'+
+        '<div class="col-lg-6">Billing Number' + '</div>'
+        + '<div class="col-lg-6">' + BillingNum + '</div>'+
+        '<div class="col-lg-6">Project Manager' + '</div>'
+        + '<div class="col-lg-6">' + jsonMap[0].staff_last + ', ' + jsonMap[0].staff_first + '</div>'+
+        '<div class="col-lg-6">Billing Group Manager' + '</div>'
+        + '<div class="col-lg-6">' + mgrName + '</div>'+
+        '<div class="col-lg-6">QAQC Person' + '</div>'
+        + '<div class="col-lg-6">' + qaqcName + '</div>'+
+        '<div class="col-lg-6">Team Members' + '</div>'
+        + '<div class="col-lg-6">' + formatMem + '</div>'+
+        '<div class="col-lg-6">Start Date' + '</div>'
+        + '<div class="col-lg-6">' + formatStartDate + '</div>'+
+        '<div class="col-lg-6">End Date' + '</div>'
+        + '<div class="col-lg-6">' + formatCloseDate + '</div>'+
+        '<div class="col-lg-6">Project Location Descriptor' + '</div>'
+        + '<div class="col-lg-6">' + projLoc + '</div>'+
+        '<div class="col-lg-6">Project Latitude' + '</div>'
+        + '<div class="col-lg-6">' + latitude + '</div>'+
+        '<div class="col-lg-6">Project Longitude' + '</div>'
+        + '<div class="col-lg-6">' + longitude + '</div>'+
+        '<div class="col-lg-6">Project Keywords' + '</div>'
+        + '<div class="col-lg-6">' + formatKeys + '</div>'+
+        '<div class="col-lg-6">Other Keywords' + '</div>'
+        + '<div class="col-lg-6">' + otherKeys + '</div>'+
+        '<div class="col-lg-6">Profile Code' + '</div>'
+        + '<div class="col-lg-6">' + profCodeName + '</div>'+
+        '<div class="col-lg-6">Contract Type' + '</div>'
+        + '<div class="col-lg-6">' + contactTypeName + '</div>'+
+        '<div class="col-lg-6">Service Area' + '</div>'
+        + '<div class="col-lg-6">' + servName + '</div>'+
+        '<div class="col-lg-6">Total Contract' + '</div>'
+        + '<div class="col-lg-6">' + totalContract + '</div>'+
+        '<div class="col-lg-6">Invoice Format' + '</div>'
+        + '<div class="col-lg-6">' + invoiceName + '</div>'+
+        '<div class="col-lg-6">Retainer' + '</div>'
+        + '<div class="col-lg-6">' + waiver + '</div>'+
+        '<div class="col-lg-6">Retainer amount' + '</div>'
+        + '<div class="col-lg-6">' + myAmount + '</div>'+
+        '<div class="col-lg-6">Client Contract/PO #' + '</div>'
+        + '<div class="col-lg-6">' + contractPONum + '</div>'+
+        '<div class="col-lg-6">Outside Markup' + '</div>'
+        + '<div class="col-lg-6">' + outsideMarkup + '</div>'+
+        '<div class="col-lg-6">Prevailige Wage' + '</div>'
+        + '<div class="col-lg-6">' + (prevWage == 1?"Yes":"No") + '</div>'+
+        '<div class="col-lg-6">Agency' + '</div>'
+        + '<div class="col-lg-6">' + (prevWage == 1?agency_name:"N/A") + '</div>'+
+        '<div class="col-lg-6">Special Billing Instructions' + '</div>'
+        + '<div class="col-lg-6">' + specBillInstr + '</div>'+
+        '<div class="col-lg-6">AutoCAD Job' + '</div>'
+        + '<div class="col-lg-6">' + autoCadName + '</div>'+
+        '<div class="col-lg-6">GIS Job' + '</div>'
+        + '<div class="col-lg-6">' + gisName + '</div>'+
+        '<div class="col-lg-6">Binder Size' + '</div>'
+        + '<div class="col-lg-6">' + (binderSize == "NULL"?"N/A":binderSize) + '</div>'+
+        '<div class="col-lg-6">Description of Services' + '</div>'
+        + '<div class="col-lg-6">' + breakedDesc + '</div>'+
         '</div><div id="submitter"><button type="button" onclick="goBack(3)">Back</button><button type="button" onclick="submitBilling()">Submit</button></div>';
     }
 }
@@ -564,7 +565,7 @@ function getTextField(label, newID, value, required) { // i.e. getTextField('Pro
         myReq = 'required';
         myLabel = myLabel + '<span class="astrick">*</span>';
     }
-    return '<div class="grid-item"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="grid-item"><input type="text" id="'+ newID +'" name="'+ newID +'" maxlength="255" value="'+ value +'" '+ myReq +'></div>';
+    return '<div class="col-lg-4"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-lg-8"><input type="text" id="'+ newID +'" name="'+ newID +'" maxlength="255" value="'+ value +'" '+ myReq +'></div>';
 }
 
 
@@ -596,7 +597,7 @@ function getNumberField(label, newID, value, step, min, max, required) {
     if(max != -1) {
         myMax = 'max="' + max + '"';
     }
-    return '<div class="grid-item"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="grid-item"><input type="number" id="'+ newID +'" name="'+ newID + myStep +' min="' + min + '" '+ myMax +' onkeypress="limit(this);" value="'+ value +'" '+ myReq +'></div>';
+    return '<div class="col-lg-4"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-lg-8"><input type="number" id="'+ newID +'" name="'+ newID + myStep +' min="' + min + '" '+ myMax +' onkeypress="limit(this);" value="'+ value +'" '+ myReq +'></div>';
 }
 
 /*
