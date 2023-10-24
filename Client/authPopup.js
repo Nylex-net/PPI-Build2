@@ -124,7 +124,7 @@ function startSessionTimer() {
 
     // Start a new session timer.
     sessionTimer = setTimeout(signOut, sessionTimeout);
-    document.getElementById('projForm').innerHTML = '<h2>Your session is over.</h2><button type="button" onclick="window.reload();">Restart</button>';
+    document.getElementById('projForm').innerHTML = '<h2>Your session is over.</h2><button type="button" onclick="location.reload();">Restart</button>';
 }
 
 function resetSessionTimer() {
