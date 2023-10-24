@@ -166,7 +166,7 @@ function billForm() {
                 json.forEach(mem => {
                     teamMem.push(mem.member_id);
                 });
-                document.getElementById('billRes').innerHTML = '<form name="myForm" id="projForm" onsubmit="reqField();" action="" method=""><div class="grid-container"></div></form>';
+                document.getElementById('billRes').innerHTML = '<form name="myForm" onsubmit="reqField();" action="" method=""><div class="container" id="projForm"></div></form>';
                 document.getElementById('projForm').innerHTML = gotPage(json);
 
                 // Initialize values from database entries.
