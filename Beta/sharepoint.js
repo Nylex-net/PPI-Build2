@@ -1,80 +1,37 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const bodyParser = require('body-parser');
-const http = require('https');
-const webpack = require('webpack');
+// Define the URL to the SharePoint site and the file path
+const sharepointSite = "https://nylexnet.sharepoint.com";
+const filePath = '/sites/nylex.net/Shared Documents/dummy.txt'; // The destination path
 
-module.exports = {
-    plugins: [
-      new webpack.DefinePlugin({
-        'process.env.tenant_id': JSON.stringify('tenant_id'),
-        'process.env.client_id': JSON.stringify('client_id')
-      }),
-    ],
-  };
+// The URL for the SharePoint file endpoint
+const fileEndpoint = `${sharepointSite}/_api/web/getfolderbyserverrelativeurl('${filePath}')/files/add(overwrite=true)`;
 
-const tenant_id = process.env.tenant_id;
-console.log(tenant_id);
-const url = `https://login.microsoftonline.com/${tenant_id}/oauth2/v2.0/authorize`;
+// Define the file content
+const fileContent = 'This is the content of the file.';
 
-const params = {
-    client_id: process.env.client_id,
-    response_type: 'code',
-    scope: 'user.read sites.readwrite.all',
-    response_mode: 'query',
-    redirect_uri: 'http://localhost',
-    state: 12345,
-    code_challenge: '',
-    code_challenge_method: 'S256'
+const accessToken = ''
+
+// Define the request headers, including the Access Token
+const headers = {
+  Authorization: `Bearer ${accessToken}`,
+  'Content-Type': 'application/json',
 };
 
-// Function to build the URL
-function buildUrl(baseUrl, params) {
-    const url = new URL(baseUrl);
-    for (const key in params) {
-      url.searchParams.append(key, params[key]);
-    }
-    return url.toString();
-  }
+// Define the request options https://nylexnet.sharepoint.com/:t:/r/sites/nylex.net/Shared%20Documents/dummy.txt?csf=1&web=1&e=cbMaZM
+const options = {
+  method: 'POST',
+  headers: headers,
+  body: JSON.stringify({ Content: fileContent }),
+};
 
-  function generateCodeVerifier(length) {
-    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-    let verifier = '';
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charset.length);
-      verifier += charset[randomIndex];
+// Make the API request to upload the file
+fetch(fileEndpoint, options)
+  .then((response) => {
+    if (response.ok) {
+      console.log('File uploaded successfully.');
+    } else {
+      console.error('Error:', response.status, response.statusText);
     }
-    return verifier;
-  }
-  
-  // Calculate the code challenge from the code verifier
-  function generateCodeChallenge(codeVerifier) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(codeVerifier);
-    return crypto.subtle.digest('SHA-256', data).then((buffer) => {
-      const challenge = Array.from(new Uint8Array(buffer))
-        .map((byte) => String.fromCharCode(byte))
-        .join('');
-      return btoa(challenge)
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-    });
-  }
-  
-  // Generate a code verifier and code challenge
-  async function generatePKCEChallenge() {
-    const codeVerifier = generateCodeVerifier(128); // Adjust the length as needed
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
-    return { codeVerifier, codeChallenge };
-  }
-  
-  // Usage
-  generatePKCEChallenge().then((pkce) => {
-    console.log('Code Verifier:', pkce.codeVerifier);
-    console.log('Code Challenge:', pkce.codeChallenge);
-    const myURL = buildUrl(url, params);
-    console.log(myURL);
-    // const request = https.request();
+  })
+  .catch((error) => {
+    console.error('Error:', error);
   });
