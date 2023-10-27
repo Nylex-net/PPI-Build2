@@ -841,7 +841,7 @@ function page3() {
     '<div class="col-lg-4"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
     '<div class="col-lg-8"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
     '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'+
-    '<div class="col-lg-4"><label for="projectType">Project Type<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="radio" id="NahBruh" name="projectType" value="0" title="NA" checked> N/A   <input type="radio" id="conf" name="projectType" value="1" title="gis"> Confidential  <input type="radio" name="projectType" id="nda" value="2" title="nda"> NDA    </div>'
+    '<div class="col-lg-4"><label for="projectType">Project Type</label></div><div class="col-lg-8"><input type="radio" id="NahBruh" name="projectType" value="0" title="NA" checked> N/A   <input type="radio" id="conf" name="projectType" value="1" title="gis"> Confidential  <input type="radio" name="projectType" id="nda" value="2" title="nda"> NDA    </div>'
     +'</div>';
 }
 
@@ -1469,7 +1469,6 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         this.document.querySelector('#contract').value = totalContract;
         this.document.querySelector('#yesAgreement').checked = ServAgree;
         this.document.querySelector('#retainer').value = retainer;
-        this.document.querySelector('#projectType').value = projType;
 
         // If service agreement was previously selected, select "Yes" and fill value of the external field.
 
@@ -1488,6 +1487,13 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         else if(retainer == 'Waived by X') {
             customAmount();
             this.document.getElementById('personnel').value = senior;
+        }
+
+        if(projType == 1) {
+            document.getElementById('conf').checked = true;
+        }
+        else if(projType == 2) {
+            document.getElementById('nda').checked = true;
         }
     }
     else if(newPage == 4) { // Fill page 4.
