@@ -838,7 +838,8 @@ function page3() {
     '<div class="col-lg-4"><label for="projExempt">Is this project exempt from having a Service Agreement?<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="radio" name="projExempt" id="yesAgreement" value="Yes" title="projExempt" onchange="expandWhy()">Yes<input type="radio" name="projExempt" value="No" title="projExempt" onchange="expandWhy()" checked>No<div id="justWhy"></div></div>'+
     '<div class="col-lg-4"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
     '<div class="col-lg-8"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
-    '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'
+    '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'+
+    '<div class="col-lg-4"><label for="projectType">Project Type<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="radio" id="NA" name="projectType" value="" title="NA" checked> N/A<input type="radio" id="conf" name="projectType" value="Yes" title="gis"> Confidential<input type="radio" name="projectType" id="nda" value="NDA" title="nda"> NDA</div>'
     +'</div>';
 }
 
