@@ -249,7 +249,7 @@ app.post('/result', jsonParser, (req, res) => {
     // });
 
     // Begin building SQL query.
-
+    // ADD project_type TO DATABASE QUERY.
     // let latLongNaN = false;
     const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, closed, start_date, close_date, project_location, latitude, longitude, ' +
             'SHNOffice_ID, service_area, total_contract, exempt_agreement, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup,'+
