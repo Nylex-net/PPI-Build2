@@ -26,6 +26,7 @@ let retainer = 0;
 let retainAmnt = 'NULL';
 let senior = '';
 let profCode = -1; // required
+let projType = 0;
 let contactType = 0; // required
 let invoiceFormat = "B";
 let contractPONum = ''; // required
@@ -549,6 +550,7 @@ function preparePost() {
     '"WaivedBy":"'+ format(waiver) + '",' +
     '"ProfileCode":"'+ profCode + '",' +
     '"ProfileCodeName":"'+ profCodeName + '",' +
+    '"ProjectType":"'+ projType + '",' +
     '"ContractType":"'+ contactType + '",' +
     '"contactTypeName":"'+contactTypeName + '",'+
     '"InvoiceID":"'+ invoiceFormat + '",'+
@@ -839,7 +841,7 @@ function page3() {
     '<div class="col-lg-4"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
     '<div class="col-lg-8"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
     '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'+
-    '<div class="col-lg-4"><label for="projectType">Project Type<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="radio" id="NA" name="projectType" value="" title="NA" checked> N/A<input type="radio" id="conf" name="projectType" value="Yes" title="gis"> Confidential<input type="radio" name="projectType" id="nda" value="NDA" title="nda"> NDA</div>'
+    '<div class="col-lg-4"><label for="projectType">Project Type<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="radio" id="NahBruh" name="projectType" value="0" title="NA" checked> N/A   <input type="radio" id="conf" name="projectType" value="1" title="gis"> Confidential  <input type="radio" name="projectType" id="nda" value="2" title="nda"> NDA    </div>'
     +'</div>';
 }
 
@@ -975,6 +977,8 @@ function page7() {
     + '<div class="col-lg-6">' + retainAmnt + '</div>'+
     '<div class="col-lg-6">Profile Code' + '</div>'
     + '<div class="col-lg-6">' + profCodeName + '</div>'+
+    '<div class="col-lg-6">Project Type' + '</div>'
+    + '<div class="col-lg-6">' + (projType == 1?'Confidential':(projType == 2?'NDA':'N/A')) + '</div>'+
     '<div class="col-lg-6">Contract Type' + '</div>'
     + '<div class="col-lg-6">' + contactTypeName + '</div>'+
     '<div class="col-lg-6">Invoice Format' + '</div>'
@@ -1082,6 +1086,7 @@ function saveChoices(currPage) {
         retainer = document.getElementById('retainer').value;
         profCode = document.getElementById('code').value;
         profCodeName = document.getElementById('code').options[document.getElementById("code").selectedIndex].text;
+        projType = (document.getElementById('conf').checked?1:(document.getElementById('nda').checked?2:0));
         if(ServAgree) {
             ifYesWhy = document.getElementById('bruh').value.trim();
         }
@@ -1464,6 +1469,7 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         this.document.querySelector('#contract').value = totalContract;
         this.document.querySelector('#yesAgreement').checked = ServAgree;
         this.document.querySelector('#retainer').value = retainer;
+        this.document.querySelector('#projectType').value = projType;
 
         // If service agreement was previously selected, select "Yes" and fill value of the external field.
 
