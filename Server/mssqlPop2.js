@@ -57,7 +57,7 @@ function populateStaff() {
     connection.query('SELECT ID, Active, First, Last, Email, PM FROM Contacts').then(data => {
         let query = '';
         data.forEach((element) => {
-            query += "INSERT INTO Staff VALUES ("+element.ID+", "+((element.Active == 'Yes')?1:0)+", '"+element.First.replace(/'/gi, "''")+"', '"+element.Last.replace(/'/gi, "''")+"', '"+element.Email+"', "+(element.PM==-1?1:0)+", 0, NULL);";
+            query += "INSERT INTO Staff VALUES ("+element.ID+", "+((element.Active == 'Yes')?1:0)+", '"+element.First.replace(/'/gi, "''")+"', '"+(typeof element.Last == 'string'?element.Last.replace(/'/gi, "''"):'')+"', '"+element.Email+"', "+(element.PM==-1?1:0)+", 0, NULL);";
         });
         pool.query(query, (err, rows) => {
             if(err) {
@@ -147,7 +147,7 @@ function populateData() {
             if(element.BillGrp == null || element.BillGrp == 'NULL' || (typeof element.BillGrp == 'string' && element.BillGrp.trim() == '')) {
                 query += "IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"') BEGIN TRY INSERT INTO Projects "+
                 "(project_id, project_title, project_manager_ID, qaqc_person_ID, closed, created, start_date, close_date, project_location, latitude, longitude, SHNOffice_ID, service_area, "+
-                "total_contract, exempt_agreement, why, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, prevailing_wage, "+
+                "total_contract, exempt_agreement, why, retainer, retainer_paid, waived_by, profile_code_id, project_type, contract_ID, invoice_format, client_contract_PO, outside_markup, prevailing_wage, "+
                 "agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, first_name, last_name, relationship, "+
                 "job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, binder_size, binder_location, description_service) OUTPUT inserted.* "+
                 "VALUES ('"+// element.Id +", '"+
@@ -168,7 +168,7 @@ function populateData() {
                 ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid != "")?element.RetainerPaid.replace(/'/gi, "''"):"NA")+"', "+
                 ((element.RetainerPaid == null || element.RetainerPaid == "NULL" || element.RetainerPaid == "")?0:(isNaN(element.RetainerPaid.substring(1))?"NULL":Number(element.RetainerPaid.substring(1))))+", "+
                 ((element.RetainerPaid != null && element.RetainerPaid != "NULL" && element.RetainerPaid.includes("Waived by"))?"'"+element.RetainerPaid.substring(10).replace(/'/gi, "''")+"'":"NULL")+", "+
-                (codeMap.get(element.ProfileCode)==undefined?167:codeMap.get(element.ProfileCode))+", "+
+                (codeMap.get(element.ProfileCode)==undefined?167:codeMap.get(element.ProfileCode))+", 0, "+
                 ((isNaN(element.ContractType) || element.ContractType == null || element.ContractType == "NULL")?1:(element.ContractType.includes("10")?10:(isNaN(element.ContractType[0])?1:element.ContractType[0]))) +", "+
                 (/n\\a|na|null|none/gi.test(element.InvoiceFormat)?"NULL":(element.InvoiceFormat.length <= 0?"NULL":"'"+element.InvoiceFormat[0]+"'"))+", 'NA', "+
                 ((isNaN(element.OutsideMarkup) || element.OutsideMarkup == null || element.OutsideMarkup == "NULL" || element.OutsideMarkup == "")?15:element.OutsideMarkup) +", "+
