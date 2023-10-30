@@ -3,5 +3,4 @@ config.json
 *.docx
 *.sql
 .env
-/Beta/sharepoint.js
-Beta/sharepoint.js
+sharepoint.js
