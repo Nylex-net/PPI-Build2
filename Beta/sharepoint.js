@@ -1,5 +1,5 @@
 // const Msal = require('msal');
-
+const client = require('@microsoft/microsoft-graph-client');
 function accessSharePoint(token) {
   // Define the URL to the SharePoint site and the file path
   const sharepointSite = 'https://nylexnet.sharepoint.com';
@@ -45,7 +45,7 @@ function graphMe(token) {
     Host: 'graph.microsoft.com'
   };
 
-  fetch("https://graph.microsoft.com/v1.0/me", {headers:headers})
+  fetch("https://graph.microsoft.com/v1.0/users", {headers:headers})
   .then((response) => {
     if (response.ok) {
       console.log('Das Right!!');
@@ -61,6 +61,7 @@ function graphMe(token) {
 async function getAccessToken() {
   // Define the request headers, including the Access Token
   const headers = {
+    'Host': 'login.microsoftonline.com',
     'Content-Type': 'application/x-www-form-urlencoded'
   };
 
@@ -71,7 +72,7 @@ async function getAccessToken() {
   formData.append("scope",confData.sharepoint.scope + "/.default");
   formData.append("client_secret",confData.sharepoint.client_secret);
 
-  // Define the request options https://nylexnet.sharepoint.com/:t:/r/sites/nylex.net/Shared%20Documents/dummy.txt?csf=1&web=1&e=cbMaZM
+  // Define the request options.
   const options = {
     method: 'POST',
     headers: headers,
