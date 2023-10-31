@@ -49,7 +49,7 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
 
 // String to connect to MSSQL.
 const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=Yes;Driver={ODBC Driver 17 for SQL Server}`;
-
+/*
 const pool = new msnodesqlv8.Pool({
     connectionString: connectionString
 });
@@ -59,7 +59,7 @@ pool.on('open', (options) => {
   pool.on('error', e => {
     console.log(e)
   });
-
+*/
 // projects API returns the project info in projects, plus the first and last name of the Project Manager.
 
 app.post('/projects', jsonParser, (req, res) => {
@@ -938,14 +938,76 @@ app.post('/upload', (req, res) => {
         return res.status(400).send('No files were uploaded.');
     }
 
-    const uploadedFile = req.files.file;
-    console.log(uploadedFile);
-    console.log(typeof uploadedFile);
+    const uploadedFiles = req.files.file;
+    const filePath1 = `/uploads/${uploadedFiles[0].name}`;
+    const filePath5 = `/uploads/${uploadedFiles[1].name}`;
+    const filePath10 = `/uploads/${uploadedFiles[2].name}`;
+
+    // Save the uploaded file to the server
+    uploadedFiles[0].mv(__dirname + filePath1, (err) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        else {
+            uploadedFiles[1].mv(__dirname + filePath1, (err) => {
+                if(err) {
+                    return res.status(500).send(err);
+                }
+                else {
+                    uploadedFiles[2].mv(__dirname + filePath1, (err) => {
+                        if(err) {
+                            return res.status(500).send(err);
+                        }
+                        else {
+                            uploadToSharePoint(filePath1, filePath5, filePath10);
+                        }
+                    });
+                }
+            });
+        }
+    });
 
     // Handle the file as needed (e.g., save to disk, process, etc.)
 
     res.json({ message: 'File uploaded successfully.' });
 });
+
+function uploadToSharePoint(file1, file5, file10) {
+    getAccessToken().then((token) => {
+        if(token.access_token != undefined) {
+            // accessSharePoint(token.access_token).then();
+        }
+        else {
+            res.status(500).send("Server could not access SharePoint.");
+        }
+    }).catch((err)=> {
+        console.error(err);
+    });
+}
+
+async function getAccessToken() {
+    // Define the request headers, including the Access Token
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+  
+    const formData = new URLSearchParams();
+    formData.append("grant_type","client_credentials");
+    formData.append("client_id",jsonData.SHNpoint.client_id);
+    formData.append("scope","https://graph.microsoft.com/.default");
+    formData.append("client_secret",jsonData.SHNpoint.client_secret);
+  
+    // Define the request options.
+    const options = {
+      method: 'POST',
+      headers: headers,
+      body: formData.toString(),
+    };
+  
+    const response = await fetch('https://login.microsoftonline.com/'+jsonData.SHNpoint.tenant_id+'/oauth2/v2.0/token', options);
+    return response.json();
+  }
+
 
 /*
 app.post('/delete', jsonParser, (req, res) => {
@@ -1280,7 +1342,7 @@ async function createTicket(error, msg) {
 // const port = Number(process.env.PORT) || 3001;
 // app.listen(port, () => console.log(`Listening to port ${port}...`));
 
-pool.open();
+// pool.open();
 https.createServer(options, app, function (req, res) {
     res.statusCode = 200;
   }).listen(3001);
