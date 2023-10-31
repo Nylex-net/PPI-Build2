@@ -111,12 +111,14 @@ getAccessToken().then((token) => {
     accessSharePoint(token.access_token).then((result) => 
     {
       const SITE_ID = result.id.split(',')[1];
+      console.log(SITE_ID);
       driveID(token.access_token, SITE_ID).then((data) => {
         // listContents(token.access_token, data.value[0].id).then((PM_files) => {
         //   console.log(PM_files);
         // });
+        console.log(data.value[0].id);
         uploadLocal(token.access_token, data.value[0].id).then((meme) => {
-          console.log(meme);
+          console.log("Done");
         });
       });
     });
