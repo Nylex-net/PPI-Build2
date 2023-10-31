@@ -1,22 +1,11 @@
-// const Msal = require('msal');
-const client = require('@microsoft/microsoft-graph-client');
-function accessSharePoint(token) {
+async function accessSharePoint(token) {
   // Define the URL to the SharePoint site and the file path
-  const sharepointSite = 'https://nylexnet.sharepoint.com';
-  const filePath = '/Shared Documents'; // The destination path
-
-  // The URL for the SharePoint file endpoint
-  const fileEndpoint = `${sharepointSite}/_api/web/getfolderbyserverrelativeurl('${filePath}')/ListItemAllFields`;
-
-  // Define the file content
-  const fileContent = 'This is the content of the file.';
-
-  const accessToken = token;
+  const sharepointSite = `https://graph.microsoft.com/v1.0/sites/${require("./config.json").SHNpoint.scope}:/sites/ProjectManagementPublic`;
 
   // Define the request headers, including the Access Token
   const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    Accept: 'application/json;odata=verbose',
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
   };
 
   const options = {
@@ -26,51 +15,42 @@ function accessSharePoint(token) {
   };
 
   // Make the API request to upload the file
-  fetch(fileEndpoint, options)
-    .then((response) => {
-      if (response.ok) {
-        console.log('Yeah Baby!!');
-      } else {
-        console.error('Error:', response.status, response.statusText);
-      }
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
+  const response = await fetch(sharepointSite, options);
+  return response.json();
 }
 
-function graphMe(token) {
+async function driveID(token, site_id) {
+  const site = `https://graph.microsoft.com/v1.0/sites/${site_id}/Drives`;
+
+  // Define the request headers, including the Access Token
   const headers = {
     Authorization: `Bearer ${token}`,
-    Host: 'graph.microsoft.com'
+    Accept: 'application/json',
   };
 
-  fetch("https://graph.microsoft.com/v1.0/users", {headers:headers})
-  .then((response) => {
-    if (response.ok) {
-      console.log('Das Right!!');
-    } else {
-      console.error('Error:', response.status, response.statusText);
-    }
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
+  const options = {
+    method: 'GET',
+    headers: headers
+    // body: JSON.stringify({ Content: fileContent }),
+  };
+
+  // Make the API request to upload the file
+  const response = await fetch(site, options);
+  return response.json();
 }
 
 async function getAccessToken() {
   // Define the request headers, including the Access Token
   const headers = {
-    'Host': 'login.microsoftonline.com',
     'Content-Type': 'application/x-www-form-urlencoded'
   };
 
   const confData = require("./config.json");
   const formData = new URLSearchParams();
   formData.append("grant_type","client_credentials");
-  formData.append("client_id",confData.sharepoint.client_id);
-  formData.append("scope",confData.sharepoint.scope + "/.default");
-  formData.append("client_secret",confData.sharepoint.client_secret);
+  formData.append("client_id",confData.SHNpoint.client_id);
+  formData.append("scope","https://graph.microsoft.com/.default");
+  formData.append("client_secret",confData.SHNpoint.client_secret);
 
   // Define the request options.
   const options = {
@@ -79,14 +59,67 @@ async function getAccessToken() {
     body: formData.toString(),
   };
 
-  const response = await fetch('https://login.microsoftonline.com/'+confData.sharepoint.tenant_id+'/oauth2/v2.0/token', options);
+  const response = await fetch('https://login.microsoftonline.com/'+confData.SHNpoint.tenant_id+'/oauth2/v2.0/token', options);
+  return response.json();
+}
+
+async function listContents(token, drive_id) {
+  const url = `https://graph.microsoft.com/v1.0/Drives/${drive_id}/root:/PM Tools spreadsheets:/Children`;
+
+  // Define the request headers, including the Access Token
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
+  };
+
+  const options = {
+    method: 'GET',
+    headers: headers
+    // body: JSON.stringify({ Content: fileContent }),
+  };
+
+  // Make the API request to upload the file
+  const response = await fetch(url, options);
+  return response.json();
+}
+
+async function uploadLocal(token, drive_id) {
+  const url = `https://graph.microsoft.com/v1.0/Drives/${drive_id}/root:/PM Tools spreadsheets/dummy.txt:/content`;
+
+  // Define the request headers, including the Access Token
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
+  };
+
+  const fileContent = 'This is a test file.';
+
+  const options = {
+    method: 'PUT',
+    headers: headers,
+    body: JSON.stringify({ Content: fileContent }),
+  };
+
+  // Make the API request to upload the file
+  const response = await fetch(url, options);
   return response.json();
 }
 
 getAccessToken().then((token) => {
   if(token.access_token != undefined) {
-    // accessSharePoint(token.access_token);
-    graphMe(token.access_token);
+    // console.log(token);
+    accessSharePoint(token.access_token).then((result) => 
+    {
+      const SITE_ID = result.id.split(',')[1];
+      driveID(token.access_token, SITE_ID).then((data) => {
+        // listContents(token.access_token, data.value[0].id).then((PM_files) => {
+        //   console.log(PM_files);
+        // });
+        uploadLocal(token.access_token, data.value[0].id).then((meme) => {
+          console.log(meme);
+        });
+      });
+    });
   }
   else {
     console.error(token);

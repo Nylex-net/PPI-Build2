@@ -2,6 +2,7 @@
 'use strict';
 const msnodesqlv8 = require('msnodesqlv8');
 const express = require('express');
+const fileUpload = require('express-fileupload');
 // const cluster = require('cluster');
 const cors = require('cors');
 // const { useCallback } = require('react');
@@ -13,6 +14,7 @@ const PDFDocument = require('pdfkit-table');
 const https = require('https');
 const winPermissionsManager = require('win-permissions-js');
 app.use(cors());
+app.use(fileUpload());
 var jsonParser = bodyParser.json();
 const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\PPI\\Database\\SHN_Project_Backup.mdb;";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
@@ -925,6 +927,24 @@ app.post('/verify', jsonParser, (req, res) => {
             }
         }
     });
+});
+
+/**
+ * 
+ */
+
+app.post('/upload', (req, res) => {
+    if (!req.files || !req.files.file) {
+        return res.status(400).send('No files were uploaded.');
+    }
+
+    const uploadedFile = req.files.file;
+    console.log(uploadedFile);
+    console.log(typeof uploadedFile);
+
+    // Handle the file as needed (e.g., save to disk, process, etc.)
+
+    res.json({ message: 'File uploaded successfully.' });
 });
 
 /*
