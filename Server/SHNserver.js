@@ -114,19 +114,6 @@ app.get('/', (req, res) => {
             res.send(JSON.stringify(rows));
         }
     });
-    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    // connection.query('SELECT ID, Last, First, PM FROM Contacts WHERE Active = \'Yes\' ORDER BY Last')
-    // .then(data => {
-    //     // Display formatted JSON data
-    //     res.send(JSON.stringify(data));
-    //     // callback(res);
-    // })
-    // .catch(error => {
-    //     console.error('Error occured while accessing database.');
-    //     createTicket(error, "Cannot GET employees.");
-    //     res.send(JSON.stringify(error));
-    //     // return callback(new Error("An error has occurred"));
-    // })
 });
 
 // Gets all keywords.
