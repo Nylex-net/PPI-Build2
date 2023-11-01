@@ -2,7 +2,8 @@
 // Also make sure file extenstion is '.mdb'.
 'use strict';
 // const ADODB = require('node-adodb');
-const msnodesqlv8 = require('msnodesqlv8');
+// const msnodesqlv8 = require('msnodesqlv8');
+const sql = require('mssql');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -61,23 +62,49 @@ var jsonParser = bodyParser.json();
 // String to connect to MSSQL.
 const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=Yes;Driver={ODBC Driver 17 for SQL Server}`;
 
-const pool = new msnodesqlv8.Pool({
-    connectionString: connectionString
+const pool = new sql.ConnectionPool({
+    user: jsonData.mssql.user,
+    password: jsonData.mssql.password,
+    server: jsonData.mssql.server,
+    database: jsonData.mssql.database,
+    options : jsonData.mssql.options
+    // pool: {
+    //     idleTimeoutMills: 
+    // }
 });
-pool.on('open', (options) => {
-    console.log(`ready options = ${JSON.stringify(options, null, 4)}`)
-  });
+
+// pool.on('open', (options) => {
+//     console.log(`ready options = ${JSON.stringify(options, null, 4)}`)
+//   });
   pool.on('error', e => {
-    console.log(e)
+    console.log(e);
   });
 
+// Function to establish a new connection
+async function establishConnection() {
+    try {
+      await pool.connect();
+      console.log('Connection established.');
+    } catch (err) {
+      console.error('Error establishing connection:', err);
+    }
+}
+
+  pool.on('requestTimeout', (err) => {
+    console.error('Connection timed out:', err);
+    console.log('Reinitiating the connection...');
+    establishConnection();
+  });
+
+establishConnection();
 // Change source directory accordingly.
 app.use(cors());
 
 // Gets all Employees.
 app.get('/', (req, res) => {
-    const query = 'SELECT * FROM Staff WHERE Active = 1 ORDER BY last'
-    pool.query(query, (err, rows) => {
+    const query = 'SELECT * FROM Staff WHERE Active = 1 ORDER BY last';
+    const request = pool.request();
+    request.query(query, (err, rows) => {
         if(err) {
             console.log("Error for entry ID: " + element.ID);
             console.error(err);
@@ -1839,7 +1866,7 @@ function denyGroupDelete(folderPath) {
 
 // const port = Number(process.env.PORT) || 3000;
 // app.listen(port, () => console.log(`Listening to port ${port}...`));
-pool.open();
+// pool.open();
 https.createServer(options, app, function (req, res) {
     res.statusCode = 200;
   }).listen(3000);
