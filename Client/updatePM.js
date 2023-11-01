@@ -27,10 +27,7 @@ document.getElementById('projForm').addEventListener('submit', function (e) {
         method: 'POST',
         body: formData,
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-    })
+    .then(response => console.log(response))
     .catch(error => {
         console.error(error);
     });

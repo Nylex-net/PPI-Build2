@@ -49,7 +49,7 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
 
 // String to connect to MSSQL.
 const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=Yes;Driver={ODBC Driver 17 for SQL Server}`;
-/*
+
 const pool = new msnodesqlv8.Pool({
     connectionString: connectionString
 });
@@ -59,7 +59,7 @@ pool.on('open', (options) => {
   pool.on('error', e => {
     console.log(e)
   });
-*/
+
 // projects API returns the project info in projects, plus the first and last name of the Project Manager.
 
 app.post('/projects', jsonParser, (req, res) => {
@@ -939,27 +939,30 @@ app.post('/upload', (req, res) => {
     }
 
     const uploadedFiles = req.files.file;
-    const filePath1 = `/uploads/${uploadedFiles[0].name}`;
-    const filePath5 = `/uploads/${uploadedFiles[1].name}`;
-    const filePath10 = `/uploads/${uploadedFiles[2].name}`;
+    const filePath1 = `\\uploads\\${uploadedFiles[0].name}`;
+    const filePath5 = `\\uploads\\${uploadedFiles[1].name}`;
+    const filePath10 = `\\uploads\\${uploadedFiles[2].name}`;
 
     // Save the uploaded file to the server
+    console.log(__dirname + filePath1);
     uploadedFiles[0].mv(__dirname + filePath1, (err) => {
         if (err) {
             return res.status(500).send(err);
         }
         else {
-            uploadedFiles[1].mv(__dirname + filePath1, (err) => {
+            // console.log(uploadedFiles);
+            uploadedFiles[1].mv(__dirname + filePath5, (err) => {
                 if(err) {
                     return res.status(500).send(err);
                 }
                 else {
-                    uploadedFiles[2].mv(__dirname + filePath1, (err) => {
+                    uploadedFiles[2].mv(__dirname + filePath10, (err) => {
                         if(err) {
                             return res.status(500).send(err);
                         }
                         else {
                             uploadToSharePoint(filePath1, filePath5, filePath10);
+                            res.status(200).send("Uploads success");
                         }
                     });
                 }
@@ -968,14 +971,14 @@ app.post('/upload', (req, res) => {
     });
 
     // Handle the file as needed (e.g., save to disk, process, etc.)
-
-    res.json({ message: 'File uploaded successfully.' });
 });
 
 function uploadToSharePoint(file1, file5, file10) {
     getAccessToken().then((token) => {
         if(token.access_token != undefined) {
-            // accessSharePoint(token.access_token).then();
+            uploadLocal(token.access_token, jsonData.SHNpoint.site_id, jsonData.SHNpoint.drive_id, file1);
+            uploadLocal(token.access_token, jsonData.SHNpoint.site_id, jsonData.SHNpoint.drive_id, file5);
+            uploadLocal(token.access_token, jsonData.SHNpoint.site_id, jsonData.SHNpoint.drive_id, file10);
         }
         else {
             res.status(500).send("Server could not access SharePoint.");
@@ -1008,7 +1011,26 @@ async function getAccessToken() {
     return response.json();
   }
 
-
+  async function uploadLocal(token, site_id, drive_id, filePath) {
+    const url = `https://graph.microsoft.com/v1.0/sites/${site_id}/Drives/${drive_id}/root:/PM Tools spreadsheets/${filePath.split('\\')[2]}:/content`;
+  
+    // Define the request headers, including the Access Token
+    const headers = {
+      Authorization: `Bearer ${token}`
+    };
+  
+    const options = {
+      method: 'PUT',
+      headers: headers,
+      body: fs.createReadStream(__dirname + filePath)
+    };
+  
+    // Make the API request to upload the file
+    const response = await fetch(url, options);
+    if(!response.ok) {
+        console.log("Could not upload " + filePath);
+    }
+  }
 /*
 app.post('/delete', jsonParser, (req, res) => {
     let dir = PATH;
@@ -1342,7 +1364,7 @@ async function createTicket(error, msg) {
 // const port = Number(process.env.PORT) || 3001;
 // app.listen(port, () => console.log(`Listening to port ${port}...`));
 
-// pool.open();
+pool.open();
 https.createServer(options, app, function (req, res) {
     res.statusCode = 200;
   }).listen(3001);
