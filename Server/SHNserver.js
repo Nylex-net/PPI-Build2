@@ -102,7 +102,7 @@ app.use(cors());
 
 // Gets all Employees.
 app.get('/', (req, res) => {
-    const query = 'SELECT * FROM Staff WHERE Active = 1 ORDER BY last';
+    const query = 'SELECT * FROM Staff WHERE Active = 1 ORDER BY last;';
     const request = pool.request();
     request.query(query, (err, rows) => {
         if(err) {
@@ -130,8 +130,9 @@ app.get('/1', (req, res) => {
     //     res.send(JSON.stringify(error));
     //     // return callback(new Error("An error has occurred"));
     // })
-    const query = 'SELECT * FROM Keywords ORDER BY Keyword'
-    pool.query(query, (err, rows) => {
+    const query = 'SELECT * FROM Keywords ORDER BY Keyword;';
+    const request = pool.request();
+    request.query(query, (err, rows) => {
         if(err) {
             console.log("Error for entry ID: " + element.ID);
             console.error(err);
@@ -145,8 +146,9 @@ app.get('/1', (req, res) => {
 
 // Get all Profile codes.
 app.get('/2', (req, res) => {
-    const query = 'SELECT * FROM ProfileCodes ORDER BY Code'
-    pool.query(query, (err, rows) => {
+    const query = 'SELECT * FROM ProfileCodes ORDER BY Code;';
+    const request = pool.request();
+    request.query(query, (err, rows) => {
         if(err) {
             console.log("Error for entry ID: " + element.ID);
             console.error(err);
