@@ -163,9 +163,10 @@ function getUsers(num) {
             let myEmpl = response.json();
             return myEmpl; // returns to the ".then" statement's data below for processing.
         }).then(data => {
+            console.log(data);
             if(!data[0].hasOwnProperty("ID")) {
                 accessErr = true;
-                console.log(data);
+                // console.log(data);
                 throw error;
             }
 

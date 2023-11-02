@@ -111,7 +111,7 @@ app.get('/', (req, res) => {
             res.send(JSON.stringify(err));
         }
         else {
-            res.send(JSON.stringify(rows));
+            res.send(JSON.stringify(rows.recordset));
         }
     });
 });
@@ -139,7 +139,7 @@ app.get('/1', (req, res) => {
             res.send(JSON.stringify(err));
         }
         else {
-            res.send(JSON.stringify(rows));
+            res.send(JSON.stringify(rows.recordset));
         }
     });
 });
@@ -155,7 +155,7 @@ app.get('/2', (req, res) => {
             res.send(JSON.stringify(err));
         }
         else {
-            res.send(JSON.stringify(rows));
+            res.send(JSON.stringify(rows.recordset));
         }
     });
     // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
