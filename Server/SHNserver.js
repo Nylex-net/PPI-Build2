@@ -272,7 +272,7 @@ app.post('/result', jsonParser, (req, res) => {
             'prevailing_wage, agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, '+
             'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, '+
             'binder_size, binder_location, description_service, created'+
-            ') VALUES (' + '\''+ projnum + '\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
+            ') OUTPUT inserted.* VALUES (' + '\''+ projnum + '\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
             req.body.StartDate + '\', \''+ req.body.CloseDate +'\', \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
             '' + req.body.officeID + ', \''+ req.body.ServiceArea + '\', \''+ req.body.TotalContract +'\', '+ req.body.ServiceAgreement +', \''+ req.body.Retainer + '\', '+ req.body.RetainerPaid +', \''+ req.body.WaivedBy +'\', ' + req.body.ProfileCode +', '+
             req.body.ContractType +', \''+ req.body.InvoiceID + '\', \''+ req.body.ClientContractPONumber +'\', '+ req.body.OutsideMarkup +', ' + req.body.PREVAILING_WAGE + ', '+ (req.body.agency != 'NULL'?'\''+req.body.agency +'\'':req.body.agency) +', '+ (req.body.SpecialBillingInstructins != 'NULL'?'\''+ req.body.SpecialBillingInstructins + '\'':req.body.SpecialBillingInstructins) + ', ' + 
@@ -282,8 +282,8 @@ app.post('/result', jsonParser, (req, res) => {
             req.body.PhoneW1 + '\', ' +(req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
             req.body.DescriptionService + '\', \''+ myDate +'\'' +
             ')';
-
-    pool.query(query, (err, data) => {
+    const request = new pool.request();
+    request.query(query, (err, data) => {
         if(err) {
             console.log("Error for query:\n" + query);
             console.error(err);
@@ -296,36 +296,37 @@ app.post('/result', jsonParser, (req, res) => {
             }
         }
         else {
-            pool.query("SELECT ID FROM Projects WHERE project_id = '"+ projnum +"'", (error, ID) => {
-                if(error) {
-                    console.log("Cannot get Project ID for " + projnum);
-                    console.error(error);
-                    try{
-                        res.send(JSON.stringify(error));
-                        createTicket(err, "Cannot get Project ID for " + projnum);
+            // pool.query("SELECT ID FROM Projects WHERE project_id = '"+ projnum +"'", (error, ID) => {
+            //     if(error) {
+            //         console.log("Cannot get Project ID for " + projnum);
+            //         console.error(error);
+            //         try{
+            //             res.send(JSON.stringify(error));
+            //             createTicket(err, "Cannot get Project ID for " + projnum);
+            //         }
+            //         catch(OhNo) {
+            //             console.log("Could not send back error response for project " + projnum);
+            //         }
+            //     }
+            const result = data.recordset[0];
+            console.log(data.recordset);
+                let teamArr = req.body.TeamMembers.split(',');
+                let teamQuery = '';
+                teamArr.forEach((memb) => {
+                    teamQuery += "INSERT INTO ProjectTeam VALUES ("+result.ID+", "+memb+");"
+                });
+                let keyArr = req.body.KeyIDs.split(',');
+                keyArr.forEach((key) => {
+                    teamQuery += "INSERT INTO ProjectKeywords VALUES ("+result.ID+", "+key+");"
+                });
+                request.query(teamQuery, (uwu) => {
+                    if(uwu) {
+                        console.log("Error with query:\n" + teamQuery);
+                        console.error(uwu);
                     }
-                    catch(OhNo) {
-                        console.log("Could not send back error response for project " + projnum);
-                    }
-                }
-                else if(ID.length > 0) {
-                    let teamArr = req.body.TeamMembers.split(',');
-                    let teamQuery = '';
-                    teamArr.forEach((memb) => {
-                        teamQuery += "INSERT INTO ProjectTeam VALUES ("+ID[0].ID+", "+memb+");"
-                    });
-                    let keyArr = req.body.KeyIDs.split(',');
-                    keyArr.forEach((key) => {
-                        teamQuery += "INSERT INTO ProjectKeywords VALUES ("+ID[0].ID+", "+key+");"
-                    });
-                    pool.query(teamQuery, (uwu) => {
-                        if(uwu) {
-                            console.log("Error with query:\n" + teamQuery);
-                            console.error(uwu);
-                        }
-                    });
-                }
-            });
+                });
+            // });
+
             if(!fs.existsSync(dir)) {
                 fs.mkdir((dir), err => {
                     if(err){
@@ -433,12 +434,13 @@ app.post('/result', jsonParser, (req, res) => {
                     admins.push(admin);
                 }
                 // Get individual Project manager to notify.
-                pool.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr +' AND email IS NOT NULL AND email <> \'\'', (awNo, emails) => {
+                request.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr +' AND email IS NOT NULL AND email <> \'\'', (awNo, emails) => {
                     if(awNo) {
                         console.log('Could not query emails.  The following error occurred instead:\n' + awNo);
                         createTicket(awNo, "Project initiation email could not be sent:");
                     }
                     else {
+                        console.log(emails);
                         Object.entries(emails).forEach(email => {
                             if(!admins.includes(email[1].email + '@shn-engr.com') && email[1].email != undefined && email[1].email != 'undefined' && email[1].email != null && email[1].email != 'NULL') {
                                 admins.push(email[1].email + '@shn-engr.com');
