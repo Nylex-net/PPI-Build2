@@ -52,9 +52,9 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
  */
 
 // Directory for testing environment.
-process.chdir("U:\\Eureka\\Nylex\\test\\Mock_Drive");
 const PATH = "P:";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
+process.chdir(PATH);
 
 // create application/json parser
 var jsonParser = bodyParser.json();
@@ -282,7 +282,7 @@ app.post('/result', jsonParser, (req, res) => {
             req.body.PhoneW1 + '\', ' +(req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
             req.body.DescriptionService + '\', \''+ myDate +'\'' +
             ')';
-    const request = new pool.request();
+    const request = pool.request();
     request.query(query, (err, data) => {
         if(err) {
             console.log("Error for query:\n" + query);
