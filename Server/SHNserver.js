@@ -54,18 +54,18 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
 // Directory for testing environment.
 const PATH = "P:";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
-process.chdir(PATH);
+process.chdir(DEMO_PATH);
 
 // create application/json parser
 var jsonParser = bodyParser.json();
 
 // Connection Pool for Database.
 const pool = new sql.ConnectionPool({
-    user: jsonData.mssql.user,
-    password: jsonData.mssql.password,
-    server: jsonData.mssql.server,
-    database: jsonData.mssql.database,
-    options : jsonData.mssql.options
+    user: jsonData.mssqlPROD.user,
+    password: jsonData.mssqlPROD.password,
+    server: jsonData.mssqlPROD.server,
+    database: jsonData.mssqlPROD.database,
+    options : jsonData.mssqlPROD.options
     // pool: {
     //     idleTimeoutMills: 
     // }
