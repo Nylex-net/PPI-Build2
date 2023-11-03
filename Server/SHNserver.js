@@ -446,7 +446,7 @@ app.post('/result', jsonParser, (req, res) => {
                                 admins.push(email[1].email + '@shn-engr.com');
                             }
                         });
-                        // console.log(admins);
+                        console.log(admins);
                         // Finally, send out email notice.
                         // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     }
