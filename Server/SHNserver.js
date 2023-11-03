@@ -59,9 +59,7 @@ process.chdir(PATH);
 // create application/json parser
 var jsonParser = bodyParser.json();
 
-// String to connect to MSSQL.
-const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=Yes;Driver={ODBC Driver 17 for SQL Server}`;
-
+// Connection Pool for Database.
 const pool = new sql.ConnectionPool({
     user: jsonData.mssql.user,
     password: jsonData.mssql.password,
