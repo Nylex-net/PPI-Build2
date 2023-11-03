@@ -11,11 +11,11 @@ const keyMap = new Map();
 let request;
 
 const pool = new sql.ConnectionPool({
-    user: jsonData.mssql.user,
-    password: jsonData.mssql.password,
-    server: jsonData.mssql.server,
-    database: jsonData.mssql.database,
-    options : jsonData.mssql.options,
+    user: jsonData.mssqlPROD.user,
+    password: jsonData.mssqlPROD.password,
+    server: jsonData.mssqlPROD.server,
+    database: jsonData.mssqlPROD.database,
+    options : jsonData.mssqlPROD.options,
     requestTimeout: 600000
     // pool: {
     //     idleTimeoutMills: 
