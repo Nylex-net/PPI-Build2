@@ -294,18 +294,8 @@ app.post('/result', jsonParser, (req, res) => {
             }
         }
         else {
-            // pool.query("SELECT ID FROM Projects WHERE project_id = '"+ projnum +"'", (error, ID) => {
-            //     if(error) {
-            //         console.log("Cannot get Project ID for " + projnum);
-            //         console.error(error);
-            //         try{
-            //             res.send(JSON.stringify(error));
-            //             createTicket(err, "Cannot get Project ID for " + projnum);
-            //         }
-            //         catch(OhNo) {
-            //             console.log("Could not send back error response for project " + projnum);
-            //         }
-            //     }
+
+            // Update Team and Keywords tables to link to Project.
             const result = data.recordset[0];
             console.log(data.recordset);
                 let teamArr = req.body.TeamMembers.split(',');
@@ -548,7 +538,7 @@ app.post('/promo', jsonParser, (req, res) => {
     'SHNOffice_ID, service_area, profile_code_id, client_company, client_abbreviation, '+
     'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, '+
     'binder_size, description_service, created'+
-    ') VALUES (0, NULL,' + '\''+ projnum + '\', \''+req.body.AlternateTitle+'\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
+    ') OUTPUT inserted.* VALUES (0, NULL,' + '\''+ projnum + '\', \''+req.body.AlternateTitle+'\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
     req.body.StartDate + '\', \''+ req.body.CloseDate +'\', \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
     '' + req.body.officeID + ', \''+ req.body.ServiceArea + '\', '+ req.body.ProfileCode + ', \'' +
     req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL'?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
@@ -556,9 +546,9 @@ app.post('/promo', jsonParser, (req, res) => {
     req.body.PhoneW1 + '\', ' + (req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', \''+
     req.body.DescriptionService + '\', \''+ myDate +'\'' +
     ')';
-
+    const request = pool.request();
     // Execute query.
-    pool.query(query, (error, data) => {
+    request.query(query, (error, data) => {
         // Start creating Promo directories.
         if(error) {
             console.log(query);
@@ -572,36 +562,26 @@ app.post('/promo', jsonParser, (req, res) => {
             }
         }
         else {
-            pool.query("SELECT ID FROM Promos WHERE promo_id = '"+ projnum +"'", (error, ID) => {
-                if(error) {
-                    console.log("Cannot get Promo ID for " + projnum);
-                    console.error(error);
-                    try{
-                        // res.send(JSON.stringify(error));
-                        createTicket(err, "Cannot get Promo ID for " + projnum);
-                    }
-                    catch(OhNo) {
-                        console.log("Could not send back error response for promo " + projnum);
-                    }
-                }
-                else if(ID.length > 0) {
-                    let teamArr = req.body.TeamMembers.split(',');
-                    let teamQuery = '';
-                    teamArr.forEach((memb) => {
-                        teamQuery += "INSERT INTO PromoTeam VALUES ("+ID[0].ID+", "+memb+");"
-                    });
-                    let keyArr = req.body.KeyIDs.split(',');
-                    keyArr.forEach((key) => {
-                        teamQuery += "INSERT INTO PromoKeywords VALUES ("+ID[0].ID+", "+key+");"
-                    });
-                    pool.query(teamQuery, (uwu) => {
-                        if(uwu) {
-                            console.log("Error with query:\n" + teamQuery);
-                            console.error(uwu);
-                        }
-                    });
+
+            // Update Team and Keywords tables to link to Promo.
+            const result = data.recordset[0];
+            console.log(data.recordset);
+            let teamArr = req.body.TeamMembers.split(',');
+            let teamQuery = '';
+            teamArr.forEach((memb) => {
+                teamQuery += "INSERT INTO PromoTeam VALUES ("+result.ID+", "+memb+");"
+            });
+            let keyArr = req.body.KeyIDs.split(',');
+            keyArr.forEach((key) => {
+                teamQuery += "INSERT INTO PromoKeywords VALUES ("+result.ID+", "+key+");"
+            });
+            request.query(teamQuery, (uwu) => {
+                if(uwu) {
+                    console.log("Error with query:\n" + teamQuery);
+                    console.error(uwu);
                 }
             });
+
             if(!fs.existsSync(dir)) {
                 fs.mkdir((dir), err => {
                     if(err){
@@ -713,9 +693,9 @@ app.post('/promo', jsonParser, (req, res) => {
                         createTicket(awNo, "Project initiation email could not be sent:");
                     }
                     else {
-                        Object.entries(emails).forEach(email => {
-                            if(!admins.includes(email[1].email + '@shn-engr.com') && email[1].email != undefined && email[1].email != 'undefined' && email[1].email != null && email[1].email != 'NULL') {
-                                admins.push(email[1].email + '@shn-engr.com');
+                        emails.recordset.forEach(email => {
+                            if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
+                                admins.push(email.email + '@shn-engr.com');
                             }
                         });
                         // Finally, send out email notice.
@@ -731,12 +711,11 @@ app.post('/promo', jsonParser, (req, res) => {
 
 /**
  * Gets IDs of the keywords by keyword names.
- * It assumes keywords wil be sent in a string format, where the keywords are separated with " || ".
- * Older project don't always conform to this separation.
  */
 
-app.post('/keyName', jsonParser, (req, res) => { // MA BOI LEFT OFF HERE
-    pool.query("SELECT * FROM ProjectKeywords WHERE project_id = " + req.body.project, (err, data) => {
+app.post('/keyName', jsonParser, (req, res) => {
+    const request = pool.request();
+    request.query("SELECT * FROM ProjectKeywords WHERE project_id = " + req.body.project, (err, data) => {
         if(err) {
             console.error(err);
             res.send(JSON.stringify(err));
@@ -749,7 +728,6 @@ app.post('/keyName', jsonParser, (req, res) => { // MA BOI LEFT OFF HERE
 
 /**
  * API to convert a promo to a project.
- * To be real with ya, SHN doesn't seem to care enough about this functionality.
  */
 
 app.post('/ProjPromo', jsonParser, (req, res) => {
@@ -843,8 +821,9 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             (req.body.ClientRelation != 'NULL'?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL' && req.body.Address2_1!=null?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
             req.body.PhoneW1 + '\', ' + (req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
             req.body.DescriptionService + '\', \''+ myDate +'\')';
-    // console.log('Project Number is ' + req.body.ProjectNumber + ', and Description is ' + req.body.Description);
-    pool.query(query, (err, memes) => { // MEMES >:)
+    
+    const request = pool.request();
+    request.query(query, (err, memes) => { // MEMES >:)
         if(err) {
             // console.log(query);
             console.error("promo query error:\n" + err);
