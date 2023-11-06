@@ -1,6 +1,7 @@
 // npm libraries.
 'use strict';
-const msnodesqlv8 = require('msnodesqlv8');
+// const msnodesqlv8 = require('msnodesqlv8');
+const sql = require('mssql');
 const express = require('express');
 const fileUpload = require('express-fileupload');
 // const cluster = require('cluster');
@@ -47,19 +48,35 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
     }
 });
 
-// String to connect to MSSQL.
-const connectionString = `server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=Yes;Driver={ODBC Driver 17 for SQL Server}`;
-
-const pool = new msnodesqlv8.Pool({
-    connectionString: connectionString
+// Connection Pool for Database.
+const pool = new sql.ConnectionPool({
+    user: jsonData.mssqlPROD.user,
+    password: jsonData.mssqlPROD.password,
+    server: jsonData.mssqlPROD.server,
+    database: jsonData.mssqlPROD.database,
+    options : jsonData.mssqlPROD.options
+    // pool: {
+    //     idleTimeoutMills: 
+    // }
 });
-pool.on('open', (options) => {
-    console.log(`ready options = ${JSON.stringify(options, null, 4)}`)
-  });
-  pool.on('error', e => {
-    console.log(e)
+
+// Function to establish a new connection
+async function establishConnection() {
+    try {
+      await pool.connect();
+      console.log('Connection established.');
+    } catch (err) {
+      console.error('Error establishing connection:', err);
+    }
+}
+
+  pool.on('requestTimeout', (err) => {
+    console.error('Connection timed out:', err);
+    console.log('Reinitiating the connection...');
+    establishConnection();
   });
 
+establishConnection();
 // projects API returns the project info in projects, plus the first and last name of the Project Manager.
 
 app.post('/projects', jsonParser, (req, res) => {
