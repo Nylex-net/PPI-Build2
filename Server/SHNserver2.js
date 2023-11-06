@@ -80,7 +80,8 @@ establishConnection();
 // projects API returns the project info in projects, plus the first and last name of the Project Manager.
 
 app.post('/projects', jsonParser, (req, res) => {
-    pool.query('SELECT Projects.*, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id LIKE \'%'+req.body.projID+'%\' ORDER BY Projects.project_id, Staff.last, Staff.first, Projects.client_company, Projects.project_title, Projects.description_service;', (err, data) => {
+    const request = pool.request();
+    request.query('SELECT Projects.*, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id LIKE \'%'+req.body.projID+'%\' ORDER BY Projects.project_id, Staff.last, Staff.first, Projects.client_company, Projects.project_title, Projects.description_service;', (err, data) => {
         if(err) {
             console.error(err);
             res.send(JSON.stringify(err));
@@ -88,7 +89,7 @@ app.post('/projects', jsonParser, (req, res) => {
         else {
             const result = new Array();
             result.push(data);
-            pool.query('SELECT Promos.*, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_id = Staff.ID WHERE Promos.promo_id LIKE \'%'+req.body.projID+'%\' ORDER BY Promos.promo_id, Staff.last, Staff.first, Promos.client_company, Promos.promo_title, Promos.description_service;', (error, homo) => {
+            request.query('SELECT Promos.*, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_id = Staff.ID WHERE Promos.promo_id LIKE \'%'+req.body.projID+'%\' ORDER BY Promos.promo_id, Staff.last, Staff.first, Promos.client_company, Promos.promo_title, Promos.description_service;', (error, homo) => {
                 if(error) {
                     console.error(error);
                     res.send(JSON.stringify(error));
