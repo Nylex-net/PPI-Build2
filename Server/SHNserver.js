@@ -439,9 +439,9 @@ app.post('/result', jsonParser, (req, res) => {
                     }
                     else {
                         console.log(emails);
-                        Object.entries(emails).forEach(email => {
-                            if(!admins.includes(email[1].email + '@shn-engr.com') && email[1].email != undefined && email[1].email != 'undefined' && email[1].email != null && email[1].email != 'NULL') {
-                                admins.push(email[1].email + '@shn-engr.com');
+                        emails.recordset.forEach(email => {
+                            if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
+                                admins.push(email.email + '@shn-engr.com');
                             }
                         });
                         console.log(admins);
