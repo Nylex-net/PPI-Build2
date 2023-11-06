@@ -61,6 +61,7 @@ let homePhoneInput;
 let cellPhoneInput;
 let faxInput;
 
+const HOST = 'e-dt-usertest';
 /*
 Functions to be called when fields are needed.
 This was to keep from having to manually insert too much html labels and input fields
@@ -219,7 +220,7 @@ function preparePost() {
     const jsonString = JSON.parse(JSON.stringify(sql));
 
     var xhr = new XMLHttpRequest();
-    var url = "https://e-hv-ppi.shn-engr.com:3000/promo";
+    var url = "https://"+HOST+".shn-engr.com:3000/promo";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onerror = function(e) {
@@ -319,7 +320,7 @@ function getUsers(num) {
     let accessErr = false;
     // If-statements are to determine which page is making the call.
     if(num == 1) { // for page1()
-        fetch("https://e-hv-ppi.shn-engr.com:3000").then(response => { // Makes a call for employees.
+        fetch("https://"+HOST+".shn-engr.com:3000").then(response => { // Makes a call for employees.
             let myEmpl = response.json();
             return myEmpl; // returns to the ".then" statement's data below for processing.
         }).then(data => {
@@ -441,7 +442,7 @@ function getUsers(num) {
         });
     }
     else if(num == 2) { // for page2()
-        fetch("https://e-hv-ppi.shn-engr.com:3000/1").then(response => { // Makes a call for keywords.
+        fetch("https://"+HOST+".shn-engr.com:3000/1").then(response => { // Makes a call for keywords.
             let myKeys = response.json();
             return myKeys; // returns to the ".then" statement's data below for processing.
         }).then(data => {
@@ -513,7 +514,7 @@ function getUsers(num) {
         });
     }
     else if(num == 3) { // for page3()
-        fetch("https://e-hv-ppi.shn-engr.com:3000/2").then(response => { // Makes a call for profile codes.
+        fetch("https://"+HOST+".shn-engr.com:3000/2").then(response => { // Makes a call for profile codes.
             let myCodes = response.json();
             return myCodes; // returns to the ".then" statement's data below for processing.
         }).then(data => {

@@ -1077,19 +1077,20 @@ app.post('/search', jsonParser, (req, res) => {
 app.post('/billMe', jsonParser, (req, res) => {
     // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
     // console.log('Project Number is ' + req.body.ProjectNumber + ', and Description is ' + req.body.Description);
-    pool.query('SELECT Projects.*, Staff.ID AS staff_id, Staff.first AS staff_first, Staff.last AS staff_last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id = \''+ req.body.ProjectNumber +'\'', (error, data) => {
+    const request = pool.request();
+    request.query('SELECT Projects.*, Staff.ID AS staff_id, Staff.first AS staff_first, Staff.last AS staff_last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id = \''+ req.body.ProjectNumber +'\'', (error, data) => {
         if(error) {
             console.log(error);
             res.send(JSON.stringify(error));
         }
-        else if(data.length > 0) {
-            let result = data;
-            pool.query("SELECT * FROM BillingGroups WHERE project_ID = " + data[0].ID + " ORDER BY group_number", (err, billing) => {
+        else if(data.recordset.length > 0) {
+            let result = data.recordset;
+            request.query("SELECT * FROM BillingGroups WHERE project_ID = " + data[0].ID + " ORDER BY group_number", (err, billing) => {
                 if(err) {
                     console.error(err);
                 }
-                else if (billing.length > 0){
-                    result.push(billing);
+                else if (billing.recordset.length > 0){
+                    result.push(billing.recordset);
                     // console.log(result);
                 }
                 res.send(JSON.stringify(result));
@@ -1108,13 +1109,14 @@ app.post('/billMe', jsonParser, (req, res) => {
  */
 
 app.post('/mgrs', jsonParser, (req, res) => {
-    pool.query("SELECT member_id FROM ProjectTeam WHERE project_id = " + req.body.id, (err, data) => {
+    const request = pool.request();
+    request.query("SELECT member_id FROM ProjectTeam WHERE project_id = " + req.body.id, (err, data) => {
         if(err) {
             console.error(err);
             res.send(JSON.stringify(err));
         }
         else {
-            res.send(JSON.stringify(data));
+            res.send(JSON.stringify(data.recordset));
         }
     });
 })
@@ -1155,17 +1157,36 @@ app.post('/submitBill', jsonParser, (req, res) => {
     const query = "INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, group_location, "+
     "latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, "+
     "prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service)"+
-    " VALUES ("+req.body.ProjectID+", '"+req.body.BillingNum+"', '"+req.body.BillingName+"', "+req.body.AutoCAD_Project+", "+ req.body.GIS_Project+", "+req.body.NewMgr+", "+req.body.QAQC+", '"+myDate+
+    " OUTPUT inserted.* VALUES ("+req.body.ProjectID+", '"+req.body.BillingNum+"', '"+req.body.BillingName+"', "+req.body.AutoCAD_Project+", "+ req.body.GIS_Project+", "+req.body.NewMgr+", "+req.body.QAQC+", '"+myDate+
     "', '"+ req.body.StartDate +"', '"+ req.body.CloseDate +"', '"+ req.body.ProjectLocation +"', "+ req.body.Latitude +", "+ req.body.Longitude +", "+ (req.body.ServiceArea == "NULL"?"NULL":"'"+req.body.ServiceArea+"'") +", "+ req.body.TotalContract +", '"+
     req.body.Retainer +"', "+(req.body.RetainerPaid == "NULL" || isNaN(req.body.RetainerPaid) ?"NULL":req.body.RetainerPaid)+", "+(req.body.waiver == "NULL"?req.body.waiver:"'"+req.body.waiver+"'")+", "+req.body.ProfileCode+", "+req.body.ContractType+", '"+
     req.body.InvoiceFormat+"', '"+req.body.ClientContractPONumber+"', "+ req.body.OutsideMarkup +", "+req.body.PREVAILING_WAGE+", "+(req.body.agency == "NULL"?"NULL":"'"+req.body.agency+"'")+", "+
     (req.body.SpecialBillingInstructins == "NULL"?"NULL":"'"+req.body.SpecialBillingInstructins+"'") + ", "+ (req.body.BinderSize == "NULL"?"NULL":req.body.BinderSize) +", '"+req.body.DescriptionService+"');";
-    pool.query(query, (error, foo) => {
+
+    const request = pool.request();
+    request.query(query, (error, result) => {
         if(error) {
             console.error(error);
             res.send(JSON.stringify(error));
         }
         else {
+            // Add Billing group team and keywords.
+            let teamArr = req.body.TeamMembers.split(',');
+            let teamQuery = '';
+            teamArr.forEach((memb) => {
+                teamQuery += "INSERT INTO ProjectTeam VALUES ("+result.recordset[0].ID+", "+memb+");"
+            });
+            let keyArr = req.body.KeyIDs.split(',');
+            keyArr.forEach((key) => {
+                teamQuery += "INSERT INTO ProjectKeywords VALUES ("+result.recordset[0].ID+", "+key+");"
+            });
+            teamQuery += "UPDATE Promos SET is_project = 1, proj_ID = " + result.recordset[0].ID + " WHERE ID = " + req.body.ID + ";"
+            request.query(teamQuery, (uwu) => {
+                if(uwu) {
+                    console.log("Error with query:\n" + teamQuery);
+                    console.error(uwu);
+                }
+            });
             if(fs.existsSync(dir)) {
                 dir += '/' + req.body.BillingNum + '-' + removeSpace(removeEscapeQuote(req.body.BillingName));
                 if(!fs.existsSync(dir)) {

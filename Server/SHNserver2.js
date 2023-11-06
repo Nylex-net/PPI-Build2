@@ -441,7 +441,7 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', ';
         query += 'project_manager_ID = '+ req.body.project_manager_ID + ', ';
         query += 'project_location = \''+ req.body.project_location.replace(/'/gi, "''") + '\', ';
-        // query += 'closed = ' + req.body.closed + ', ';
+        query += 'project_type = ' + req.body.project_type + ', ';
         query += 'SHNOffice_ID = ' + req.body.SHNOffice_ID + ', ';
         query += 'total_contract = ' + (req.body.total_contract == 'NULL' || req.body.total_contract == null ? 'NULL':req.body.total_contract) + ', ';
         query += 'exempt_agreement = ' + req.body.exempt_agreement + ', ';

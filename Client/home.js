@@ -51,6 +51,8 @@ let GIS = false;
 let binderSize = 'NA';
 let descOfServ = ''; // required
 
+const HOST = 'e-dt-usertest';
+
 function findProjects() {
     const projectNumber = document.getElementById('billGrp').value.trim();
     if(projectNumber.length > 15 || projectNumber == '') {
@@ -60,7 +62,7 @@ function findProjects() {
     const jsonString = JSON.parse(JSON.stringify('{"ProjectNumber":"'+ projectNumber +'"}'));
 
     var xhr = new XMLHttpRequest();
-    var url = "https://e-hv-ppi.shn-engr.com:3000/billMe";
+    var url = "https://"+HOST+".shn-engr.com:3000/billMe";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onerror = function(e) {
@@ -151,7 +153,7 @@ function billForm() {
 
     document.getElementById('results').innerHTML = "Loading form...";
     var xhr = new XMLHttpRequest();
-    var url = "https://e-hv-ppi.shn-engr.com:3000/mgrs";
+    var url = "https://"+HOST+".shn-engr.com:3000/mgrs";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onerror = function(e) {
@@ -205,7 +207,7 @@ function billForm() {
 }
 
 async function getKeyIDs() {
-    await fetch("https://e-hv-ppi.shn-engr.com:3000/keyName", {
+    await fetch("https://"+HOST+".shn-engr.com:3000/keyName", {
         method: "POST",
         mode: "cors",
         headers: {
@@ -823,7 +825,7 @@ function getUsers(num) {
     let accessErr = false;
     // If-statements are to determine which page is making the call.
     if(num == 1) { // for page1()
-        fetch("https://e-hv-ppi.shn-engr.com:3000").then(response => { // Makes a call for employees.
+        fetch("https://"+HOST+".shn-engr.com:3000").then(response => { // Makes a call for employees.
             let myEmpl = response.json();
             return myEmpl; // returns to the ".then" statement's data below for processing.
         }).then(data => {
@@ -945,7 +947,7 @@ function getUsers(num) {
         });
     }
     else if(num == 2) { // for page2()
-        fetch("https://e-hv-ppi.shn-engr.com:3000/1").then(response => { // Makes a call for keywords.
+        fetch("https://"+HOST+".shn-engr.com:3000/1").then(response => { // Makes a call for keywords.
             let myKeys = response.json();
             return myKeys; // returns to the ".then" statement's data below for processing.
         }).then(data => {
@@ -1017,7 +1019,7 @@ function getUsers(num) {
         });
     }
     else if(num == 3) { // for page3()
-        fetch("https://e-hv-ppi.shn-engr.com:3000/2").then(response => { // Makes a call for profile codes.
+        fetch("https://"+HOST+".shn-engr.com:3000/2").then(response => { // Makes a call for profile codes.
             let myCodes = response.json();
             return myCodes; // returns to the ".then" statement's data below for processing.
         }).then(data => {
@@ -1095,8 +1097,8 @@ function fillAfterLoad(currPage) {
         // For-loops to select the checkboxes from previous user selections, if any.
         // The loops tests checkboxes based on the checkbox IDs stored in variable teamMem.
         
-        for(memb of teamMem) {
-            for(selects of prevSelects) {
+        for(let memb of teamMem) {
+            for(let selects of prevSelects) {
                 if(memb == selects.id) {
                     document.getElementById(selects.id).checked = true;
                     break;
@@ -1113,8 +1115,8 @@ function fillAfterLoad(currPage) {
         // For-loops to select the checkboxes from previous user selections, if any.
         // The loops tests checkboxes based on the checkbox IDs stored in variable Projkeywords.
         
-        for(check of Projkeywords) {
-            for(ischeck of nuts) {
+        for(let check of Projkeywords) {
+            for(let ischeck of nuts) {
                 if(check == ischeck.id) {
                     document.getElementById(ischeck.id).checked = true;
                     break;
@@ -1175,6 +1177,7 @@ function submitBilling() {
         '"Latitude":"'+ format(latitude) + '",' +
         '"Longitude":"'+ format(longitude) + '",' +
         '"ProjectKeywords":"'+ teamString(keyNames) + ','+ format(myNames) + '",' +
+        '"KeyIDs":"'+ Projkeywords + '",' +
         '"ProfileCode":"'+ profCode + '",' +
         '"ProfileCodeName":"'+ format(profCodeName) + '",' +
         '"ContractType":"'+ contactType + '",' +
@@ -1201,7 +1204,7 @@ function submitBilling() {
     document.getElementById('submitter').innerHTML = "Submitting";
 
     var xhr = new XMLHttpRequest();
-    var url = "https://e-hv-ppi.shn-engr.com:3000/submitBill";
+    var url = "https://"+HOST+".shn-engr.com:3000/submitBill";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onerror = function(e) {

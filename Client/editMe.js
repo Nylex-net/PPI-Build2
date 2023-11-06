@@ -29,6 +29,7 @@ let homePhoneInput;
 let cellPhoneInput;
 let faxInput;
 
+const HOST = 'e-dt-usertest';
 /**
  * Loads the first page.
  */
@@ -61,7 +62,7 @@ async function starter(res) {
 }
 
 async function verify(id) {
-    const response = await fetch('https://e-hv-ppi.shn-engr.com:3001/verify', {
+    const response = await fetch('https://'+HOST+'.shn-engr.com:3001/verify', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -72,7 +73,7 @@ async function verify(id) {
 }
 
 async function fetchInfo() {
-    const response = await fetch('https://e-hv-ppi.shn-engr.com:3001/getMe', {
+    const response = await fetch('https://'+HOST+'.shn-engr.com:3001/getMe', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -130,6 +131,7 @@ function manager(currPage) {
             document.getElementById("office").value = userData[0].SHNOffice_ID;
             document.getElementById('contract').value = userData[0].total_contract;
             document.getElementById('yesAgreement').checked = (userData[0].exempt_agreement == 1)?true:false;
+            
             if(document.getElementById('yesAgreement').checked) {
                 expandWhy();
                 document.getElementById('bruh').value = userData[0].why;
@@ -147,6 +149,13 @@ function manager(currPage) {
             }
             else {
                 document.getElementById('retainer').value = (userData[0].retainer.includes("Existing Client")?"Existing Client":(userData[0].retainer.includes("Exempt")?"Exempt Public Client":0));
+            }
+
+            if(userData[0].project_type == 1) {
+                document.getElementById('conf').checked = true;
+            }
+            else if(userData[0].project_type == 2) {
+                document.getElementById('nda').checked = true;
             }
         }
         else if (isBillingGroup) {
@@ -601,7 +610,8 @@ function getPage(num) {
             '<div class="grid-item"><label for="projExempt">Is this project exempt from having a Service Agreement?<span class="astrick">*</span></label></div><div class="grid-item"><input type="radio" name="projExempt" id="yesAgreement" value="Yes" title="projExempt" onchange="expandWhy()">Yes<input type="radio" name="projExempt" value="No" title="projExempt" onchange="expandWhy()" checked>No<div id="justWhy"></div></div>'+
             '<div class="grid-item"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
             '<div class="grid-item"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
-            '<div class="grid-item"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="grid-item" id="codeFill">Loading profile codes...</div>'
+            '<div class="grid-item"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="grid-item" id="codeFill">Loading profile codes...</div>'+
+            '<div class="col-lg-4"><label for="projectType">Project Type</label></div><div class="col-lg-8"><input type="radio" id="NahBruh" name="projectType" value="0" title="NA" checked> None   <input type="radio" id="conf" name="projectType" value="1" title="gis"> Confidential  <input type="radio" name="projectType" id="nda" value="2" title="nda"> NDA    </div>'
             +'</div>';
         }
         else if(isBillingGroup) {
@@ -977,6 +987,8 @@ function getPage(num) {
         + '<div class="grid-item">' + waiver + '</div>'+
         '<div class="grid-item">Profile Code' + '</div>'
         + '<div class="grid-item">' + profCodeName + '</div>'+
+        '<div class="grid-item">Project Type' + '</div>'
+        + '<div class="grid-item">' + (userData[0].project_type == 0?'N/A':(userData[0].project_type == 1?'Confidential':'NDA')) + '</div>'+
         '<div class="grid-item">Contract Type' + '</div>'
         + '<div class="grid-item">' + contactTypeName + '</div>'+
         '<div class="grid-item">Invoice Format' + '</div>'
@@ -1050,7 +1062,7 @@ function getUsers(num) {
     let accessErr = false;
     // If-statements are to determine which page is making the call.
     if(num == 1) { // for page1()
-        fetch("https://e-hv-ppi.shn-engr.com:3000").then(response => { // Makes a call for employees.
+        fetch("https://"+HOST+".shn-engr.com:3000").then(response => { // Makes a call for employees.
             let myEmpl = response.json();
             return myEmpl; // returns to the ".then" statement's data below for processing.
         }).then(data => {
@@ -1172,7 +1184,7 @@ function getUsers(num) {
         });
     }
     else if(num == 2) { // for page2()
-        fetch("https://e-hv-ppi.shn-engr.com:3000/1").then(response => { // Makes a call for keywords.
+        fetch("https://"+HOST+".shn-engr.com:3000/1").then(response => { // Makes a call for keywords.
             let myKeys = response.json();
             return myKeys; // returns to the ".then" statement's data below for processing.
         }).then(data => {
@@ -1244,7 +1256,7 @@ function getUsers(num) {
         });
     }
     else if(num == 3) { // for page3()
-        fetch("https://e-hv-ppi.shn-engr.com:3000/2").then(response => { // Makes a call for profile codes.
+        fetch("https://"+HOST+".shn-engr.com:3000/2").then(response => { // Makes a call for profile codes.
             let myCodes = response.json();
             return myCodes; // returns to the ".then" statement's data below for processing.
         }).then(data => {
@@ -1416,6 +1428,7 @@ function saveChoices(currPage) {
                     Explanation = document.getElementById('bruh').value.trim();
                     userData[0].why = document.getElementById('bruh').value.trim();
                 }
+                userData[0].project_type = (document.getElementById('conf').checked?1:(document.getElementById('nda').checked?2:0));
             }
             else {
                 userData[0].contract_ID = document.getElementById('contactType').value;
@@ -2006,7 +2019,7 @@ function preparePost() {
     let buttonboi = (isProject)?7:6;
     document.getElementById('sending').innerHTML = '<p id="submitStat">Submitting...</p>';
     var xhr = new XMLHttpRequest();
-    var url = "https://e-hv-ppi.shn-engr.com:3001/updater";
+    var url = "https://"+HOST+".shn-engr.com:3001/updater";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
