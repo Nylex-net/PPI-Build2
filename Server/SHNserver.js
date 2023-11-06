@@ -808,14 +808,14 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
     let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
     const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, closed, start_date, close_date, project_location, latitude, longitude, ' +
-            'SHNOffice_ID, service_area, total_contract, exempt_agreement, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup,'+
+            'SHNOffice_ID, service_area, total_contract, exempt_agreement, retainer, retainer_paid, waived_by, profile_code_id, project_type, contract_ID, invoice_format, client_contract_PO, outside_markup,'+
             'prevailing_wage, agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, '+
             'first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, '+
             'binder_size, binder_location, description_service, created'+
-            ') VALUES (' + '\''+ projnum + '\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
+            ') OUTPUT inserted.* VALUES (' + '\''+ projnum + '\', \''+ req.body.ProjectTitle + '\', ' + req.body.ProjectMgr + ', ' + req.body.QA_QCPerson + ', 0, \''+
             req.body.StartDate + '\', \''+ req.body.CloseDate +'\', \''+ req.body.ProjectLocation +'\', '+req.body.Latitude +', '+req.body.Longitude +', '+
             '' + req.body.officeID + ', \''+ req.body.ServiceArea + '\', \''+ req.body.TotalContract +'\', '+ req.body.ServiceAgreement +', \''+ req.body.Retainer + '\', '+ req.body.RetainerPaid +', '+ (req.body.WaivedBy != "NULL"?"'"+req.body.WaivedBy+"'":"NULL") +', ' + req.body.ProfileCode +', '+
-            req.body.ContractType +', \''+ req.body.InvoiceID + '\', \''+ req.body.ClientContractPONumber +'\', '+ req.body.OutsideMarkup +', ' + req.body.PREVAILING_WAGE + ', '+ (req.body.agency != 'NULL'?'\''+req.body.agency +'\'':req.body.agency) +', '+ (req.body.SpecialBillingInstructins != 'NULL'?'\''+ req.body.SpecialBillingInstructins + '\'':req.body.SpecialBillingInstructins) + ', ' + 
+            req.body.ProjectType + ', ' + req.body.ContractType +', \''+ req.body.InvoiceID + '\', \''+ req.body.ClientContractPONumber +'\', '+ req.body.OutsideMarkup +', ' + req.body.PREVAILING_WAGE + ', '+ (req.body.agency != 'NULL'?'\''+req.body.agency +'\'':req.body.agency) +', '+ (req.body.SpecialBillingInstructins != 'NULL'?'\''+ req.body.SpecialBillingInstructins + '\'':req.body.SpecialBillingInstructins) + ', ' + 
             (req.body.SEEALSO != 'NULL'?'\''+req.body.SEEALSO+'\'':req.body.SEEALSO) +', '+ req.body.AutoCAD_Project + ', '+ req.body.GIS_Project + ', ' + req.body.Project_Specifications + ', \'' +
             req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL' && req.body.ClientAbbrev1 != null?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', ' + (req.body.OfficeMailingLists1 != 'NULL'?'\''+req.body.OfficeMailingLists1 +'\'':req.body.OfficeMailingLists1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
             (req.body.ClientRelation != 'NULL'?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL' && req.body.Address2_1!=null?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
@@ -836,35 +836,21 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             }
         }
         else {
-            pool.query("SELECT ID FROM Projects WHERE project_id = '"+ projnum +"'", (error, ID) => {
-                if(error) {
-                    console.log("Cannot get Project ID for " + projnum);
-                    console.error(error);
-                    try{
-                        res.send(JSON.stringify(error));
-                        createTicket(err, "Cannot get Project ID for " + projnum);
-                    }
-                    catch(OhNo) {
-                        console.log("Could not send back error response for project " + projnum);
-                    }
-                }
-                else if(ID.length > 0) {
-                    let teamArr = req.body.TeamMembers.split(',');
-                    let teamQuery = '';
-                    teamArr.forEach((memb) => {
-                        teamQuery += "INSERT INTO ProjectTeam VALUES ("+ID[0].ID+", "+memb+");"
-                    });
-                    let keyArr = req.body.KeyIDs.split(',');
-                    keyArr.forEach((key) => {
-                        teamQuery += "INSERT INTO ProjectKeywords VALUES ("+ID[0].ID+", "+key+");"
-                    });
-                    teamQuery += "UPDATE Promos SET is_project = 1, proj_ID = " + ID[0].ID + " WHERE ID = " + req.body.ID + ";"
-                    pool.query(teamQuery, (uwu) => {
-                        if(uwu) {
-                            console.log("Error with query:\n" + teamQuery);
-                            console.error(uwu);
-                        }
-                    });
+            
+            let teamArr = req.body.TeamMembers.split(',');
+            let teamQuery = '';
+            teamArr.forEach((memb) => {
+                teamQuery += "INSERT INTO ProjectTeam VALUES ("+memes.recordset[0].ID+", "+memb+");"
+            });
+            let keyArr = req.body.KeyIDs.split(',');
+            keyArr.forEach((key) => {
+                teamQuery += "INSERT INTO ProjectKeywords VALUES ("+memes.recordset[0].ID+", "+key+");"
+            });
+            teamQuery += "UPDATE Promos SET is_project = 1, proj_ID = " + memes.recordset[0].ID + " WHERE ID = " + req.body.ID + ";"
+            request.query(teamQuery, (uwu) => {
+                if(uwu) {
+                    console.log("Error with query:\n" + teamQuery);
+                    console.error(uwu);
                 }
             });
             if(!fs.existsSync(dir)) {
@@ -976,14 +962,14 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                         admins.push(admin);
                     }
                     // Get individual Project manager to notify.
-                    pool.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr +' AND email IS NOT NULL', (awNo, emails) => {
+                    request.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr +' AND email IS NOT NULL', (awNo, emails) => {
                         if(awNo) {
                             console.log('Could not send email.  The following error occurred instead:\n' + awNo);
                         }
                         else {
-                            Object.entries(emails).forEach(email => {
-                                if(!admins.includes(email[1].email + '@shn-engr.com') && email[1].email != undefined && email[1].email != 'undefined' && email[1].email != null && email[1].email != 'NULL') {
-                                    admins.push(email[1].email + '@shn-engr.com');
+                            emails.recordset.forEach(email => {
+                                if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
+                                    admins.push(email.email + '@shn-engr.com');
                                 }
                             });
                         }
