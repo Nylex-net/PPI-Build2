@@ -926,7 +926,7 @@ app.post('/getPath', jsonParser, (req, res) => {
  * Verifies if the user logging into the edit page has the privileges to edit.
  */
 app.post('/verify', jsonParser, (req, res) => {
-    const query = 'SELECT * FROM Staff WHERE Active = 1 AND MS_account_ID = \'' + req.body.ID + '\';';
+    const query = 'SELECT * FROM Staff WHERE active = 1 AND MS_account_ID = \'' + req.body.ID + '\';';
     pool.query(query, (err, data) => {
         if(err) {
             console.error(err);
