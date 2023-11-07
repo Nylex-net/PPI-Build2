@@ -421,7 +421,7 @@ function getTextField(label, newID, value, required) { // i.e. getTextField('Pro
         myReq = 'required';
         myLabel = myLabel + '<span class="astrick">*</span>';
     }
-    return '<div class="grid-item"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="grid-item"><input type="text" id="'+ newID +'" name="'+ newID +'" maxlength="240" value="'+ value +'" '+ myReq +'></div>';
+    return '<div class="col-lg-4"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-lg-8"><input type="text" id="'+ newID +'" name="'+ newID +'" maxlength="240" value="'+ value +'" '+ myReq +'></div>';
 }
 
 // Inserts a Label and checkbox for the table-based format the form has.
@@ -448,7 +448,7 @@ function getNumberField(label, newID, value, step, min, max, required) {
     if(max != -1) {
         myMax = 'max="' + max + '"';
     }
-    return '<div class="grid-item"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="grid-item"><input type="number" id="'+ newID +'" name="'+ newID + myStep +' min="' + min + '" '+ myMax +' onkeypress="limit(this);" value="'+ value +'" '+ myReq +'></div>';
+    return '<div class="col-lg-4"><label for="'+ newID +'">'+ myLabel +'</label></div><div class="col-lg-8"><input type="number" id="'+ newID +'" name="'+ newID + myStep +' min="' + min + '" '+ myMax +' onkeypress="limit(this);" value="'+ value +'" '+ myReq +'></div>';
 }
 
 // limit(element) gets called by number fields to try preventing users from entering more than 45 numbers.
@@ -546,131 +546,131 @@ function fillCheck() {
 function getPage(num) {
     if(num === 1) {
         if(!isProject) {
-            return '<div class="grid-container">' + getTextField('Promo Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', userData[0].promo_title, true) +
-            '<div class="grid-item"><label for="promo-type">Type of Promo<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><select name="promo-type" id="promo-type" title="Promo" required><option value="" selected>-Select-</option><option value="on-going">On-going</option><option value="letter">Letter</option><option value="soq">SOQ</option><option value="ProPri">Proposal-Prime</option><option value="ProSub">Proposal-Sub</option></select></div>'+
-            '<div class="grid-item"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item" id="projFiller">Loading managers...</div>'+
-            '<div class="grid-item"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item" id="qaqcFill">Loading QA QC people...</div>'+
-            '<div class="grid-item"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
-            '<div class="grid-item" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
-            '<div class="grid-item"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="date" id="start" value="start" required></div>'+
-            '<div class="grid-item"><label for="end">Close Date<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="date" id="end" value="end" required></div>'
+            return '<div class="row">' + getTextField('Promo Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', userData[0].promo_title, true) +
+            '<div class="col-lg-4"><label for="promo-type">Type of Promo<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><select name="promo-type" id="promo-type" title="Promo" required><option value="" selected>-Select-</option><option value="on-going">On-going</option><option value="letter">Letter</option><option value="soq">SOQ</option><option value="ProPri">Proposal-Prime</option><option value="ProSub">Proposal-Sub</option></select></div>'+
+            '<div class="col-lg-4"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8" id="projFiller">Loading managers...</div>'+
+            '<div class="col-lg-4"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8" id="qaqcFill">Loading QA QC people...</div>'+
+            '<div class="col-lg-4"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
+            '<div class="col-lg-8" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
+            '<div class="col-lg-4"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><input type="date" id="start" value="start" required></div>'+
+            '<div class="col-lg-4"><label for="end">Close Date<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><input type="date" id="end" value="end" required></div>'
             +'</div>';
         }
         else if(isBillingGroup) {
-            return '<div class="grid-container">'+
-            '<div class="grid-item"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="text" id="newBillName" maxlength="255" required/></div>'+
-            '<div class="grid-item"><label for="autocad">AutoCAD Job</label></div><div class="grid-item"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
-            '<div class="grid-item"><label for="gis">GIS Job</label></div><div class="grid-item"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div>'+
-            '<div class="grid-item"><label for="projMgr">Group Manager<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item" id="projFiller">Loading managers...</div>'+
-            '<div class="grid-item"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item" id="qaqcFill">Loading QA QC people...</div>'+
-            '<div class="grid-item"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
-            '<div class="grid-item" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
-            '<div class="grid-item"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="date" id="start" value="start" required></div>'+
-            '<div class="grid-item"><label for="end">End Date<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="date" id="end" value="end" required></div>'+
+            return '<div class="row">'+
+            '<div class="col-lg-4"><label for="groupName">Billing Group Name<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><input type="text" id="newBillName" maxlength="255" required/></div>'+
+            '<div class="col-lg-4"><label for="autocad">AutoCAD Job</label></div><div class="col-lg-8"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
+            '<div class="col-lg-4"><label for="gis">GIS Job</label></div><div class="col-lg-8"><input type="radio" id="gis" name="gis" value="Yes" title="gis"> Yes<input type="radio" name="gis" value="No" title="gis" checked> No</div>'+
+            '<div class="col-lg-4"><label for="projMgr">Group Manager<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8" id="projFiller">Loading managers...</div>'+
+            '<div class="col-lg-4"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8" id="qaqcFill">Loading QA QC people...</div>'+
+            '<div class="col-lg-4"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
+            '<div class="col-lg-8" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
+            '<div class="col-lg-4"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><input type="date" id="start" value="start" required></div>'+
+            '<div class="col-lg-4"><label for="end">End Date<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><input type="date" id="end" value="end" required></div>'+
             '</div>';
         }
-        return '<div class="grid-container">' + getTextField((isBillingGroup?"Billing Group":"Project")+' Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', ((isBillingGroup)?userData[0].group_name:userData[0].project_title), true) +
-            '<div class="grid-item"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item" id="projFiller">Loading managers...</div>'+
-            '<div class="grid-item"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item" id="qaqcFill">Loading QA QC people...</div>'+
-            '<div class="grid-item"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
-            '<div class="grid-item" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
-            '<div class="grid-item"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="date" id="start" value="start" required></div>'+
-            '<div class="grid-item"><label for="end">End Date<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="date" id="end" value="end" required></div>'
+        return '<div class="row">' + getTextField((isBillingGroup?"Billing Group":"Project")+' Title<br>No special characters<br>(i.e. "#<>/\\$+%!`*\'|{}?=:@)', 'promo', ((isBillingGroup)?userData[0].group_name:userData[0].project_title), true) +
+            '<div class="col-lg-4"><label for="projMgr">Project Manager<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8" id="projFiller">Loading managers...</div>'+
+            '<div class="col-lg-4"><label for="qaqc">QA QC Person<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8" id="qaqcFill">Loading QA QC people...</div>'+
+            '<div class="col-lg-4"><label for="Team">Team Members<span class="astrick">*</span><br/>(Select at least one)</label><br/></div>'+
+            '<div class="col-lg-8" id="help"><div class="column" id="emplCol">Loading team members...</div></div>'+
+            '<div class="col-lg-4"><label for="start">Start Date<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><input type="date" id="start" value="start" required></div>'+
+            '<div class="col-lg-4"><label for="end">End Date<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><input type="date" id="end" value="end" required></div>'
             +'</div>';
     }
     else if(num === 2) {
-        return '<div class="grid-container">'+ getTextField('Project Street Address', 'LocDesc', ((isProject)?userData[0].project_location:((isBillingGroup)?userData[0].group_location:userData[0].promo_location)), true) +
+        return '<div class="row">'+ getTextField('Project Street Address', 'LocDesc', ((isProject)?userData[0].project_location:((isBillingGroup)?userData[0].group_location:userData[0].promo_location)), true) +
         getNumberField('Project Latitude<br/>(i.e. 40.868928)', 'lat', userData[0].latitude, -1, -90, 90, true) +
         getNumberField('Project Longitude<br/>(i.e. -123.988061)', 'long', userData[0].longitude, -1, -90, 90, true)
-        + '<div class="grid-item"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
-        '<div class="grid-item"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
+        + '<div class="col-lg-4"><label for="key">Project Keywords<span class="astrick">*</span><br/>(Must select at least one keyword and/or add an extra keyword)</label></div>'+
+        '<div class="col-lg-8"><div class="searchable" id="searchable"><label>Search Keywords: </label><input type="text" id="search" onkeyup="searchKeywords(this)"></div><div class = "column" id="keywords">Getting keywords...</div><br/><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey1" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey2" name="Otherkey" title="Otherkey" maxlength="255"><br/><label for="Otherkey">Other: </label><input type="text" id="Otherkey3" name="Otherkey" title="Otherkey" maxlength="255"></div>'
         +'</div>';
     }
     else if(num === 3) {
         if(isProject && !isBillingGroup) {
-            return '<div class="grid-container">'+
-            '<div class="grid-item"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="grid-item"><select name="office" id="office" title="Office Location" required><option value="">-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
-            '<div class="grid-item"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><select name="service" id="service" title="Service Area" required><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
+            return '<div class="row">'+
+            '<div class="col-lg-4"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="office" id="office" title="Office Location" required><option value="">-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
+            '<div class="col-lg-4"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><select name="service" id="service" title="Service Area" required><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
             getNumberField('Total Contract', 'contract', 'contract', 1, 0, -1, true) +
-            '<div class="grid-item"><label for="projExempt">Is this project exempt from having a Service Agreement?<span class="astrick">*</span></label></div><div class="grid-item"><input type="radio" name="projExempt" id="yesAgreement" value="Yes" title="projExempt" onchange="expandWhy()">Yes<input type="radio" name="projExempt" value="No" title="projExempt" onchange="expandWhy()" checked>No<div id="justWhy"></div></div>'+
-            '<div class="grid-item"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
-            '<div class="grid-item"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="grid-item" id="codeFill">Loading profile codes...</div>'+
+            '<div class="col-lg-4"><label for="projExempt">Is this project exempt from having a Service Agreement?<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="radio" name="projExempt" id="yesAgreement" value="Yes" title="projExempt" onchange="expandWhy()">Yes<input type="radio" name="projExempt" value="No" title="projExempt" onchange="expandWhy()" checked>No<div id="justWhy"></div></div>'+
+            '<div class="col-lg-4"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
+            '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'+
             '<div class="col-lg-4"><label for="projectType">Project Type</label></div><div class="col-lg-8"><input type="radio" id="NahBruh" name="projectType" value="0" title="NA" checked> None   <input type="radio" id="conf" name="projectType" value="1" title="gis"> Confidential  <input type="radio" name="projectType" id="nda" value="2" title="nda"> NDA    </div>'
             +'</div>';
         }
         else if(isBillingGroup) {
-            return '<div class="grid-container">' +
-            '<div class="grid-item"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="grid-item" id="codeFill">Loading profile codes...</div>'+
-            '<div class="grid-item"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
-            '<div class="grid-item"><label for="service">Service Area</label></div>'+
-            '<div class="grid-item"><select name="service" id="service" title="Service Area"><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
-            '<div class="grid-item"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
+            return '<div class="row">' +
+            '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'+
+            '<div class="col-lg-4"><label for="retainer">Retainer<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><select name="retainer" id="retainer" title="retainer" onchange="customAmount()" required><option value="0">-Select-</option><option value="Enter Amount">Enter Amount:</option><option value="Existing Client">Existing Client No Issues</option><option value="Exempt Public Client">Exempt Public Client</option><option value="Waived by X">Waived by X (Senior Personnel select)</option></select><p id="custAmount"></p></div>'+
+            '<div class="col-lg-4"><label for="service">Service Area</label></div>'+
+            '<div class="col-lg-8"><select name="service" id="service" title="Service Area"><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
+            '<div class="col-lg-4"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
             getNumberField('Total Contract', 'contract', 'contract', 1, 0, -1, false) +
-            '<div class="grid-item"><label for="invoiceFormat">Invoice Format</label></div><div class="grid-item"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
+            '<div class="col-lg-4"><label for="invoiceFormat">Invoice Format</label></div><div class="col-lg-8"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
             getTextField('Client Contract/PO #', 'PO', userData[0].client_contract_PO, false) +
-            '<div class="grid-item"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-            '<div class="grid-item"><label for="wage">Prevailing Wage</label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onchange="agentBruh();" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
-            '<div class="grid-item"><label for="billInst">Special Billing Instructions</label></div><div class="grid-item"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
-            '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
-            '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>' +
+            '<div class="col-lg-4"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
+            '<div class="col-lg-4"><label for="wage">Prevailing Wage</label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onchange="agentBruh();" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
+            '<div class="col-lg-4"><label for="billInst">Special Billing Instructions</label></div><div class="col-lg-8"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
+            '<div class="col-lg-4"><label for="binder">Binder Size</label></div><div class="col-lg-8"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+            '<div class="col-lg-4"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="col-lg-8"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>' +
             '</div>';
         }
-        return '<div class="grid-container">'+
-        '<div class="grid-item"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="grid-item"><select name="office" id="office" title="Office Location" required><option value="-1" selected>-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
-        '<div class="grid-item"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
-        '<div class="grid-item"><select name="service" id="service" title="Service Area" required><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
-        '<div class="grid-item"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="grid-item" id="codeFill">Loading profile codes...</div>'
+        return '<div class="row">'+
+        '<div class="col-lg-4"><label for="office">SHN Office<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="office" id="office" title="Office Location" required><option value="-1" selected>-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></div>'+
+        '<div class="col-lg-4"><label for="service">Service Area<span class="astrick">*</span></label></div>'+
+        '<div class="col-lg-8"><select name="service" id="service" title="Service Area" required><option value="0" selected>-Select-</option><option value="Civil">Civil</option><option value="Environmental">Environmental</option><option value="Geology">Geology</option><option value="Planning/Permitting">Planning/Permitting</option><option value="Survey">Survey</option></select></div>' +
+        '<div class="col-lg-4"><label for="code">Profile Code<span class="astrick">*</span></label></div><div class="col-lg-8" id="codeFill">Loading profile codes...</div>'
         +'</div>';
     }
     else if(num === 4) {
         if(isProject && !isBillingGroup) {
-            return '<div class="grid-container">' +
-            '<div class="grid-item"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
-            '<div class="grid-item"><label for="invoiceFormat">Invoice Format</label></div>'+
-            '<div class="grid-item"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
+            return '<div class="row">' +
+            '<div class="col-lg-4"><label for="contactType">Contract Type<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
+            '<div class="col-lg-4"><label for="invoiceFormat">Invoice Format</label></div>'+
+            '<div class="col-lg-8"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
             getTextField('Client Contract/PO #', 'PO', userData[0].client_contract_PO, true) +
-            '<div class="grid-item"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-            '<div class="grid-item"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="grid-item"><select name="wage" id="wage" title="wage" onclick="agentBruh();" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
-            '<div class="grid-item"><label for="billInst">Special Billing Instructions</label></div><div class="grid-item"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
-            '<div class="grid-item"><label for="seeAlso">See Also</label></div><div class="grid-item"><textarea id="seeAlso" name="seeAlso" rows="5" cols="50" maxlength="200"></textarea></div>'+
-            '<div class="grid-item"><label for="autocad">AutoCAD Job</label></div><div class="grid-item"><input type="radio" name="autocad" id="yesAuto" value="1" title="autocad"> Yes<input type="radio" name="autocad" value="0" title="autocad" checked> No </div>'+
-            '<div class="grid-item"><label for="gis">GIS Job</label></div><div class="grid-item"><input type="radio" id="gis" name="gis" value="1" title="gis"> Yes<input type="radio" name="gis" value="0" title="gis" checked> No</div><div class="grid-item"><label for="ProjSpecs">Project Specifications</label></div><div class="grid-item"><input type="radio" id="ProjSpecs" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications"> Yes <input type="radio" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications" checked> No</div>'
+            '<div class="col-lg-4"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
+            '<div class="col-lg-4"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onclick="agentBruh();" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
+            '<div class="col-lg-4"><label for="billInst">Special Billing Instructions</label></div><div class="col-lg-8"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
+            '<div class="col-lg-4"><label for="seeAlso">See Also</label></div><div class="col-lg-8"><textarea id="seeAlso" name="seeAlso" rows="5" cols="50" maxlength="200"></textarea></div>'+
+            '<div class="col-lg-4"><label for="autocad">AutoCAD Job</label></div><div class="col-lg-8"><input type="radio" name="autocad" id="yesAuto" value="1" title="autocad"> Yes<input type="radio" name="autocad" value="0" title="autocad" checked> No </div>'+
+            '<div class="col-lg-4"><label for="gis">GIS Job</label></div><div class="col-lg-8"><input type="radio" id="gis" name="gis" value="1" title="gis"> Yes<input type="radio" name="gis" value="0" title="gis" checked> No</div><div class="col-lg-8"><label for="ProjSpecs">Project Specifications</label></div><div class="col-lg-8"><input type="radio" id="ProjSpecs" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications"> Yes <input type="radio" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications" checked> No</div>'
             + '</div>';
         }
         else if(!isProject) {
-            return '<div class="grid-container">' + getTextField('Client Company', 'clientComp', userData[0].client_company, true) + getTextField('Client Abbreviation', 'clientAbbr', userData[0].client_abbreviation, false) + 
+            return '<div class="row">' + getTextField('Client Company', 'clientComp', userData[0].client_company, true) + getTextField('Client Abbreviation', 'clientAbbr', userData[0].client_abbreviation, false) + 
             getTextField('Client First Name', 'cFirst', userData[0].first_name, true) + getTextField('Client Last Name', 'cLast', userData[0].last_name, true) + 
-            '<div class="grid-item"><label for="relation">Client Relationship</label></div><div class="grid-item"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
+            '<div class="col-lg-4"><label for="relation">Client Relationship</label></div><div class="col-lg-8"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
             getTextField('Title', 'title', userData[0].job_title, false) + getTextField("Address 1", 'addy1', userData[0].address1, true) + getTextField('Address 2', 'addy2', userData[0].address2, false) + 
-            getTextField('City', 'city', userData[0].city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
-            '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
-            '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
-            '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
-            '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
-            '<div class="grid-item"><label for="email">Email<span class="astrick">*</span></label></div><div class="grid-item"><input type="email" id="email" name="email" maxlength="75" required></div>'
+            getTextField('City', 'city', userData[0].city, true) + '<div class="col-lg-4"><label for="state">State<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
+            '<div class="col-lg-4"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="col-lg-8"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
+            '<div class="col-lg-4"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
+            '<div class="col-lg-4"><label for="HP">Home Phone</label></div><div class="col-lg-8"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
+            '<div class="col-lg-4"><label for="cell">Cell</label></div><div class="col-lg-8"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
+            '<div class="col-lg-4"><label for="fax">Fax</label></div><div class="col-lg-8"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
+            '<div class="col-lg-4"><label for="email">Email<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="email" id="email" name="email" maxlength="75" required></div>'
             + '</div>';
         }
         else {
@@ -700,95 +700,95 @@ function getPage(num) {
             let breakedDesc = userData[0].description_service.replaceAll('\n', '<br>');
             let waiver = ((userData[0].retainer == 'Waived by X') ? 'Waived by ' + userData[0].waived_by:(userData[0].retainer == 'Enter Amount'?"$"+userData[0].retainer_paid:userData[0].retainer));
 
-            return '<div class="grid-container">' +
-            '<div class="grid-item">Billing Name' + '</div>'
-            + '<div class="grid-item">' + userData[0].group_name + '</div>'+
-            '<div class="grid-item">Billing Number' + '</div>'
-            + '<div class="grid-item">' + userData[0].group_number + '</div>'+
-            '<div class="grid-item">Project Manager' + '</div>'
-            + '<div class="grid-item">' + userData[0].last + ', ' + userData[0].first + '</div>'+
-            '<div class="grid-item">Billing Group Manager' + '</div>'
-            + '<div class="grid-item">' + mgrName + '</div>'+
-            '<div class="grid-item">QAQC Person' + '</div>'
-            + '<div class="grid-item">' + qaqcName + '</div>'+
-            '<div class="grid-item">Team Members' + '</div>'
-            + '<div class="grid-item">' + formatMem + '</div>'+
-            '<div class="grid-item">Start Date' + '</div>'
-            + '<div class="grid-item">' + formatStartDate + '</div>'+
-            '<div class="grid-item">End Date' + '</div>'
-            + '<div class="grid-item">' + formatCloseDate + '</div>'+
-            '<div class="grid-item">Project Location Descriptor' + '</div>'
-            + '<div class="grid-item">' + userData[0].group_location + '</div>'+
-            '<div class="grid-item">Project Latitude' + '</div>'
-            + '<div class="grid-item">' + userData[0].latitude + '</div>'+
-            '<div class="grid-item">Project Longitude' + '</div>'
-            + '<div class="grid-item">' + userData[0].longitude + '</div>'+
-            '<div class="grid-item">Project Keywords' + '</div>'
-            + '<div class="grid-item">' + formatKeys + '</div>'+
-            '<div class="grid-item">Other Keywords' + '</div>'
-            + '<div class="grid-item">' + otherKeys + '</div>'+
-            '<div class="grid-item">Profile Code' + '</div>'
-            + '<div class="grid-item">' + profCodeName + '</div>'+
-            '<div class="grid-item">Contract Type' + '</div>'
-            + '<div class="grid-item">' + contactTypeName + '</div>'+
-            '<div class="grid-item">Service Area' + '</div>'
-            + '<div class="grid-item">' + userData[0].service_area + '</div>'+
-            '<div class="grid-item">Total Contract' + '</div>'
-            + '<div class="grid-item">' + userData[0].total_contract + '</div>'+
-            '<div class="grid-item">Invoice Format' + '</div>'
-            + '<div class="grid-item">' + invoiceName + '</div>'+ // FIX VARIABLE
-            '<div class="grid-item">Retainer' + '</div>'
-            + '<div class="grid-item">' + waiver + '</div>'+
-            '<div class="grid-item">Client Contract/PO #' + '</div>'
-            + '<div class="grid-item">' + userData[0].client_contract_PO + '</div>'+
-            '<div class="grid-item">Outside Markup' + '</div>'
-            + '<div class="grid-item">' + userData[0].outside_markup + '</div>'+
-            '<div class="grid-item">Prevailige Wage' + '</div>'
-            + '<div class="grid-item">' + (userData[0].prevailing_wage == 1?"Yes":"No") + '</div>'+
-            '<div class="grid-item">Agency' + '</div>'
-            + '<div class="grid-item">' + (userData[0].prevailing_wage == 1?userData[0].agency_name:"N/A") + '</div>'+
-            '<div class="grid-item">Special Billing Instructions' + '</div>'
-            + '<div class="grid-item">' + userData[0].special_billing_instructions + '</div>'+
-            '<div class="grid-item">AutoCAD Job' + '</div>'
-            + '<div class="grid-item">' + autoCadName + '</div>'+
-            '<div class="grid-item">GIS Job' + '</div>'
-            + '<div class="grid-item">' + gisName + '</div>'+
-            '<div class="grid-item">Binder Size' + '</div>'
-            + '<div class="grid-item">' + (userData[0].binder_size == "NULL"?"N/A":userData[0].binder_size) + '</div>'+
-            '<div class="grid-item">Description of Services' + '</div>'
-            + '<div class="grid-item">' + breakedDesc + '</div>'+
+            return '<div class="row">' +
+            '<div class="col-lg-6">Billing Name' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].group_name + '</div>'+
+            '<div class="col-lg-6">Billing Number' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].group_number + '</div>'+
+            '<div class="col-lg-6">Project Manager' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].last + ', ' + userData[0].first + '</div>'+
+            '<div class="col-lg-6">Billing Group Manager' + '</div>'
+            + '<div class="col-lg-6">' + mgrName + '</div>'+
+            '<div class="col-lg-6">QAQC Person' + '</div>'
+            + '<div class="col-lg-6">' + qaqcName + '</div>'+
+            '<div class="col-lg-6">Team Members' + '</div>'
+            + '<div class="col-lg-6">' + formatMem + '</div>'+
+            '<div class="col-lg-6">Start Date' + '</div>'
+            + '<div class="col-lg-6">' + formatStartDate + '</div>'+
+            '<div class="col-lg-6">End Date' + '</div>'
+            + '<div class="col-lg-6">' + formatCloseDate + '</div>'+
+            '<div class="col-lg-6">Project Location Descriptor' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].group_location + '</div>'+
+            '<div class="col-lg-6">Project Latitude' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].latitude + '</div>'+
+            '<div class="col-lg-6">Project Longitude' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].longitude + '</div>'+
+            '<div class="col-lg-6">Project Keywords' + '</div>'
+            + '<div class="col-lg-6">' + formatKeys + '</div>'+
+            '<div class="col-lg-6">Other Keywords' + '</div>'
+            + '<div class="col-lg-6">' + otherKeys + '</div>'+
+            '<div class="col-lg-6">Profile Code' + '</div>'
+            + '<div class="col-lg-6">' + profCodeName + '</div>'+
+            '<div class="col-lg-6">Contract Type' + '</div>'
+            + '<div class="col-lg-6">' + contactTypeName + '</div>'+
+            '<div class="col-lg-6">Service Area' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].service_area + '</div>'+
+            '<div class="col-lg-6">Total Contract' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].total_contract + '</div>'+
+            '<div class="col-lg-6">Invoice Format' + '</div>'
+            + '<div class="col-lg-6">' + invoiceName + '</div>'+ // FIX VARIABLE
+            '<div class="col-lg-6">Retainer' + '</div>'
+            + '<div class="col-lg-6">' + waiver + '</div>'+
+            '<div class="col-lg-6">Client Contract/PO #' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].client_contract_PO + '</div>'+
+            '<div class="col-lg-6">Outside Markup' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].outside_markup + '</div>'+
+            '<div class="col-lg-6">Prevailige Wage' + '</div>'
+            + '<div class="col-lg-6">' + (userData[0].prevailing_wage == 1?"Yes":"No") + '</div>'+
+            '<div class="col-lg-6">Agency' + '</div>'
+            + '<div class="col-lg-6">' + (userData[0].prevailing_wage == 1?userData[0].agency_name:"N/A") + '</div>'+
+            '<div class="col-lg-6">Special Billing Instructions' + '</div>'
+            + '<div class="col-lg-6">' + userData[0].special_billing_instructions + '</div>'+
+            '<div class="col-lg-6">AutoCAD Job' + '</div>'
+            + '<div class="col-lg-6">' + autoCadName + '</div>'+
+            '<div class="col-lg-6">GIS Job' + '</div>'
+            + '<div class="col-lg-6">' + gisName + '</div>'+
+            '<div class="col-lg-6">Binder Size' + '</div>'
+            + '<div class="col-lg-6">' + (userData[0].binder_size == "NULL"?"N/A":userData[0].binder_size) + '</div>'+
+            '<div class="col-lg-6">Description of Services' + '</div>'
+            + '<div class="col-lg-6">' + breakedDesc + '</div>'+
             '</div>';
         }
     }
     else if(num === 5) {
         if(isProject) {
-            return '<div class="grid-container">' + getTextField('Client Company', 'clientComp', userData[0].client_company, true) + 
-            '<div class="grid-item"><label for="mail">Mail Lists</label></div><div class="grid-item"><input type="checkbox" id="openHouse" name="mail" title="openHouse" placeholder="Open House"> Open House<input type="checkbox" id="christmas" name="mail" title="christmas" placeholder="Christmas"> Christmas</div>' +
+            return '<div class="row">' + getTextField('Client Company', 'clientComp', userData[0].client_company, true) + 
+            '<div class="col-lg-4"><label for="mail">Mail Lists</label></div><div class="col-lg-8"><input type="checkbox" id="openHouse" name="mail" title="openHouse" placeholder="Open House"> Open House<input type="checkbox" id="christmas" name="mail" title="christmas" placeholder="Christmas"> Christmas</div>' +
             getTextField('Client Abbreviation', 'clientAbbr', userData[0].client_abbreviation, false) + 
             getTextField('Client First Name', 'cFirst', userData[0].first_name, true) + getTextField('Client Last Name', 'cLast', userData[0].last_name, true) + 
-            '<div class="grid-item"><label for="relation">Client Relationship</label></div><div class="grid-item"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
+            '<div class="col-lg-4"><label for="relation">Client Relationship</label></div><div class="col-lg-8"><select name="relation" id="relation" title="Client Relationship"><option value="current">on-going</option><option value="past">past/former</option><option value="none" selected>none or distant</option></select></div>'+
             getTextField('Title', 'title', userData[0].job_title, false) + getTextField("Address 1", 'addy1', userData[0].address1, true) + getTextField('Address 2', 'addy2', userData[0].address2, false) + 
-            getTextField('City', 'city', userData[0].city, true) + '<div class="grid-item"><label for="state">State<span class="astrick">*</span></label></div>'+
-            '<div class="grid-item"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
-            '<div class="grid-item"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="grid-item"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
-            '<div class="grid-item"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="grid-item"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
-            '<div class="grid-item"><label for="HP">Home Phone</label></div><div class="grid-item"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
-            '<div class="grid-item"><label for="cell">Cell</label></div><div class="grid-item"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
-            '<div class="grid-item"><label for="fax">Fax</label></div><div class="grid-item"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
-            '<div class="grid-item"><label for="email">Email<span class="astrick">*</span></label></div><div class="grid-item"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" required></div>'
+            getTextField('City', 'city', userData[0].city, true) + '<div class="col-lg-4"><label for="state">State<span class="astrick">*</span></label></div>'+
+            '<div class="col-lg-8"><select name="state" id="state" size="1" required><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
+            '<div class="col-lg-4"><Label for="zip">Zip Code<span class="astrick">*</span></div><div class="col-lg-8"><input type="text" id="zip" name="zip" maxlength="20" required></div>' +
+            '<div class="col-lg-4"><label for="WP">Work Phone<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="tel" id="WP" name="WP" maxlength="12" required><label for="ext"> Ext:</label><input type="text" id="ext" name="ext" maxlength="3"></div>'+
+            '<div class="col-lg-4"><label for="HP">Home Phone</label></div><div class="col-lg-8"><input type="tel" id="HP" name="HP" maxlength="12"></div>'+
+            '<div class="col-lg-4"><label for="cell">Cell</label></div><div class="col-lg-8"><input type="tel" id="cell" name="cell" maxlength="12"></div>'+
+            '<div class="col-lg-4"><label for="fax">Fax</label></div><div class="col-lg-8"><input type="tel" id="fax" name="fax" maxlength="12"></div>'+
+            '<div class="col-lg-4"><label for="email">Email<span class="astrick">*</span></label></div><div class="col-lg-8"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" required></div>'
             + '</div>';
         }
-        return '<div class="grid-container">' +
-        '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
-        '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search_demo.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'
+        return '<div class="row">' +
+        '<div class="col-lg-4"><label for="binder">Binder Size</label></div><div class="col-lg-8"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+        '<div class="col-lg-4"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search_demo.html" target="_blank">here</a>.</label></div><div class="col-lg-8"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'
         +'</div>';
     }
     else if(num === 6) {
         if(isProject) {
-            return '<div class="grid-container">' +
-            '<div class="grid-item"><label for="binder">Binder Size</label></div><div class="grid-item"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
-            '<div class="grid-item"><label for="bindLoc">Binder Location</label></div><div class="grid-item"><input type="text" id="bindLoc" name="bindLoc"></div>' +
-            '<div class="grid-item"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="grid-item"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div></div>';
+            return '<div class="row">' +
+            '<div class="col-lg-4"><label for="binder">Binder Size</label></div><div class="col-lg-8"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
+            '<div class="col-lg-4"><label for="bindLoc">Binder Location</label></div><div class="col-lg-8"><input type="text" id="bindLoc" name="bindLoc"></div>' +
+            '<div class="col-lg-4"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="col-lg-8"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div></div>';
         }
         // Else review page for promos.
         let formatMem = '';
@@ -821,73 +821,73 @@ function getPage(num) {
             return "Eureka";
         })();
 
-        return '<div class="grid-container">' +
-        '<div class="grid-item">Promo Title' + '</div>'
-        + '<div class="grid-item">' + userData[0].promo_title + '</div>'+
-        '<div class="grid-item">Type of Promo' + '</div>'
-        + '<div class="grid-item">' + userData[0].promo_type + '</div>'+
-        '<div class="grid-item">Project Manager' + '</div>'
-        + '<div class="grid-item">' + mgrName + '</div>'+
-        '<div class="grid-item">QAQC Person' + '</div>'
-        + '<div class="grid-item">' + qaqcName + '</div>'+
-        '<div class="grid-item">Team Members' + '</div>'
-        + '<div class="grid-item">' + formatMem + '</div>'+
-        '<div class="grid-item">Start Date' + '</div>'
-        + '<div class="grid-item">' + formatStartDate + '</div>'+
-        '<div class="grid-item">Close Date' + '</div>'
-        + '<div class="grid-item">' + formatCloseDate + '</div>'+
-        '<div class="grid-item">Project Location Descriptor' + '</div>'
-        + '<div class="grid-item">' + userData[0].promo_location + '</div>'+
-        '<div class="grid-item">Project Latitude' + '</div>'
-        + '<div class="grid-item">' + userData[0].latitude + '</div>'+
-        '<div class="grid-item">Project Longitude' + '</div>'
-        + '<div class="grid-item">' + userData[0].longitude + '</div>'+
-        '<div class="grid-item">Project Keywords' + '</div>'
-        + '<div class="grid-item">' + formatKeys + '</div>'+
-        '<div class="grid-item">Other Keywords' + '</div>'
-        + '<div class="grid-item">' + otherKeys + '</div>'+
-        '<div class="grid-item">SHN Office' + '</div>'
-        + '<div class="grid-item">' + shnOffice + '</div>'+
-        '<div class="grid-item">Service Area' + '</div>'
-        + '<div class="grid-item">' + userData[0].service_area + '</div>'+
-        '<div class="grid-item">Profile Code' + '</div>'
-        + '<div class="grid-item">' + profCodeName + '</div>'+
-        '<div class="grid-item">Client Company' + '</div>'
-        + '<div class="grid-item">' + userData[0].client_company + '</div>'+
-        '<div class="grid-item">Client Abbreviation' + '</div>'
-        + '<div class="grid-item">' + userData[0].client_abbreviation + '</div>'+
-        '<div class="grid-item">Client First Name' + '</div>'
-        + '<div class="grid-item">' + userData[0].first_name + '</div>'+
-        '<div class="grid-item">Client Last Name' + '</div>'
-        + '<div class="grid-item">' + userData[0].last_name + '</div>'+
-        '<div class="grid-item">Client Relationship' + '</div>'
-        + '<div class="grid-item">' + userData[0].relationship + '</div>'+
-        '<div class="grid-item">Title' + '</div>'
-        + '<div class="grid-item">' + userData[0].job_title + '</div>'+
-        '<div class="grid-item">Address 1' + '</div>'
-        + '<div class="grid-item">' + userData[0].address1 + '</div>'+
-        '<div class="grid-item">Address 2' + '</div>'
-        + '<div class="grid-item">' + userData[0].address2 + '</div>'+
-        '<div class="grid-item">City' + '</div>'
-        + '<div class="grid-item">' + userData[0].city + '</div>'+
-        '<div class="grid-item">State' + '</div>'
-        + '<div class="grid-item">' + userData[0].state + '</div>'+
-        '<div class="grid-item">Zip' + '</div>'
-        + '<div class="grid-item">' + userData[0].zip_code + '</div>'+
-        '<div class="grid-item">Work Phone' + '</div>'
-        + '<div class="grid-item">' + userData[0].work_phone + (userData[0].ext != null && userData[0].ext != 'NULL' && userData[0].ext != undefined && userData[0].ext != '' ? ' Ext: ' + userData[0].ext : '') + '</div>'+
-        '<div class="grid-item">Home Phone' + '</div>'
-        + '<div class="grid-item">' + userData[0].home_phone + '</div>'+
-        '<div class="grid-item">Cell Phone' + '</div>'
-        + '<div class="grid-item">' + userData[0].cell + '</div>'+
-        '<div class="grid-item">Fax' + '</div>'
-        + '<div class="grid-item">' + userData[0].fax + '</div>'+
-        '<div class="grid-item">Email' + '</div>'
-        + '<div class="grid-item">' + userData[0].email + '</div>'+
-        '<div class="grid-item">Binder Size' + '</div>'
-        + '<div class="grid-item">' + (userData[0].binder_size == null || userData[0].binder_size == 'NULL'?'N/A':userData[0].binder_size + ' inch') + '</div>'+
-        '<div class="grid-item">Description of Services' + '</div>'
-        + '<div class="grid-item">' + userData[0].description_service.replaceAll('\n', '<br>') + '</div></div>';
+        return '<div class="row">' +
+        '<div class="col-lg-6">Promo Title' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].promo_title + '</div>'+
+        '<div class="col-lg-6">Type of Promo' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].promo_type + '</div>'+
+        '<div class="col-lg-6">Project Manager' + '</div>'
+        + '<div class="col-lg-6">' + mgrName + '</div>'+
+        '<div class="col-lg-6">QAQC Person' + '</div>'
+        + '<div class="col-lg-6">' + qaqcName + '</div>'+
+        '<div class="col-lg-6">Team Members' + '</div>'
+        + '<div class="col-lg-6">' + formatMem + '</div>'+
+        '<div class="col-lg-6">Start Date' + '</div>'
+        + '<div class="col-lg-6">' + formatStartDate + '</div>'+
+        '<div class="col-lg-6">Close Date' + '</div>'
+        + '<div class="col-lg-6">' + formatCloseDate + '</div>'+
+        '<div class="col-lg-6">Project Location Descriptor' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].promo_location + '</div>'+
+        '<div class="col-lg-6">Project Latitude' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].latitude + '</div>'+
+        '<div class="col-lg-6">Project Longitude' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].longitude + '</div>'+
+        '<div class="col-lg-6">Project Keywords' + '</div>'
+        + '<div class="col-lg-6">' + formatKeys + '</div>'+
+        '<div class="col-lg-6">Other Keywords' + '</div>'
+        + '<div class="col-lg-6">' + otherKeys + '</div>'+
+        '<div class="col-lg-6">SHN Office' + '</div>'
+        + '<div class="col-lg-6">' + shnOffice + '</div>'+
+        '<div class="col-lg-6">Service Area' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].service_area + '</div>'+
+        '<div class="col-lg-6">Profile Code' + '</div>'
+        + '<div class="col-lg-6">' + profCodeName + '</div>'+
+        '<div class="col-lg-6">Client Company' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].client_company + '</div>'+
+        '<div class="col-lg-6">Client Abbreviation' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].client_abbreviation + '</div>'+
+        '<div class="col-lg-6">Client First Name' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].first_name + '</div>'+
+        '<div class="col-lg-6">Client Last Name' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].last_name + '</div>'+
+        '<div class="col-lg-6">Client Relationship' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].relationship + '</div>'+
+        '<div class="col-lg-6">Title' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].job_title + '</div>'+
+        '<div class="col-lg-6">Address 1' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].address1 + '</div>'+
+        '<div class="col-lg-6">Address 2' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].address2 + '</div>'+
+        '<div class="col-lg-6">City' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].city + '</div>'+
+        '<div class="col-lg-6">State' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].state + '</div>'+
+        '<div class="col-lg-6">Zip' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].zip_code + '</div>'+
+        '<div class="col-lg-6">Work Phone' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].work_phone + (userData[0].ext != null && userData[0].ext != 'NULL' && userData[0].ext != undefined && userData[0].ext != '' ? ' Ext: ' + userData[0].ext : '') + '</div>'+
+        '<div class="col-lg-6">Home Phone' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].home_phone + '</div>'+
+        '<div class="col-lg-6">Cell Phone' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].cell + '</div>'+
+        '<div class="col-lg-6">Fax' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].fax + '</div>'+
+        '<div class="col-lg-6">Email' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].email + '</div>'+
+        '<div class="col-lg-6">Binder Size' + '</div>'
+        + '<div class="col-lg-6">' + (userData[0].binder_size == null || userData[0].binder_size == 'NULL'?'N/A':userData[0].binder_size + ' inch') + '</div>'+
+        '<div class="col-lg-6">Description of Services' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].description_service.replaceAll('\n', '<br>') + '</div></div>';
     }
     else { // Review page for Projects.
 
@@ -950,105 +950,105 @@ function getPage(num) {
 
         let waiver = (userData[0].retainer == 'Waived by X') ? 'Waived by ' + userData[0].waived_by:(userData[0].retainer == "Enter Amount"?userData[0].retainer_paid:userData[0].retainer);
 
-        return '<div class="grid-container">' +
-        '<div class="grid-item">Project Title' + '</div>'
-        + '<div class="grid-item">' + userData[0].project_title + '</div>'+
-        '<div class="grid-item">Project Manager' + '</div>'
-        + '<div class="grid-item">' + mgrName + '</div>'+
-        '<div class="grid-item">QAQC Person' + '</div>'
-        + '<div class="grid-item">' + qaqcName + '</div>'+
-        '<div class="grid-item">Team Members' + '</div>'
-        + '<div class="grid-item">' + formatMem + '</div>'+
-        '<div class="grid-item">Start Date' + '</div>'
-        + '<div class="grid-item">' + formatStartDate + '</div>'+
-        '<div class="grid-item">End Date' + '</div>'
-        + '<div class="grid-item">' + formatCloseDate + '</div>'+
-        '<div class="grid-item">Project Location Descriptor' + '</div>'
-        + '<div class="grid-item">' + userData[0].project_location + '</div>'+
-        '<div class="grid-item">Project Latitude' + '</div>'
-        + '<div class="grid-item">' + userData[0].latitude + '</div>'+
-        '<div class="grid-item">Project Longitude' + '</div>'
-        + '<div class="grid-item">' + userData[0].longitude + '</div>'+
-        '<div class="grid-item">Project Keywords' + '</div>'
-        + '<div class="grid-item">' + formatKeys + '</div>'+
-        '<div class="grid-item">Other Keywords' + '</div>'
-        + '<div class="grid-item">' + otherKeys + '</div>'+
-        '<div class="grid-item">SHN Office' + '</div>'
-        + '<div class="grid-item">' + shnOffice + '</div>'+
-        '<div class="grid-item">Service Area' + '</div>'
-        + '<div class="grid-item">' + userData[0].service_area + '</div>'+
-        '<div class="grid-item">Total Contract' + '</div>'
-        + '<div class="grid-item">' + userData[0].total_contract + '</div>'+
-        '<div class="grid-item">Exempt from Service Agreement?' + '</div>'
-        + '<div class="grid-item">' + (userData[0].exempt_agreement == 1?"Yes":"No") + '</div>'+
-        '<div class="grid-item">If yes, why?' + '</div>'
-        + '<div class="grid-item">' + (userData[0].why == null || userData[0].why == 'NULL'?'N/A':userData[0].why) + '</div>'+
-        '<div class="grid-item">Retainer' + '</div>'
-        + '<div class="grid-item">' + waiver + '</div>'+
-        '<div class="grid-item">Profile Code' + '</div>'
-        + '<div class="grid-item">' + profCodeName + '</div>'+
-        '<div class="grid-item">Project Type' + '</div>'
-        + '<div class="grid-item">' + (userData[0].project_type == 0?'N/A':(userData[0].project_type == 1?'Confidential':'NDA')) + '</div>'+
-        '<div class="grid-item">Contract Type' + '</div>'
-        + '<div class="grid-item">' + contactTypeName + '</div>'+
-        '<div class="grid-item">Invoice Format' + '</div>'
-        + '<div class="grid-item">' + userData[0].invoice_format + '</div>'+
-        '<div class="grid-item">Client Contract/PO #' + '</div>'
-        + '<div class="grid-item">' + userData[0].client_contract_PO + '</div>'+
-        '<div class="grid-item">Outside Markup' + '</div>'
-        + '<div class="grid-item">' + userData[0].outside_markup + '</div>'+
-        '<div class="grid-item">Prevailige Wage' + '</div>'
-        + '<div class="grid-item">' + (userData[0].prevailing_wage == 1?"Yes":"No") + '</div>'+
-        '<div class="grid-item">Special Billing Instructions' + '</div>'
-        + '<div class="grid-item">' + userData[0].special_billing_instructions + '</div>'+
-        '<div class="grid-item">See Also' + '</div>'
-        + '<div class="grid-item">' + userData[0].see_also + '</div>'+
-        '<div class="grid-item">AutoCAD Job' + '</div>'
-        + '<div class="grid-item">' + (userData[0].autoCAD == 1?"Yes":"No") + '</div>'+
-        '<div class="grid-item">GIS Job' + '</div>'
-        + '<div class="grid-item">' + (userData[0].GIS == 1?"Yes":"No") + '</div>'+
-        '<div class="grid-item">Project Specifications' + '</div>'
-        + '<div class="grid-item">' + speccy + '</div>'+
-        '<div class="grid-item">Client Company' + '</div>'
-        + '<div class="grid-item">' + userData[0].client_company + '</div>'+
-        '<div class="grid-item">Mail Lists' + '</div>'
-        + '<div class="grid-item">' + mailString + '</div>'+
-        '<div class="grid-item">Client Abbreviation' + '</div>'
-        + '<div class="grid-item">' + userData[0].client_abbreviation + '</div>'+
-        '<div class="grid-item">Client First Name' + '</div>'
-        + '<div class="grid-item">' + userData[0].first_name + '</div>'+
-        '<div class="grid-item">Client Last Name' + '</div>'
-        + '<div class="grid-item">' + userData[0].last_name + '</div>'+
-        '<div class="grid-item">Client Relationship' + '</div>'
-        + '<div class="grid-item">' + clientRelation + '</div>'+
-        '<div class="grid-item">Title' + '</div>'
-        + '<div class="grid-item">' + userData[0].job_title + '</div>'+
-        '<div class="grid-item">Address 1' + '</div>'
-        + '<div class="grid-item">' + userData[0].address1 + '</div>'+
-        '<div class="grid-item">Address 2' + '</div>'
-        + '<div class="grid-item">' + userData[0].address2 + '</div>'+
-        '<div class="grid-item">City' + '</div>'
-        + '<div class="grid-item">' + userData[0].city + '</div>'+
-        '<div class="grid-item">State' + '</div>'
-        + '<div class="grid-item">' + userData[0].state + '</div>'+
-        '<div class="grid-item">Zip' + '</div>'
-        + '<div class="grid-item">' + userData[0].zip + '</div>'+
-        '<div class="grid-item">Work Phone' + '</div>'
-        + '<div class="grid-item">' + userData[0].work_phone + (userData[0].ext != null && userData[0].ext != 'NULL' && userData[0].ext != undefined && userData[0].ext != '' ? ' Ext: ' + userData[0].ext : '')  + '</div>'+
-        '<div class="grid-item">Home Phone' + '</div>'
-        + '<div class="grid-item">' + userData[0].home_phone + '</div>'+
-        '<div class="grid-item">Cell' + '</div>'
-        + '<div class="grid-item">' + userData[0].cell + '</div>'+
-        '<div class="grid-item">Fax' + '</div>'
-        + '<div class="grid-item">' + userData[0].fax + '</div>'+
-        '<div class="grid-item">Email' + '</div>'
-        + '<div class="grid-item">' + userData[0].email + '</div>'+
-        '<div class="grid-item">Binder Size' + '</div>'
-        + '<div class="grid-item">' + (userData[0].binder_size == null || userData[0].binder_size == 'NULL'?'N/A':userData[0].binder_size + ' inch') + '</div>'+
-        '<div class="grid-item">Binder Location' + '</div>'
-        + '<div class="grid-item">' + userData[0].binder_location + '</div>'+
-        '<div class="grid-item">Description of Services' + '</div>'
-        + '<div class="grid-item">' + userData[0].description_service.replaceAll('\n', '<br>') + '</div>'+
+        return '<div class="row">' +
+        '<div class="col-lg-6">Project Title' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].project_title + '</div>'+
+        '<div class="col-lg-6">Project Manager' + '</div>'
+        + '<div class="col-lg-6">' + mgrName + '</div>'+
+        '<div class="col-lg-6">QAQC Person' + '</div>'
+        + '<div class="col-lg-6">' + qaqcName + '</div>'+
+        '<div class="col-lg-6">Team Members' + '</div>'
+        + '<div class="col-lg-6">' + formatMem + '</div>'+
+        '<div class="col-lg-6">Start Date' + '</div>'
+        + '<div class="col-lg-6">' + formatStartDate + '</div>'+
+        '<div class="col-lg-6">End Date' + '</div>'
+        + '<div class="col-lg-6">' + formatCloseDate + '</div>'+
+        '<div class="col-lg-6">Project Location Descriptor' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].project_location + '</div>'+
+        '<div class="col-lg-6">Project Latitude' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].latitude + '</div>'+
+        '<div class="col-lg-6">Project Longitude' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].longitude + '</div>'+
+        '<div class="col-lg-6">Project Keywords' + '</div>'
+        + '<div class="col-lg-6">' + formatKeys + '</div>'+
+        '<div class="col-lg-6">Other Keywords' + '</div>'
+        + '<div class="col-lg-6">' + otherKeys + '</div>'+
+        '<div class="col-lg-6">SHN Office' + '</div>'
+        + '<div class="col-lg-6">' + shnOffice + '</div>'+
+        '<div class="col-lg-6">Service Area' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].service_area + '</div>'+
+        '<div class="col-lg-6">Total Contract' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].total_contract + '</div>'+
+        '<div class="col-lg-6">Exempt from Service Agreement?' + '</div>'
+        + '<div class="col-lg-6">' + (userData[0].exempt_agreement == 1?"Yes":"No") + '</div>'+
+        '<div class="col-lg-6">If yes, why?' + '</div>'
+        + '<div class="col-lg-6">' + (userData[0].why == null || userData[0].why == 'NULL'?'N/A':userData[0].why) + '</div>'+
+        '<div class="col-lg-6">Retainer' + '</div>'
+        + '<div class="col-lg-6">' + waiver + '</div>'+
+        '<div class="col-lg-6">Profile Code' + '</div>'
+        + '<div class="col-lg-6">' + profCodeName + '</div>'+
+        '<div class="col-lg-6">Project Type' + '</div>'
+        + '<div class="col-lg-6">' + (userData[0].project_type == 0?'N/A':(userData[0].project_type == 1?'Confidential':'NDA')) + '</div>'+
+        '<div class="col-lg-6">Contract Type' + '</div>'
+        + '<div class="col-lg-6">' + contactTypeName + '</div>'+
+        '<div class="col-lg-6">Invoice Format' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].invoice_format + '</div>'+
+        '<div class="col-lg-6">Client Contract/PO #' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].client_contract_PO + '</div>'+
+        '<div class="col-lg-6">Outside Markup' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].outside_markup + '</div>'+
+        '<div class="col-lg-6">Prevailige Wage' + '</div>'
+        + '<div class="col-lg-6">' + (userData[0].prevailing_wage == 1?"Yes":"No") + '</div>'+
+        '<div class="col-lg-6">Special Billing Instructions' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].special_billing_instructions + '</div>'+
+        '<div class="col-lg-6">See Also' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].see_also + '</div>'+
+        '<div class="col-lg-6">AutoCAD Job' + '</div>'
+        + '<div class="col-lg-6">' + (userData[0].autoCAD == 1?"Yes":"No") + '</div>'+
+        '<div class="col-lg-6">GIS Job' + '</div>'
+        + '<div class="col-lg-6">' + (userData[0].GIS == 1?"Yes":"No") + '</div>'+
+        '<div class="col-lg-6">Project Specifications' + '</div>'
+        + '<div class="col-lg-6">' + speccy + '</div>'+
+        '<div class="col-lg-6">Client Company' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].client_company + '</div>'+
+        '<div class="col-lg-6">Mail Lists' + '</div>'
+        + '<div class="col-lg-6">' + mailString + '</div>'+
+        '<div class="col-lg-6">Client Abbreviation' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].client_abbreviation + '</div>'+
+        '<div class="col-lg-6">Client First Name' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].first_name + '</div>'+
+        '<div class="col-lg-6">Client Last Name' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].last_name + '</div>'+
+        '<div class="col-lg-6">Client Relationship' + '</div>'
+        + '<div class="col-lg-6">' + clientRelation + '</div>'+
+        '<div class="col-lg-6">Title' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].job_title + '</div>'+
+        '<div class="col-lg-6">Address 1' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].address1 + '</div>'+
+        '<div class="col-lg-6">Address 2' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].address2 + '</div>'+
+        '<div class="col-lg-6">City' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].city + '</div>'+
+        '<div class="col-lg-6">State' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].state + '</div>'+
+        '<div class="col-lg-6">Zip' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].zip + '</div>'+
+        '<div class="col-lg-6">Work Phone' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].work_phone + (userData[0].ext != null && userData[0].ext != 'NULL' && userData[0].ext != undefined && userData[0].ext != '' ? ' Ext: ' + userData[0].ext : '')  + '</div>'+
+        '<div class="col-lg-6">Home Phone' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].home_phone + '</div>'+
+        '<div class="col-lg-6">Cell' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].cell + '</div>'+
+        '<div class="col-lg-6">Fax' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].fax + '</div>'+
+        '<div class="col-lg-6">Email' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].email + '</div>'+
+        '<div class="col-lg-6">Binder Size' + '</div>'
+        + '<div class="col-lg-6">' + (userData[0].binder_size == null || userData[0].binder_size == 'NULL'?'N/A':userData[0].binder_size + ' inch') + '</div>'+
+        '<div class="col-lg-6">Binder Location' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].binder_location + '</div>'+
+        '<div class="col-lg-6">Description of Services' + '</div>'
+        + '<div class="col-lg-6">' + userData[0].description_service.replaceAll('\n', '<br>') + '</div>'+
         '</div>';
     }
 }
