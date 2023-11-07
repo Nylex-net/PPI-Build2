@@ -105,15 +105,39 @@ function resultString(jsonRes) {
     console.log(jsonRes);
 
     filteredData.forEach(num => {
-        var id = num.ID;
-        if(!currResults.has(id)) {
-            currResults.set(id, num);
-        }
+        // var id = num.ID;
+        // if(!currResults.has(id)) {
+        //     currResults.set(id, num);
+        // }
         result += '<tr><td>' + ((num.closed == 1)?'<strong>X</strong> ':'')+num.project_id + '</td><td>' + ((num.BillGrp == null || num.BillGrp == undefined)?'':num.BillGrp) + '</td><td>' +
         ((num.promo_id == null || num.promo_id == undefined)?'':num.promo_id) + '</td><td>' + num.last + ", " + num.first + '</td><td>' +
         num.project_title + '</td><td>' + num.client_company + '</td><td>' + 
         '<button type="button" onclick="openPDF(\''+ ((num.project_id == null || num.project_id == undefined || num.project_id == '')?num.promo_id:num.project_id) +'\', '+ ((num.closed == 1)?true:false) +', null)">Display</button>'+ '</td><td>'+ 
         '<button type="button" onclick="edit(\''+ num.ID +'\', 0);">Edit</>'+'</td></tr>';
+        var daBillBruh = jsonRes[2].filter((bills)=>{
+            return bills.project_ID == num.ID;
+        });
+
+        if(daBillBruh.length > 0) {
+            var myBills = (daBillBruh.reduce((accumulator, currentValue) => {
+                if (!accumulator[currentValue.group_number]) {
+                  accumulator[currentValue.group_number] = true;
+                  accumulator.result.push(currentValue);
+                }
+                return accumulator;
+              }, { result: [] }).result).sort((a, b) => a.group_number - b.group_number);
+
+            myBills.forEach((bill) => {
+                // var id = bill.ID;
+                // if(!currResults.has(id)) {
+                //     currResults.set(id, bill);
+                // }
+                result += '<tr><td>' + ((bill.closed == 1)?'<strong>X</strong> ':'')+ bill.project_id +'</td><td>' + bill.group_number + '</td><td></td><td>' + bill.last + ", " + bill.first + '</td><td>' +
+                bill.group_name + '</td><td>' + bill.client_company + '</td><td>' + 
+                '<button type="button" onclick="openPDF(\''+ bill.project_id +'\', '+ ((bill.closed == 1)?true:false) +', \''+bill.group_number+'\')">Display</button>'+ '</td><td>'+ 
+                '<button type="button" onclick="edit(\''+ bill.ID +'\', -1);">Edit</>'+'</td></tr>';
+            });
+        }
     });
     numRes = filteredData.length;
 
@@ -127,10 +151,10 @@ function resultString(jsonRes) {
       }, { result: [] }).result).sort((a, b) => a.promo_id - b.promo_id);
 
       filteredData.forEach(num => {
-        var id = num.ID;
-        if(!currResults.has(id)) {
-            currResults.set(id, num);
-        }
+        // var id = num.ID;
+        // if(!currResults.has(id)) {
+        //     currResults.set(id, num);
+        // }
         result += '<tr><td>' + ((num.closed == 1)?'<strong>X</strong> ':'')+ '</td><td>' + ((num.BillGrp == null || num.BillGrp == undefined)?'':num.BillGrp) + '</td><td>' +
         ((num.promo_id == null || num.promo_id == undefined)?'':num.promo_id) + '</td><td>' + num.last + ", " + num.first + '</td><td>' +
         num.promo_title + '</td><td>' + num.client_company + '</td><td>' + 
@@ -140,6 +164,7 @@ function resultString(jsonRes) {
     numRes += filteredData.length;
 
     // For Billing groups.
+    /*
     filteredData = (jsonRes[2].reduce((accumulator, currentValue) => {
         if (!accumulator[[currentValue.project_id, currentValue.group_number]]) {
           accumulator[[currentValue.project_id, currentValue.group_number]] = true;
@@ -158,7 +183,8 @@ function resultString(jsonRes) {
         '<button type="button" onclick="openPDF(\''+ num.project_id +'\', '+ ((num.closed == 1)?true:false) +', \''+num.group_number+'\')">Display</button>'+ '</td><td>'+ 
         '<button type="button" onclick="edit(\''+ num.ID +'\', -1);">Edit</>'+'</td></tr>';
     });
-    numRes += filteredData.length;
+    */
+    // numRes += filteredData.length;
     // result = (jsonRes.length >= 500) ? '<p>Some results may have been filtered due to too large of search results.</p><br>' + result:result;
     document.getElementById('columnResults').innerHTML = result + '</table>';
     return numRes;
