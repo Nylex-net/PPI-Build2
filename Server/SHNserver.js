@@ -721,7 +721,7 @@ app.post('/keyName', jsonParser, (req, res) => {
             res.send(JSON.stringify(err));
         }
         else {
-            res.send(JSON.stringify(data));
+            res.send(JSON.stringify(data.recordset));
         }
     });
 });
@@ -1085,7 +1085,7 @@ app.post('/billMe', jsonParser, (req, res) => {
         }
         else if(data.recordset.length > 0) {
             let result = data.recordset;
-            request.query("SELECT * FROM BillingGroups WHERE project_ID = " + data[0].ID + " ORDER BY group_number", (err, billing) => {
+            request.query("SELECT * FROM BillingGroups WHERE project_ID = " + result[0].ID + " ORDER BY group_number", (err, billing) => {
                 if(err) {
                     console.error(err);
                 }
