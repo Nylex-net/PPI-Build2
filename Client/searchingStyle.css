@@ -30,7 +30,7 @@ body {
 	from{background-color: #85C466;}
 }
 
-button[type="button"] {
+button[type="button"], button[type="submit"] {
 	background: #60A13F;
 	animation-name: greenPoop;
 	animation-duration: 0.5s;
@@ -50,14 +50,14 @@ button[type="button"] {
 	background: #333333
 }
 
-button[type="button"]:hover {
+button[type="button"]:hover, button[type="submit"]:hover {
 	background: #85C466;
 	animation-name: greenButt;
 	animation-duration: 0.5s;
 	color: #fff;
 }
 
-button[type="button"]:active {
+button[type="button"]:active, button[type="submit"]:active {
 	background: white;
 	color: black;
 }
@@ -82,7 +82,7 @@ textarea:required {
 	border-bottom: 3px solid red;
 }
 
-input[type=number], input[type=date], input[type=text], input[type=tel], input[type=email] {
+input[type=number], input[type=date], input[type=text], input[type=tel], input[type=email], input[type=file] {
 	width: 20%;
 	padding: 12px 20px;
 	border: 2px solid #000;
