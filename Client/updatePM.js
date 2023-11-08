@@ -1,3 +1,5 @@
+const HOST = 'e-hv-ppi';
+
 document.getElementById('projForm').addEventListener('submit', function (e) {
     e.preventDefault();
     signIn();
@@ -7,13 +9,13 @@ function verify(id) {
     signIn();
 }
 
-async function starter() {
+async function starter(res) {
     const response = await fetch('https://'+HOST+'.shn-engr.com:3001/verify', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ID:id})
+        body: JSON.stringify({ID:res.account.homeAccountId.split('.')[0]})
     });
     if(await response.json().result) {
         const formData = new FormData();
@@ -21,7 +23,7 @@ async function starter() {
         formData.append('file', document.getElementById('task5').files[0]);
         formData.append('file', document.getElementById('task10').files[0]);
 
-        fetch('https://e-dt-usertest.shn-engr.com:3001/upload', {
+        fetch('https://'+HOST+'.shn-engr.com:3001/upload', {
             method: 'POST',
             body: formData,
         })
