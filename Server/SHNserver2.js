@@ -4,6 +4,7 @@
 const sql = require('mssql');
 const express = require('express');
 const fileUpload = require('express-fileupload');
+// const fetch = require('node-fetch');
 // const cluster = require('cluster');
 const cors = require('cors');
 // const { useCallback } = require('react');
@@ -926,7 +927,7 @@ app.post('/getPath', jsonParser, (req, res) => {
  * Verifies if the user logging into the edit page has the privileges to edit.
  */
 app.post('/verify', jsonParser, (req, res) => {
-    const query = 'SELECT * FROM Staff WHERE active = 1 AND MS_account_ID = \'' + req.body.ID + '\';';
+    const query = 'SELECT * FROM Staff WHERE Active = 1 AND MS_account_ID = \'' + req.body.ID + '\';';
     pool.query(query, (err, data) => {
         if(err) {
             console.error(err);
@@ -948,9 +949,9 @@ app.post('/verify', jsonParser, (req, res) => {
 });
 
 /**
- * 
+ * Upload API used to update PM tools.
  */
-
+/*
 app.post('/upload', (req, res) => {
     if (!req.files || !req.files.file) {
         return res.status(400).send('No files were uploaded.');
@@ -990,7 +991,7 @@ app.post('/upload', (req, res) => {
 
     // Handle the file as needed (e.g., save to disk, process, etc.)
 });
-
+*/
 function uploadToSharePoint(file1, file5, file10) {
     getAccessToken().then((token) => {
         if(token.access_token != undefined) {
@@ -1022,7 +1023,7 @@ async function getAccessToken() {
     const options = {
       method: 'POST',
       headers: headers,
-      body: formData.toString(),
+      body: formData.toString()
     };
   
     const response = await fetch('https://login.microsoftonline.com/'+jsonData.SHNpoint.tenant_id+'/oauth2/v2.0/token', options);
