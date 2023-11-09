@@ -53,7 +53,7 @@ async function starter(res) {
             }
         }
         userData[0].start_date = userData[0].start_date.substring(0, userData[0].start_date.indexOf('T'));
-        userData[0].close_date = userData[0].close_date.substring(0, userData[0].close_date.indexOf('T'))
+        userData[0].close_date = userData[0].close_date.substring(0, userData[0].close_date.indexOf('T'));
         manager(1);
     }
     else {
