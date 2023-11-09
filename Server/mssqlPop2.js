@@ -277,7 +277,7 @@ function populateBillingGroups(bills, idMap) {
         var start = (starty.getMonth() + 1).toString() + "/" + starty.getDate().toString() +"/"+ starty.getFullYear().toString();
         var closey = new Date((element.CloseDate != null && element.CloseDate != '' && !isNaN(Date.parse(element.CloseDate)) && new Date(element.CloseDate) instanceof Date)?element.CloseDate:Date.now());
         var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
-        var billCosby = ((element.BillGrp.trim().length == 4 && !isNaN(element.BillGrp))?element.BillGrp.substring(1):(isNaN(element.BillGrp) || element.BillGrp.trim().length > 3 || element.BillGrp == null?null:element.BillGrp.trim())); // Bruh.
+        var billCosby = ((element.BillGrp.trim().length >= 4 && !isNaN(element.BillGrp))?element.BillGrp.substring(element.BillGrp.length - 3):(isNaN(element.BillGrp) || element.BillGrp == null?null:element.BillGrp.trim())); // Bruh.
 
         if(billCosby != null && idMap.get(element.Projectid) != undefined) {
             // Build query string.

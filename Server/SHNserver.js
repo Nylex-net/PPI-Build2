@@ -715,7 +715,7 @@ app.post('/promo', jsonParser, (req, res) => {
 
 app.post('/keyName', jsonParser, (req, res) => {
     const request = pool.request();
-    request.query("SELECT * FROM ProjectKeywords WHERE project_id = " + req.body.project, (err, data) => {
+    request.query("SELECT * FROM ProjectKeywords WHERE project_id = " + req.body.project + ";", (err, data) => {
         if(err) {
             console.error(err);
             res.send(JSON.stringify(err));
@@ -1085,6 +1085,7 @@ app.post('/billMe', jsonParser, (req, res) => {
         }
         else if(data.recordset.length > 0) {
             let result = data.recordset;
+            // console.log(result);
             request.query("SELECT * FROM BillingGroups WHERE project_ID = " + result[0].ID + " ORDER BY group_number", (err, billing) => {
                 if(err) {
                     console.error(err);

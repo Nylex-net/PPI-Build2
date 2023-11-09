@@ -458,8 +458,8 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'agency_name = ' + (req.body.agency_name == 'NULL' || req.body.agency_name == null ? 'NULL':'\'' + req.body.agency_name.replace(/'/gi, "''")+'\'') + ', ';
         query += 'special_billing_instructions = ' + (req.body.special_billing_instructions == 'NULL' || req.body.special_billing_instructions == null ? 'NULL':'\'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\'') + ', ';
         query += 'see_also = ' + (req.body.see_also == 'NULL' || req.body.see_also == null ? 'NULL':'\'' + req.body.see_also.replace(/'/gi, "''") + '\'') + ', ';
-        query += 'autoCAD = ' + req.body.autoCAD + ', ';
-        query += 'GIS = ' + req.body.GIS + ', ';
+        query += 'autoCAD = ' + (req.body.autoCAD == false || req.body.autoCAD == 'false'?0:1) + ', ';
+        query += 'GIS = ' + (req.body.GIS == false || req.body.GIS == 'false'?0:1) + ', ';
         query += 'project_specifications = ' + req.body.project_specifications + ', ';
         query += 'client_company = \'' + req.body.client_company.replace(/'/gi, "''") + '\', ';
         query += 'client_abbreviation = ' + (req.body.client_abbreviation == 'NULL' || req.body.client_abbreviation == null?'NULL':'\'' + req.body.client_abbreviation.replace(/'/gi, "''") + '\'') + ', ';
@@ -495,10 +495,10 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'client_contract_PO = \'' + req.body.client_contract_PO + '\', ';
         query += 'outside_markup = ' + req.body.outside_markup + ', ';
         query += 'prevailing_wage = ' + req.body.prevailing_wage + ', ';
-        query += 'agency_name = ' + (req.body.agency_name == 'NULL' || req.body.agency_name == null ? 'NULL':'\'' + req.body.agency_name.replace(/'/gi, "''")) + '\'' + ', ';
+        query += 'agency_name = ' + (req.body.agency_name == 'NULL' || req.body.agency_name == null ? 'NULL':('\'' + req.body.agency_name.replace(/'/gi, "''")) + '\'') + ', ';
         query += 'special_billing_instructions = ' + (req.body.special_billing_instructions == 'NULL' || req.body.special_billing_instructions == null ? 'NULL':'\'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\'') + ', ';
-        query += 'autoCAD = ' + req.body.autoCAD + ', ';
-        query += 'GIS = ' + req.body.GIS + ', ';
+        query += 'autoCAD = ' + (req.body.autoCAD == false || req.body.autoCAD == 'false'?0:1) + ', ';
+        query += 'GIS = ' + (req.body.GIS == false || req.body.GIS == 'false'?0:1) + ', ';
     }
     else { // Is Promo
         query += 'promo_type = \''+ req.body.promo_type.replace(/'/gi, "''") + '\', ';
@@ -545,7 +545,7 @@ app.post('/updater', jsonParser, (req, res) => {
     // query += (req.body.Projectid != null && req.body.Projectid != undefined && req.body.Projectid.length >=6 && !isNaN(req.body.Projectid))?' WHERE Projectid = \'' + req.body.Projectid + '\'':' WHERE PromoId = \'' + req.body.PromoId + '\'';
     //console.log(query);
     const mydate = new Date().toString();
-
+    console.log(query);
     pool.query(query, (err, foo) => {
         if(err) {
             createTicket(err, "Cannot update initiation:");

@@ -3,7 +3,7 @@ let userData; // JSON of original entry
 const isProject = (JSON.parse(fromSession).Identifier == 0 || JSON.parse(fromSession).Identifier == -1) ? true:false;
 const isBillingGroup = JSON.parse(fromSession).Identifier == -1 ? true:false;
 let mgrName = '';
-const oldMgrName = (isBillingGroup?userData[0].last+ ", " + userData[0].first:null);
+let oldMgrName;
 let teamMem = new Array();
 let memNames = new Array();
 let keyNames = new Array();
@@ -39,6 +39,7 @@ async function starter(res) {
     const isAdmin = (await verify(res.account.homeAccountId.split('.')[0])).result;
     if(isAdmin) {
         userData = await fetchInfo();
+        oldMgrName = (isBillingGroup?userData[0].last+ ", " + userData[0].first:null);
         if(isProject && !isBillingGroup) {
             openHouse = userData[0].mailing_list != null?(userData[0].mailing_list.includes("Open")?true:false):false;
             xmas = userData[0].mailing_list != null?(userData[0].mailing_list.includes("mas")?true:false):false;

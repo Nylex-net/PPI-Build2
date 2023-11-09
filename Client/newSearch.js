@@ -132,7 +132,7 @@ function resultString(jsonRes) {
                 // if(!currResults.has(id)) {
                 //     currResults.set(id, bill);
                 // }
-                result += '<tr><td>' + ((bill.closed == 1)?'<strong>X</strong> ':'')+ bill.project_id +'</td><td>' + bill.group_number + '</td><td></td><td>' + bill.last + ", " + bill.first + '</td><td>' +
+                result += '<tr><td>' + ((bill.closed == 1)?'<strong>X</strong> ':'')+ bill.project_id +'</td><td>' + bill.group_number.toString() + '</td><td></td><td>' + bill.last + ", " + bill.first + '</td><td>' +
                 bill.group_name + '</td><td>' + bill.client_company + '</td><td>' + 
                 '<button type="button" onclick="openPDF(\''+ bill.project_id +'\', '+ ((bill.closed == 1)?true:false) +', \''+bill.group_number+'\')">Display</button>'+ '</td><td>'+ 
                 '<button type="button" onclick="edit(\''+ bill.ID +'\', -1);">Edit</>'+'</td></tr>';
