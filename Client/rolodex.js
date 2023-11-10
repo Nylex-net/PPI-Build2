@@ -93,11 +93,11 @@ function toTable(json) {
         return;
     }
     let syntax = '<table id="Rolo"><tr><th><strong>ID</strong></th><th><strong>Company</strong></th><th><strong>Name</strong></th><th><strong>Job Title</strong></th><th><strong>Address</strong></th><th><strong>Phone</strong></th><th><strong>Email</strong></th><th><strong>Info</strong></th></tr>';
-    json[0].forEach(entry => {
+    json[0].recordset.forEach(entry => {
         currResults.map.set(entry.project_id, entry);
         syntax += addRow(entry, true);
     });
-    json[1].forEach(entry => {
+    json[1].recordset.forEach(entry => {
         currResults.map.set(entry.promo_id, entry);
         syntax += addRow(entry, false);
     });

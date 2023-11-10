@@ -1401,7 +1401,8 @@ app.post('/contacts', jsonParser, (req, res) => {
     '\', state = \'' + req.body.state + '\', zip_code = \'' + req.body.zip_code + '\', work_phone = \'' + req.body.work_phone +
     '\', home_phone = ' + (req.body.home_phone == '' || req.body.home_phone == null?'NULL':'\''+req.body.home_phone + '\'')  + ', cell = '+ (req.body.cell == '' || req.body.cell == null?'NULL':'\''+req.body.cell + '\'') + ', fax = ' + (req.body.fax == '' || req.body.fax == null?'NULL':'\''+req.body.fax + '\'') + ', email = \'' + req.body.email + '\'' +
     ' WHERE ID = '+ req.body.ID + ';';
-    pool.query(sql, (err, deez) => {
+    const request = pool.request();
+    request.query(sql, (err, deez) => {
         if(err) {
             console.error(err + '\n' + sql);
             res.send(JSON.parse(JSON.stringify(err)));
