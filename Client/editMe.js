@@ -1941,8 +1941,10 @@ function teamString(memberArray) {
  * On success, thanks.html will load.
  */
 function preparePost() {
+    userData[0].TeamMembers = teamMem.toString();
     userData[0].ProfileCode = profCodeName;
     userData[0].contactTypeName = contactTypeName;
+    userData[0].keyIDs = Projkeywords.toString();
     if(isProject) {
         let Service_Agreement = '0';
         if(ServAgree) {

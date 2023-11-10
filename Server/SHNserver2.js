@@ -534,7 +534,7 @@ app.post('/updater', jsonParser, (req, res) => {
     query += 'service_area = ' + (req.body.service_area == 'NULL' || req.body.service_area == null?'NULL': '\'' + req.body.service_area.replace(/'/gi, "''") + '\'') + ', ';
     query += 'profile_code_id = ' + req.body.profile_code_id + ', ';
     query += 'binder_size = ' + (req.body.binder_size == 'NULL' || req.body.binder_size == null?"NULL":req.body.binder_size) + ', ';
-    query += 'description_service = \'' + req.body.description_service.replace(/'/gi, "''") + '\' WHERE ID = ' + req.body.ID + ';';
+    query += 'description_service = \'' + req.body.description_service.replace(/'/gi, "''") + '\' OUTPUT inserted.* WHERE ID = ' + req.body.ID + ';';
     // 'project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', project_manager_ID = ' + req.body.project_manager_ID+ ', AlternateTitle = \''+ req.body.AlternateTitle +'\', QA_QCPerson = \'' + req.body.QA_QCPerson.replace(/'/gi, "''") + '\', TeamMembers = \''+ req.body.TeamMembers.replace(/'/gi, "''") +'\', StartDate = \'' + req.body.StartDate.replace(/'/gi, "''") + '\', CloseDate = \''+ req.body.CloseDate.replace(/'/gi, "''") +'\', ProjectLoation = \''+ req.body.ProjectLoation.replace(/'/gi, "''") +'\', ' + ((!isNaN(req.body.Lattitude) && !isNaN(req.body.Longitude))?'Lattitude = '+ req.body.Lattitude + ', Longitude = '+ req.body.Longitude + ', ':'')+
     // 'ProjectKeywords = \''+ req.body.ProjectKeywords.replace(/'/gi, "''") +'\', SHNOffice = \'' + req.body.SHNOffice.replace(/'/gi, "''") + '\', ToatlContract = \'' + req.body.ToatlContract.replace(/'/gi, "''") + '\', RetainerPaid = \'' + req.body.RetainerPaid.replace(/'/gi, "''") + '\', ProfileCode = \'' + req.body.ProfileCode.replace(/'/gi, "''") + '\', ServiceArea = \''+ req.body.ServiceArea.replace(/'/gi, "''") + '\', ContractType = \'' + req.body.ContractType.replace(/'/gi, "''") + '\', InvoiceFormat = \'' + req.body.InvoiceFormat.replace(/'/gi, "''") + '\', PREVAILING_WAGE = \''+ req.body.PREVAILING_WAGE.replace(/'/gi, "''") +'\', OutsideMarkup = \'' + req.body.OutsideMarkup + '\', SpecialBillingInstructins = \'' + req.body.SpecialBillingInstructins.replace(/'/gi, "''") + '\', SEEALSO = \'' + req.body.SEEALSO.replace(/'/gi, "''") + '\', Project_Specifications = ' + req.body.Project_Specifications +
     // ', AutoCAD_Project = ' + req.body.AutoCAD_Project + ', GIS_Project = ' + req.body.GIS_Project + ', ClientCompany1 = \'' + req.body.ClientCompany1.replace(/'/gi, "''") + '\', OfficeMailingLists1 = \'' + req.body.OfficeMailingLists1.replace(/'/gi, "''") + '\','+
@@ -546,13 +546,35 @@ app.post('/updater', jsonParser, (req, res) => {
     //console.log(query);
     const mydate = new Date().toString();
     console.log(query);
-    pool.query(query, (err, foo) => {
+    const request = pool.request();
+    request.query(query, (err, data) => {
         if(err) {
             createTicket(err, "Cannot update initiation:");
             console.log(err);
             res.send(JSON.parse(JSON.stringify(err)));
         }
         else {
+            // Update Team and Keywords tables to link to Project.
+            const result = data.recordset[0];
+            // console.log(data.recordset);
+                let teamArr = req.body.TeamMembers.split(',');
+                const teamType = (isProject && !isBillingGroup?'ProjectTeam':(isProject && isBillingGroup?'BillingGroupTeam':'PromoTeam'));
+                const keyType = (isProject && !isBillingGroup?'ProjectKeywords':(isProject && isBillingGroup?'BillingGroupKeywords':'PromoKeywords'));
+                let idType = (isProject && !isBillingGroup?'project_id':(isProject && isBillingGroup?'billing_id':'promo_id'));
+                let teamQuery = "DELETE * FROM "+teamType+" WHERE "+idType+" = "+ result.ID +";DELETE * FROM "+keyType+" WHERE "+(isBillingGroup?"group_id":idType)+" = "+ result.ID +";";
+                teamArr.forEach((memb) => {
+                    teamQuery += "INSERT INTO "+teamType+" VALUES ("+result.ID+", "+memb+");"
+                });
+                let keyArr = req.body.KeyIDs.split(',');
+                keyArr.forEach((key) => {
+                    teamQuery += "INSERT INTO "+keyType+" VALUES ("+result.ID+", "+key+");"
+                });
+                request.query(teamQuery, (uwu) => {
+                    if(uwu) {
+                        console.log("Error with query:\n" + teamQuery);
+                        console.error(uwu);
+                    }
+                });
             for(let ifNull of Object.keys(req.body)) {
                 if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL' || req.body[ifNull] == '') {
                     req.body[ifNull] = "None";
