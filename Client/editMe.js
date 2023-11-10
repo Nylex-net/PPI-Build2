@@ -656,7 +656,7 @@ function getPage(num) {
             '<div class="col-lg-4"><label for="billInst">Special Billing Instructions</label></div><div class="col-lg-8"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
             '<div class="col-lg-4"><label for="seeAlso">See Also</label></div><div class="col-lg-8"><textarea id="seeAlso" name="seeAlso" rows="5" cols="50" maxlength="200"></textarea></div>'+
             '<div class="col-lg-4"><label for="autocad">AutoCAD Job</label></div><div class="col-lg-8"><input type="radio" name="autocad" id="yesAuto" value="1" title="autocad"> Yes<input type="radio" name="autocad" value="0" title="autocad" checked> No </div>'+
-            '<div class="col-lg-4"><label for="gis">GIS Job</label></div><div class="col-lg-8"><input type="radio" id="gis" name="gis" value="1" title="gis"> Yes<input type="radio" name="gis" value="0" title="gis" checked> No</div><div class="col-lg-8"><label for="ProjSpecs">Project Specifications</label></div><div class="col-lg-8"><input type="radio" id="ProjSpecs" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications"> Yes <input type="radio" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications" checked> No</div>'
+            '<div class="col-lg-4"><label for="gis">GIS Job</label></div><div class="col-lg-8"><input type="radio" id="gis" name="gis" value="1" title="gis"> Yes<input type="radio" name="gis" value="0" title="gis" checked> No</div><div class="col-lg-4"><label for="ProjSpecs">Project Specifications</label></div><div class="col-lg-8"><input type="radio" id="ProjSpecs" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications"> Yes <input type="radio" name="ProjSpecs" title="ProjSpecs" placeholder="Project Specifications" checked> No</div>'
             + '</div>';
         }
         else if(!isProject) {
@@ -1942,6 +1942,7 @@ function teamString(memberArray) {
  */
 function preparePost() {
     userData[0].TeamMembers = teamMem.toString();
+    userData[0].TeamMemberNames = teamString(memNames);
     userData[0].ProfileCode = profCodeName;
     userData[0].contactTypeName = contactTypeName;
     userData[0].keyIDs = Projkeywords.toString();

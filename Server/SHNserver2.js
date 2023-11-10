@@ -545,7 +545,6 @@ app.post('/updater', jsonParser, (req, res) => {
     // query += (req.body.Projectid != null && req.body.Projectid != undefined && req.body.Projectid.length >=6 && !isNaN(req.body.Projectid))?' WHERE Projectid = \'' + req.body.Projectid + '\'':' WHERE PromoId = \'' + req.body.PromoId + '\'';
     //console.log(query);
     const mydate = new Date().toString();
-    console.log(query);
     const request = pool.request();
     request.query(query, (err, data) => {
         if(err) {
@@ -561,11 +560,11 @@ app.post('/updater', jsonParser, (req, res) => {
                 const teamType = (isProject && !isBillingGroup?'ProjectTeam':(isProject && isBillingGroup?'BillingGroupTeam':'PromoTeam'));
                 const keyType = (isProject && !isBillingGroup?'ProjectKeywords':(isProject && isBillingGroup?'BillingGroupKeywords':'PromoKeywords'));
                 let idType = (isProject && !isBillingGroup?'project_id':(isProject && isBillingGroup?'billing_id':'promo_id'));
-                let teamQuery = "DELETE * FROM "+teamType+" WHERE "+idType+" = "+ result.ID +";DELETE * FROM "+keyType+" WHERE "+(isBillingGroup?"group_id":idType)+" = "+ result.ID +";";
+                let teamQuery = "DELETE FROM "+teamType+" WHERE "+idType+" = "+ result.ID +";DELETE FROM "+keyType+" WHERE "+(isBillingGroup?"group_id":idType)+" = "+ result.ID +";";
                 teamArr.forEach((memb) => {
                     teamQuery += "INSERT INTO "+teamType+" VALUES ("+result.ID+", "+memb+");"
                 });
-                let keyArr = req.body.KeyIDs.split(',');
+                let keyArr = req.body.keyIDs.split(',');
                 keyArr.forEach((key) => {
                     teamQuery += "INSERT INTO "+keyType+" VALUES ("+result.ID+", "+key+");"
                 });
@@ -583,31 +582,31 @@ app.post('/updater', jsonParser, (req, res) => {
             let rower, head, titler, subtitler; // Will hold arrays of submission info for PDF configurations.
             if(isProject && isBillingGroup) { // Is a billing group.
                 rower = [
-                    ["Billing Group #", req.body.group_number, "Project ID", (req.body.project_id[req.body.project_id.length - 1] == 'A'?req.body.project_id.substring(0,req.body.project_id.length - 1):req.body.project_id)],
-                    [ "Billing Title", req.body.group_name, "Project Title", req.body.project_title],
-                    ['Group Manager', req.body.ProjectMgrName, "Project Manager", req.body.oldMgrName],
-                    ["Start Date", formatDate(req.body.start_date),'-','-'],
-                    ["Close Date", formatDate(req.body.close_date),'-','-'],
-                    ["QAQC Person", req.body.QAQCPersonName,'-','-'],
-                    ["Team Members", req.body.TeamMemberNames,'-','-'],
-                    ["Location", req.body.project_location,'-','-'],
+                    ["Billing Group #", req.body.group_number.toString(), "Project ID", (req.body.project_id[req.body.project_id.length - 1] == 'A'?req.body.project_id.substring(0,req.body.project_id.length - 1):req.body.project_id).toString()],
+                    [ "Billing Title", req.body.group_name.toString(), "Project Title", req.body.project_title.toString()],
+                    ['Group Manager', req.body.ProjectMgrName.toString(), "Project Manager", req.body.oldMgrName.toString()],
+                    ["Start Date", formatDate(req.body.start_date).toString(),'-','-'],
+                    ["Close Date", formatDate(req.body.close_date).toString(),'-','-'],
+                    ["QAQC Person", req.body.QAQCPersonName.toString(),'-','-'],
+                    ["Team Members", req.body.TeamMemberNames.toString(),'-','-'],
+                    ["Location", req.body.project_location.toString(),'-','-'],
                     ["Latitude", req.body.latitude.toString(),'-','-'],
                     ["Longitude", req.body.longitude.toString(),'-','-'],
-                    ["Keywords", req.body.ProjectKeywords,'-','-'],
-                    ["Service Area", (req.body.service_area == "NULL" || req.body.service_area == null?"None":req.body.service_area),'-','-'],
-                    ["Profile Code", req.body.ProfileCode,'-','-'],
+                    ["Keywords", req.body.ProjectKeywords.toString(),'-','-'],
+                    ["Service Area", (req.body.service_area == "NULL" || req.body.service_area == null?"None":req.body.service_area).toString(),'-','-'],
+                    ["Profile Code", req.body.ProfileCode.toString(),'-','-'],
                     ["Total Contract", (req.body.total_contract == "NULL" || req.body.total_contract == null?"None":req.body.total_contract.toString()),'-','-'],
-                    ["Retainer", (req.body.retainer == "Waived by X"?"Waived by " + req.body.waived_by:(req.body.retainer == "Enter Amount"?req.body.retainer_paid.toString():req.body.retainer)),'-','-'],
-                    ["Contract Type",req.body.contactTypeName,'-','-'],
-                    ["Invoice Format", req.body.invoiceName,'-','-'],
-                    ["Client Contract/PO #", req.body.client_contract_PO,'-','-'],
+                    ["Retainer", (req.body.retainer == "Waived by X"?"Waived by " + req.body.waived_by:(req.body.retainer == "Enter Amount"?req.body.retainer_paid.toString():req.body.retainer.toString())),'-','-'],
+                    ["Contract Type",req.body.contactTypeName.toString(),'-','-'],
+                    ["Invoice Format", req.body.invoiceName.toString(),'-','-'],
+                    ["Client Contract/PO #", req.body.client_contract_PO.toString(),'-','-'],
                     ["Outside Markup", req.body.outside_markup.toString(),'-','-'],
-                    ["Prevailing Wage", (req.body.prevailing_wage == 1?req.body.agency_name:"No"),'-','-'],
-                    ["Billing Instructions", req.body.special_billing_instructions,'-','-'],
+                    ["Prevailing Wage", (req.body.prevailing_wage == 1?req.body.agency_name.toString():"No"),'-','-'],
+                    ["Billing Instructions", req.body.special_billing_instructions.toString(),'-','-'],
                     ["AutoCAD Project", (req.body.autoCAD == 1)?'Yes':'No','-','-'],
                     ["GIS Project", (req.body.GIS == 1)?'Yes':'No','-','-'],
                     ["Binder Size", (req.body.binder_size == "NULL" || req.body.binder_size == null?"None":req.body.BinderSize + " inch"),'Updated on',mydate.toString()],
-                    ["Description of Services", req.body.description_service,'Updated By',req.body.CreatedBy]
+                    ["Description of Services", req.body.description_service.toString(),'Updated By',req.body.CreatedBy.toString()]
                 ];
                 head = ["Billing", "Input", "Project", "Info"];
                 titler = req.body.project_id;
@@ -615,35 +614,35 @@ app.post('/updater', jsonParser, (req, res) => {
             }
             else if(isProject) { // Is a project.
                 rower = [
-                    ["Project", (req.body.project_id[req.body.project_id.length - 1] == 'A'?req.body.project_id.substring(0,req.body.project_id.length - 1):req.body.project_id), "Client Company", req.body.client_company],
-                    ["Title", req.body.project_title, "Client Abbreviation", (req.body.client_abbreviation == null || req.body.client_abbreviation == undefined || req.body.client_abbreviation == 'NULL')?"None":req.body.client_abbreviation],
-                    ["Project Manager", req.body.ProjectMgrName, "Client First Name", req.body.first_name],
-                    ["QAQC Person", req.body.QAQCPersonName, "Client Last Name", req.body.last_name],
-                    ["Team Members", req.body.TeamMemberNames, "Relationship", req.body.relationship],
-                    ["Start Date", formatDate(req.body.start_date), "Job Title", req.body.job_title],
-                    ["Close Date", formatDate(req.body.close_date), "Address", req.body.address1],
-                    ["Location", req.body.project_location, "2nd Address", req.body.address2],
-                    ["Latitude", req.body.latitude.toString(),"City", req.body.city],
-                    ["Longitude", req.body.longitude.toString(), "State", req.body.state],
-                    ["Keywords", req.body.ProjectKeywords, "Zip", req.body.zip_code],
-                    ["SHN Office", getDir(req.body.SHNOffice_ID).substring(1,req.body.SHNOffice_ID.length), "Work Phone", req.body.work_phone],
-                    ["Service Area", req.body.service_area, "Home Phone", req.body.home_phone],
-                    ["Total Contract", req.body.total_contract, "Cell Phone", (req.body.cell)],
-                    ["Service Agreement", req.body.exempt_agreement, "Fax", (req.body.fax)],
-                    ["Why?", req.body.why, "Email", (req.body.email)],
-                    ["Retainer", (req.body.retainer == 'Enter Amount'?req.body.retainer_paid.toString():(req.body.retainer == 'Waived by X'?'Waived By ' + req.body.waived_by:req.body.retainer)), "Binder Size", req.body.binder_size.toString()],
-                    ["Profile Code", req.body.ProfileCode, "Binder Location", req.body.binder_location],
-                    ["Contract Type", req.body.contactTypeName,'-','-'],
-                    ["Invoice Format", req.body.invoiceName,'-','-'],
-                    ["Client Contract/PO#", req.body.client_contract_PO,'-','-'],
+                    ["Project", (req.body.project_id[req.body.project_id.length - 1] == 'A'?req.body.project_id.substring(0,req.body.project_id.length - 1):req.body.project_id).toString(), "Client Company", req.body.client_company.toString()],
+                    ["Title", req.body.project_title.toString(), "Client Abbreviation", ((req.body.client_abbreviation == null || req.body.client_abbreviation == undefined || req.body.client_abbreviation == 'NULL')?"None":req.body.client_abbreviation).toString()],
+                    ["Project Manager", req.body.ProjectMgrName.toString(), "Client First Name", req.body.first_name.toString()],
+                    ["QAQC Person", req.body.QAQCPersonName.toString(), "Client Last Name", req.body.last_name.toString()],
+                    ["Team Members", req.body.TeamMemberNames.toString(), "Relationship", req.body.relationship.toString()],
+                    ["Start Date", formatDate(req.body.start_date).toString(), "Job Title", req.body.job_title.toString()],
+                    ["Close Date", formatDate(req.body.close_date).toString(), "Address", req.body.address1.toString()],
+                    ["Location", req.body.project_location.toString(), "2nd Address", req.body.address2.toString()],
+                    ["Latitude", req.body.latitude.toString(),"City", req.body.city.toString()],
+                    ["Longitude", req.body.longitude.toString(), "State", req.body.state.toString()],
+                    ["Keywords", req.body.ProjectKeywords.toString(), "Zip", req.body.zip_code.toString()],
+                    ["SHN Office", getDir(req.body.SHNOffice_ID).substring(1), "Work Phone", req.body.work_phone.toString()],
+                    ["Service Area", req.body.service_area.toString(), "Home Phone", req.body.home_phone.toString()],
+                    ["Total Contract", req.body.total_contract.toString(), "Cell Phone", (req.body.cell).toString()],
+                    ["Service Agreement", req.body.exempt_agreement.toString(), "Fax", (req.body.fax).toString()],
+                    ["Why?", req.body.why.toString(), "Email", (req.body.email).toString()],
+                    ["Retainer", (req.body.retainer == 'Enter Amount'?req.body.retainer_paid.toString():(req.body.retainer == 'Waived by X'?'Waived By ' + req.body.waived_by:req.body.retainer)).toString(), "Binder Size", req.body.binder_size.toString()],
+                    ["Profile Code", req.body.ProfileCode.toString(), "Binder Location", req.body.binder_location.toString()],
+                    ["Contract Type", req.body.contactTypeName.toString(),'-','-'],
+                    ["Invoice Format", req.body.invoiceName.toString(),'-','-'],
+                    ["Client Contract/PO#", req.body.client_contract_PO.toString(),'-','-'],
                     ["Outside Markup", req.body.outside_markup.toString(),'-','-'],
                     ["Prevailing Wage", (req.body.prevailing_wage == 1?req.body.agency_name:'No'), '-','-'],
-                    ["Billing Instructions", (req.body.special_billing_instructions),'-','-'],
-                    ["See Also", (req.body.see_also == 'NULL' || req.body.see_also == null?'None':req.body.see_also),'-','-'],
+                    ["Billing Instructions", (req.body.special_billing_instructions.toString()),'-','-'],
+                    ["See Also", (req.body.see_also == 'NULL' || req.body.see_also == null?'None':req.body.see_also).toString(),'-','-'],
                     ["AutoCAD", (req.body.autoCAD == 1)?'Yes':'No','-','-'],
                     ["GIS Job", (req.body.GIS == 1)?'Yes':'No','-','-'],
                     ["Project Specifications", (req.body.project_specifications == 1)?'Yes':'No','Updated on',mydate.toString()],
-                    ["Description of Services", (req.body.description_service),'Updated By',(req.body.CreatedBy)]
+                    ["Description of Services", (req.body.description_service).toString(),'Updated By',(req.body.CreatedBy).toString()]
                 ];
                 head = ["Name", "User Input", "Client", "Info"];
                 titler = req.body.project_id;
@@ -651,32 +650,32 @@ app.post('/updater', jsonParser, (req, res) => {
             }
             else { // Is a Promo.
                 rower = [
-                    ["Promo ID", (req.body.promo_id[req.body.promo_id.length - 1] == 'A'?req.body.promo_id.substring(0,req.body.promo_id.length - 1):req.body.promo_id), "Client Company", req.body.client_company],
-                    ["Title", req.body.promo_title, "Client Abbreviation", req.body.client_abbreviation],
-                    ["Project Manager", req.body.ProjectMgrName, "Client First Name", req.body.first_name],
-                    ["QAQC Person", req.body.QAQCPersonName, "Client Last Name", req.body.first_name],
-                    ["Type of Promo", req.body.promo_type, "Relationship", req.body.relationship],
-                    ["Team Members", req.body.TeamMemberNames, "Job Title", req.body.job_title],
-                    ["Start Date", formatDate(req.body.start_date), "Address", req.body.address1],
-                    ["Close Date", formatDate(req.body.close_date), "2nd Address", (req.body.address2 == 'NULL' || req.body.address2 == null ?'None':req.body.address2)],
+                    ["Promo ID", (req.body.promo_id[req.body.promo_id.length - 1] == 'A'?req.body.promo_id.substring(0,req.body.promo_id.length - 1):req.body.promo_id), "Client Company", req.body.client_company.toString()],
+                    ["Title", req.body.promo_title.toString(), "Client Abbreviation", req.body.client_abbreviation.toString()],
+                    ["Project Manager", req.body.ProjectMgrName.toString(), "Client First Name", req.body.first_name.toString()],
+                    ["QAQC Person", req.body.QAQCPersonName.toString(), "Client Last Name", req.body.first_name.toString()],
+                    ["Type of Promo", req.body.promo_type.toString(), "Relationship", req.body.relationship.toString()],
+                    ["Team Members", req.body.TeamMemberNames.toString(), "Job Title", req.body.job_title.toString()],
+                    ["Start Date", formatDate(req.body.start_date).toString(), "Address", req.body.address1.toString()],
+                    ["Close Date", formatDate(req.body.close_date).toString(), "2nd Address", (req.body.address2 == 'NULL' || req.body.address2 == null ?'None':req.body.address2).toString()],
                     ["Location", req.body.promo_location,"City", req.body.city],
-                    ["Latitude", req.body.latitude.toString(), "State", req.body.state],
-                    ["Longitude", req.body.longitude.toString(), "Zip", req.body.zip_code],
-                    ["Keywords", req.body.ProjectKeywords, "Work Phone", req.body.PhoneW1],
-                    ["SHN Office", getDir(req.body.SHNOffice_ID).substring(1,req.body.SHNOffice_ID.length), "Home Phone", (req.body.home_phone == 'NULL' || req.body.home_phone == null ?'None':req.body.home_phone)],
-                    ["Service Area", req.body.service_area, "Cell Phone", (req.body.cell == 'NULL' || req.body.cell == null ?'None':req.body.cell)],
-                    ["Profile Code", req.body.ProfileCode, "Fax", (req.body.fax == 'NULL' || req.body.fax == null ?'None':req.body.fax)],
-                    ['-', '-', "Email", req.body.email],
-                    ['-', '-', "Binder Size", (req.body.binder_size == 'NULL' || req.body.binder_size == null ?'None':req.body.binder_size)],
+                    ["Latitude", req.body.latitude.toString(), "State", req.body.state.toString()],
+                    ["Longitude", req.body.longitude.toString(), "Zip", req.body.zip_code.toString()],
+                    ["Keywords", req.body.ProjectKeywords.toString(), "Work Phone", req.body.work_phone.toString()],
+                    ["SHN Office", getDir(req.body.SHNOffice_ID).substring(1), "Home Phone", (req.body.home_phone == 'NULL' || req.body.home_phone == null ?'None':req.body.home_phone).toString()],
+                    ["Service Area", req.body.service_area.toString(), "Cell Phone", (req.body.cell == 'NULL' || req.body.cell == null ?'None':req.body.cell).toString()],
+                    ["Profile Code", req.body.ProfileCode.toString(), "Fax", (req.body.fax == 'NULL' || req.body.fax == null ?'None':req.body.fax).toString()],
+                    ['-', '-', "Email", req.body.email.toString()],
+                    ['-', '-', "Binder Size", (req.body.binder_size == 'NULL' || req.body.binder_size == null ?'None':req.body.binder_size).toString()],
                     ['-', '-', 'Updated On', mydate.toString()],
-                    ["Description of Service",req.body.description_service,'Updated By', req.body.CreatedBy]
+                    ["Description of Service",req.body.description_service.toString(),'Updated By', req.body.CreatedBy.toString()]
                 ];
                 head = ["Name", "User Input", "Client", "Info"];
                 titler = req.body.promo_id;
                 subtitler = "Promo Updated";
             }
             const doc = new PDFDocument();
-            doc.pipe(fs.createWriteStream(dir + '/'+num+'.pdf'));
+            doc.pipe(fs.createWriteStream(dir + '/'+(isBillingGroup?req.body.group_number:num)+'.pdf'));
         
             // PDF table creation runs asynchronously.
             (async function(){
@@ -1133,9 +1132,9 @@ function moveProject(ID, closer) {
             let dest = DEMO_PATH + closedJobDirDemo(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'');
             if(!fs.existsSync(dest)) {
                 fs.mkdir((dest), err => {
-                    if(err){
-                        throw err;
-                    }
+                    // if(err){
+                    //     throw err;
+                    // }
                 });
             }
             console.log("Moving to " + dest + filer)

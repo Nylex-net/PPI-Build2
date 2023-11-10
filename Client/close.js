@@ -27,7 +27,7 @@ function findProjects() {
         if (xhr.readyState == 4 && xhr.status == 200) {
             var json = JSON.parse(xhr.responseText);
             console.log(json);
-            if(json[0].length > 0 || json[1].length > 0) { // JSON Results should at least contain a Projectid Key.
+            if(json[0].recordset.length > 0 || json[1].recordset.length > 0) { // JSON Results should at least contain a Projectid Key.
                 document.getElementById('results').innerHTML = resultString(json);
             }
             else{ // No JSON results.  We got an empty array instead [].
@@ -48,11 +48,11 @@ function findProjects() {
 
 function resultString(json) {
     let result = '<table><tr><th><strong>Project/Promo ID</strong></th><th><strong>Manager</strong></th><th><strong>Title</strong></th><th><strong>Client Company</strong></th><th><strong>Description</strong></th><th></th></tr>';
-    for(let entry of json[0]) {
-        result += '<tr><td>' + entry.project_id + '</td><td>' + entry.first + " " + entry.last + '</td><td>' + entry.project_title + '</td><td>' + entry.client_company + '</td><td>' + entry.description_service + '</td><td>'+(entry.closed == 0?'<strong>Closed</strong>':'<button type="button" onclick="closeProject('+ entry.ID +', false, \''+entry.project_id+'\');">Close</button>')+'</td></tr>';
+    for(let entry of json[0].recordset) {
+        result += '<tr><td>' + entry.project_id + '</td><td>' + entry.first + " " + entry.last + '</td><td>' + entry.project_title + '</td><td>' + entry.client_company + '</td><td>' + entry.description_service + '</td><td>'+(entry.closed == 1 || entry.closed == true?'<strong>Closed</strong>':'<button type="button" onclick="closeProject('+ entry.ID +', true, \''+entry.project_id+'\');">Close</button>')+'</td></tr>';
     }
-    for(let pros of json[1]) {
-        result += '<tr><td>' + pros.promo_id + '</td><td>' + pros.first + " " + pros.last + '</td><td>' + pros.promo_title + '</td><td>' + pros.client_company + '</td><td>' + pros.description_service + '</td><td>'+(pros.closed == 0?'<strong>Closed</strong>':'<button type="button" onclick="closeProject('+ pros.ID +', false, \''+pros.promo_id+'\');">Close</button>')+'</td></tr>';
+    for(let pros of json[1].recordset) {
+        result += '<tr><td>' + pros.promo_id + '</td><td>' + pros.first + " " + pros.last + '</td><td>' + pros.promo_title + '</td><td>' + pros.client_company + '</td><td>' + pros.description_service + '</td><td>'+(pros.closed == 1 || pros.closed == true?'<strong>Closed</strong>':'<button type="button" onclick="closeProject('+ pros.ID +', false, \''+pros.promo_id+'\');">Close</button>')+'</td></tr>';
     }
     result += '</table>';
     return result;
