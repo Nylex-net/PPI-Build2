@@ -12,7 +12,6 @@ const PDFDocument = require('pdfkit-table');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const winPermissionsManager = require('win-permissions-js');
-const { exec } = require('child_process');
 const https = require('https');
 const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\PPI\\Database\\SHN_Project_Backup.mdb;";
 const jsonData = require('./config.json');
