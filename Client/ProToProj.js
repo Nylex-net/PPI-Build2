@@ -34,7 +34,7 @@ let contactType = 0; // required
 let invoiceFormat = "B";
 let contractPONum = ''; // required
 let outsideMarkup = 15; // required
-let prevWage = "No"; // required
+let prevWage = 0; // required
 let agency_name = '';
 let specBillInstr = '';
 let seeAlso = '';
@@ -93,9 +93,13 @@ let homePhoneInput;
 let cellPhoneInput;
 let faxInput;
 
-const HOST = 'e-dt-usertest';
+const HOST = 'e-hv-ppi';
 
 function findPromos() {
+    if(document.getElementById('PromoSucc').value.length < 10) {
+        document.getElementById('results').innerHTML = '<strong>No, I meant the full Promo number.</strong>';
+        return;
+    }
     document.getElementById('results').innerHTML = 'Searching...';
     var xhr = new XMLHttpRequest();
     var url = "https://"+HOST+".shn-engr.com:3000/searchPromos";
@@ -145,10 +149,10 @@ function resultString(jsonRes) {
     formatMap.clear();
     for(let i = 0; i < jsonRes.length; i++) {
         jsonRes[i].promo_title = (jsonRes[i].promo_title == null || jsonRes[i].promo_title == undefined || jsonRes[i].promo_title == '') ? '[NO TITLE]':jsonRes[i].promo_title;
-        if(!formatMap.has(jsonRes[i].promo_id)) {
-            formatMap.set(jsonRes[i].promo_id, '<p>Promo Number: ' + jsonRes[i].promo_id + ' || Title: ' + jsonRes[i].promo_title + '<br>Project Manager: ' + jsonRes[i].first + " " + jsonRes[i].last + " || Client: "+jsonRes[i].first_name + " " + jsonRes[i].last_name + "<br>Client Company: " + jsonRes[i].client_company);
+        if(!formatMap.has(jsonRes[i].promo_id[0])) {
+            formatMap.set(jsonRes[i].promo_id[0], '<p>Promo Number: ' + jsonRes[i].promo_id[0] + ' || Title: ' + jsonRes[i].promo_title + '<br>Project Manager: ' + jsonRes[i].first + " " + jsonRes[i].last + " || Client: "+jsonRes[i].first_name + " " + jsonRes[i].last_name + "<br>Client Company: " + jsonRes[i].client_company);
         }
-        projectMap.set(jsonRes[i].promo_id, jsonRes[i]);
+        projectMap.set(jsonRes[i].promo_id[0], jsonRes[i]);
     }
     for(let key of formatMap.keys()) {
         formatMap.set(key, formatMap.get(key) + '</p>' + addFields(key));
@@ -161,7 +165,7 @@ function addFields(promo) {
 
 /**
  * Saves Promo number and loads Microsoft Login.
- * @param {String} myPromo 
+ * @param {String} myPromo
  */
 function startForm(myPromo) {
     selectedPromo = myPromo;
@@ -177,9 +181,9 @@ function starter(res) {
     if(selectedPromo == undefined || selectedPromo == null) {
         return;
     }
-    rizz = rizz.filter((data) => {
-        return data.promo_id === selectedPromo;
-    });
+    // rizz = rizz.filter((data) => {
+    //     return data[0].promo_id[0] === selectedPromo;
+    // });
     document.getElementById('inserter').innerHTML = '<form name="myForm" id="projForm" onsubmit="reqField();" action="" method=""><div class="container"></div></form>';
     chosenJson = projectMap.get(selectedPromo);
     // getKeysByName();
@@ -1160,7 +1164,7 @@ function page7() {
     '<div class="col-lg-6">Total Contract' + '</div>'
     + '<div class="col-lg-6">' + totalContract + '</div>'+
     '<div class="col-lg-6">Exempt from Service Agreement?' + '</div>'
-    + '<div class="col-lg-6">' + ServiceAgreement + '</div>'+
+    + '<div class="col-lg-6">' + Service_Agreement + '</div>'+
     '<div class="col-lg-6">If yes, why?' + '</div>'
     + '<div class="col-lg-6">' + ifYesWhy + '</div>'+
     '<div class="col-lg-6">Retainer' + '</div>'
@@ -1180,7 +1184,7 @@ function page7() {
     '<div class="col-lg-6">Outside Markup' + '</div>'
     + '<div class="col-lg-6">' + outsideMarkup + '</div>'+
     '<div class="col-lg-6">Prevailige Wage' + '</div>'
-    + '<div class="col-lg-6">' + prevWage + '</div>'+
+    + '<div class="col-lg-6">' + (prevWage == 1?"Yes":"No") + '</div>'+
     '<div class="col-lg-6">Agency' + '</div>'
     + '<div class="col-lg-6">' + agency_name + '</div>'+
     '<div class="col-lg-6">Special Billing Instructions' + '</div>'
@@ -1279,6 +1283,7 @@ function saveChoices(currPage) {
         profCode = document.getElementById('code').value;
         profCodeName = document.getElementById('code').options[document.getElementById("code").selectedIndex].text;
         projType = (document.getElementById('conf').checked?1:(document.getElementById('nda').checked?2:0));
+        prevWage = document.getElementById('wage').value;
         if(ServAgree) {
             ifYesWhy = document.getElementById('bruh').value.trim();
         }
@@ -1480,7 +1485,7 @@ function reqField(currPage) { // Parameter currPage is the page the user is curr
         }
         // Test the values of the other variables.
 
-        if(shnOffice == -1 || serviceArea == 0 || totalContract == '' || totalContract < 0 || retainer == 0 || profCode == -1 || profCode == undefined) {
+        if(shnOffice == -1 || serviceArea == 0 || totalContract == '' || totalContract < 0 || retainer == 0 || profCode == -1 || profCode == undefined || (prevWage != 0 && prevWage != 1)) {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
@@ -1631,6 +1636,7 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         this.document.querySelector('#contract').value = totalContract;
         this.document.querySelector('#yesAgreement').checked = ServAgree;
         this.document.querySelector('#retainer').value = retainer;
+        document.getElementById('wage').value = prevWage;
 
         // If service agreement was previously selected, select "Yes" and fill value of the external field.
 
