@@ -1078,7 +1078,7 @@ app.post('/billMe', jsonParser, (req, res) => {
     // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
     // console.log('Project Number is ' + req.body.ProjectNumber + ', and Description is ' + req.body.Description);
     const request = pool.request();
-    request.query('SELECT Projects.*, Staff.ID AS staff_id, Staff.first AS staff_first, Staff.last AS staff_last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id = \''+ req.body.ProjectNumber +'\'', (error, data) => {
+    request.query('SELECT Projects.*, Staff.ID AS staff_id, Staff.first AS staff_first, Staff.last AS staff_last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id = \''+ req.body.ProjectNumber +'\' OR Projects.project_id LIKE \''+ req.body.ProjectNumber +'_\'', (error, data) => {
         if(error) {
             console.log(error);
             res.send(JSON.stringify(error));

@@ -55,38 +55,40 @@ const HOST = 'e-dt-usertest';
 
 function findProjects() {
     const projectNumber = document.getElementById('billGrp').value.trim();
-    if(projectNumber.length > 15 || projectNumber == '') {
+    if(projectNumber == '' || projectNumber.length < 6) {
         document.getElementById('billGrp').innerHTML = '<label for="billGrp">Exact Project Number</label><input type="text" id="billGrp"/><p>Invalid project number.</p>';
     }
-    
-    const jsonString = JSON.parse(JSON.stringify('{"ProjectNumber":"'+ projectNumber +'"}'));
+    else {
+        document.getElementById('billGrp').innerHTML = '<label for="billGrp">Exact Project Number</label><input type="text" id="billGrp"/><p>Wait...</p>';
+        const jsonString = JSON.parse(JSON.stringify('{"ProjectNumber":"'+ projectNumber +'"}'));
 
-    var xhr = new XMLHttpRequest();
-    var url = "https://"+HOST+".shn-engr.com:3000/billMe";
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onerror = function(e) {
-        document.getElementById('billRes').innerHTML = '<label for="billGrp">Exact Project Number</label><input type="text" id="billGrp"/><br><p>Connection error.  Try again or get help.</p><br><button type="button" onclick="findProjects();">Search Projects</button>';
-        console.log(e);
-    }
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var json = JSON.parse(xhr.responseText);
-            console.log(json);
-            if(json.length > 0 && json[0].hasOwnProperty('ID')) {
-                document.getElementById('billRes').innerHTML = '<label for="billGrp">Exact Project</label><input type="text" id="billGrp"/><br><button type="button" onclick="findProjects();">Search Projects</button><p>Projects:<br><p id="results"></p></p>';
-                resultString(json);
-                // for(let content of formatMap.values()) {
-                //     document.getElementById('results').innerHTML = content;
-                // }
-            }
-            else{
-                document.getElementById('billRes').innerHTML = '<label for="billGrp">Exact Project</label><input type="text" id="billGrp"/><button type="button" onclick="findProjects();">Search Projects</button><p>No Projects found.</p>';
-            }
+        var xhr = new XMLHttpRequest();
+        var url = "https://"+HOST+".shn-engr.com:3000/billMe";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onerror = function(e) {
+            document.getElementById('billRes').innerHTML = '<label for="billGrp">Exact Project Number</label><input type="text" id="billGrp"/><br><p>Connection error.  Try again or get help.</p><br><button type="button" onclick="findProjects();">Search Projects</button>';
+            console.log(e);
         }
-    };
-    console.log(jsonString);
-    xhr.send(jsonString);  // an error message typically looks like "{process: {…}, exitCode: 0}" in the console.
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var json = JSON.parse(xhr.responseText);
+                console.log(json);
+                if(json.length > 0 && json[0].hasOwnProperty('ID')) {
+                    document.getElementById('billRes').innerHTML = '<label for="billGrp">Exact Project</label><input type="text" id="billGrp"/><br><button type="button" onclick="findProjects();">Search Projects</button><p>Projects:<br><p id="results"></p></p>';
+                    resultString(json);
+                    // for(let content of formatMap.values()) {
+                    //     document.getElementById('results').innerHTML = content;
+                    // }
+                }
+                else{
+                    document.getElementById('billRes').innerHTML = '<label for="billGrp">Exact Project</label><input type="text" id="billGrp"/><button type="button" onclick="findProjects();">Search Projects</button><p>No Projects found.</p>';
+                }
+            }
+        };
+        console.log(jsonString);
+        xhr.send(jsonString);  // an error message typically looks like "{process: {…}, exitCode: 0}" in the console.
+    }
 }
 
 function resultString(jsonRes) {
