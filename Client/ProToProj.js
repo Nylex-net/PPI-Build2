@@ -995,7 +995,7 @@ function expandWhy() {
  */
 
 function agency() {
-    if(document.getElementById('wage').value == "Yes") {
+    if(document.getElementById('wage').value == 1) {
         document.getElementById('agent').innerHTML = '<br><label for="agentcy">Name of Agency:<span class="astrick">*</span></label><br><input type="text" id="agency" name="agenct" title="Agency" maxlength="10">';
     }
     else {
@@ -1283,7 +1283,6 @@ function saveChoices(currPage) {
         profCode = document.getElementById('code').value;
         profCodeName = document.getElementById('code').options[document.getElementById("code").selectedIndex].text;
         projType = (document.getElementById('conf').checked?1:(document.getElementById('nda').checked?2:0));
-        prevWage = document.getElementById('wage').value;
         if(ServAgree) {
             ifYesWhy = document.getElementById('bruh').value.trim();
         }
@@ -1305,7 +1304,8 @@ function saveChoices(currPage) {
         contractPONum = document.getElementById('PO').value.trim();
         outsideMarkup = document.getElementById('OutMark').value;
         // outsideMarkupName = document.getElementById('OutMark').options[document.getElementById("OutMark").selectedIndex].text;
-        prevWage = (document.getElementById('wage').value == 'Yes' && document.getElementById('agency').value != undefined && document.getElementById('agency').value != null)?document.getElementById('agency').value.trim():'No';
+        prevWage = document.getElementById('wage').value;
+        agency_name = (prevWage == 1 && document.getElementById('agency').value != undefined && document.getElementById('agency').value != null)?document.getElementById('agency').value.trim():'';
         specBillInstr = document.getElementById('billInst').value.trim();
         seeAlso = document.getElementById('seeAlso').value.trim();
         autoCad = document.getElementById('yesAuto').checked;
@@ -1485,7 +1485,7 @@ function reqField(currPage) { // Parameter currPage is the page the user is curr
         }
         // Test the values of the other variables.
 
-        if(shnOffice == -1 || serviceArea == 0 || totalContract == '' || totalContract < 0 || retainer == 0 || profCode == -1 || profCode == undefined || (prevWage != 0 && prevWage != 1)) {
+        if(shnOffice == -1 || serviceArea == 0 || totalContract == '' || totalContract < 0 || retainer == 0 || profCode == -1 || profCode == undefined) {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
@@ -1518,7 +1518,7 @@ function reqField(currPage) { // Parameter currPage is the page the user is curr
 
         // Test against required user selections and fields to determine if values are valid.
 
-        if(contactType == 0 || contractPONum == '' || outsideMarkup == '' || outsideMarkup < 0 || outsideMarkup > 100) {
+        if(contactType == 0 || contractPONum == '' || outsideMarkup == '' || outsideMarkup < 0 || outsideMarkup > 100 || (prevWage != 0 && prevWage != 1) || (prevWage == 1 && agency_name == '')) {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
@@ -1636,7 +1636,6 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         this.document.querySelector('#contract').value = totalContract;
         this.document.querySelector('#yesAgreement').checked = ServAgree;
         this.document.querySelector('#retainer').value = retainer;
-        document.getElementById('wage').value = prevWage;
 
         // If service agreement was previously selected, select "Yes" and fill value of the external field.
 
@@ -1674,6 +1673,10 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         document.getElementById('PO').value = contractPONum;
         document.getElementById('OutMark').value = outsideMarkup;
         document.getElementById('wage').value = prevWage;
+        if(prevWage == 1) {
+            agency();
+            document.getElementById('agency').value = agency_name;
+        }
         document.getElementById('billInst').value = specBillInstr;
         document.getElementById('seeAlso').value = seeAlso;
         document.getElementById('yesAuto').checked = autoCad;
