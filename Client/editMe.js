@@ -90,7 +90,7 @@ async function fetchInfo() {
  */
 
 function manager(currPage) {
-    document.getElementById('projForm').innerHTML = getPage(currPage);
+    document.getElementById('projForm').innerHTML = '<div class="container">' + getPage(currPage) + '</div>';
     document.getElementById('projForm').innerHTML += ((!isProject && currPage == 6) || (isProject && currPage == 7) || (isBillingGroup && currPage == 4))?'<div id="sending"><div class="buttons"><button type="button" onclick="goBack('+ currPage +')">Back</button><button type="button" onclick="preparePost()">Submit</button></div></div>':'<div class="buttons"><button type="button" onclick="goBack('+ currPage +')">Back</button><button type="button" onclick="reqField('+currPage+')">Next</button></div>';
     if(currPage === 1) {
         if(!isBillingGroup) {

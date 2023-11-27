@@ -1791,7 +1791,7 @@ function getPage(currPage) { // Parameter currPage is the page to format and be 
         
         // Get contents of the page.
 
-        document.getElementById('projForm').innerHTML = page1();
+        document.getElementById('projForm').innerHTML = '<div class="container">' + page1() + '</div>';
         fillPage(1);
 
         // API call is needed to get employee names.
@@ -1806,7 +1806,7 @@ function getPage(currPage) { // Parameter currPage is the page to format and be 
 
         // Get contents of the page.
 
-        document.getElementById('projForm').innerHTML = page2();
+        document.getElementById('projForm').innerHTML = '<div class="container">' + page2() + '</div>';
         fillPage(2);
 
         // API call is needed to get keywords.
@@ -1821,7 +1821,7 @@ function getPage(currPage) { // Parameter currPage is the page to format and be 
 
         // Get contents of the page.
 
-        document.getElementById('projForm').innerHTML = page3();
+        document.getElementById('projForm').innerHTML = '<div class="container">' + page3() + '</div>';
 
         // API call is needed to get profile codes.
 
@@ -1835,7 +1835,7 @@ function getPage(currPage) { // Parameter currPage is the page to format and be 
 
         // Get contents of the page. No API calls for now, so we'll also append buttons.
 
-        document.getElementById('projForm').innerHTML = page4() + '<div class="buttons"><button type="button" onclick="goBack(3)">Back</button><button type="button" onclick="reqField(4)">Next</button></div>';
+        document.getElementById('projForm').innerHTML = '<div class="container">' + page4() + '</div>' + '<div class="buttons"><button type="button" onclick="goBack(3)">Back</button><button type="button" onclick="reqField(4)">Next</button></div>';
 
         // Fill the page, since we don't have an API call.
 
@@ -1845,7 +1845,7 @@ function getPage(currPage) { // Parameter currPage is the page to format and be 
 
         // Get contents of the page. No API calls for now, so we'll also append buttons.
 
-        document.getElementById('projForm').innerHTML = page5() + '<div class="buttons"><button type="button" onclick="goBack(4)">Back</button><button type="button" onclick="reqField(5)">Next</button></div>';
+        document.getElementById('projForm').innerHTML = '<div class="container">' + page5() + '</div>' + '<div class="buttons"><button type="button" onclick="goBack(4)">Back</button><button type="button" onclick="reqField(5)">Next</button></div>';
 
         workPhoneInput = document.getElementById('WP');
         homePhoneInput = document.getElementById('HP');
@@ -1904,7 +1904,7 @@ function getPage(currPage) { // Parameter currPage is the page to format and be 
 
         // Get contents of the page. No API calls for now, so we'll also append buttons.
 
-        document.getElementById('projForm').innerHTML = page6() + '<div class="buttons"><button type="button" onclick="goBack(5)">Back</button><button type="button" onclick="reqField(6)">Review</button></div>';
+        document.getElementById('projForm').innerHTML = '<div class="container">' + page6() + '</div>' + '<div class="buttons"><button type="button" onclick="goBack(5)">Back</button><button type="button" onclick="reqField(6)">Review</button></div>';
 
         // Fill the page, since we don't have an API call.
 
@@ -1914,7 +1914,7 @@ function getPage(currPage) { // Parameter currPage is the page to format and be 
 
         // Get contents of the page. No API calls for now, so we'll also append buttons.
 
-        document.getElementById('projForm').innerHTML = page7() + '<div id="sending"><div class="buttons"><button type="button" onclick="goBack(6)">Back</button><button type="button" onclick="preparePost()">Submit</button></div></div>';
+        document.getElementById('projForm').innerHTML = '<div class="container">' + page7() + '</div>' + '<div id="sending"><div class="buttons"><button type="button" onclick="goBack(6)">Back</button><button type="button" onclick="preparePost()">Submit</button></div></div>';
     }
 }
 
