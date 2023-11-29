@@ -1428,19 +1428,19 @@ app.post('/contacts', jsonParser, (req, res) => {
  */
 
 // API for Justin's program.
-app.post('/peowihfds', jsonParser, (req, res) => {
-    // console.log(req.body);
-    let query = 'SELECT Id, Projectid, BillGrp, Lattitude, Longitude FROM Projects WHERE Id > ' + req.body.ID;
-    if(isNaN(req.body.ID) || req.body.ID == '') {
-        query = 'SELECT Id, Projectid, BillGrp, Lattitude, Longitude FROM Projects WHERE Id > (SELECT MAX(Id) - 20 FROM Projects)';
-    }
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query(query).then(data => {
-        res.send(JSON.stringify(data));
-    }).catch(error => {
-        res.send(JSON.stringify(error));
-    });
-})
+// app.post('/peowihfds', jsonParser, (req, res) => {
+//     // console.log(req.body);
+//     let query = 'SELECT Id, Projectid, BillGrp, Lattitude, Longitude FROM Projects WHERE Id > ' + req.body.ID;
+//     if(isNaN(req.body.ID) || req.body.ID == '') {
+//         query = 'SELECT Id, Projectid, BillGrp, Lattitude, Longitude FROM Projects WHERE Id > (SELECT MAX(Id) - 20 FROM Projects)';
+//     }
+//     const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
+//     connection.query(query).then(data => {
+//         res.send(JSON.stringify(data));
+//     }).catch(error => {
+//         res.send(JSON.stringify(error));
+//     });
+// })
 
 /*
 // API for Justin's program.
