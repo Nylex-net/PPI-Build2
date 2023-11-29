@@ -685,7 +685,7 @@ app.post('/promo', jsonParser, (req, res) => {
                     admins.push(admin);
                 }
                 // Query the Project manager's email.
-                pool.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr + ' AND email IS NOT NULL', (awNo, emails) => {
+                request.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr + ' AND email IS NOT NULL', (awNo, emails) => {
                     // console.log(emails);
                     if(awNo) {
                         console.log('Could not query emails.  The following error occurred instead:\n' + awNo);
@@ -1290,7 +1290,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
                         admins.push(admin);
                     }
                     // Query for the Project manager's contact email.
-                    pool.query('SELECT email FROM Staff WHERE ID = '+ req.body.NewMgr +' AND email IS NOT NULL', (awNo, emails) => {
+                    request.query('SELECT email FROM Staff WHERE ID = '+ req.body.NewMgr +' AND email IS NOT NULL', (awNo, emails) => {
                         if(awNo) {
                             console.log('Could not send email.  The following error occurred instead:\n' + awNo);
                         }
@@ -1316,13 +1316,14 @@ app.post('/submitBill', jsonParser, (req, res) => {
  */
 
 app.post('/searchPromos', jsonParser, (req, res) => {
-    pool.query('SELECT * FROM Promos INNER JOIN PromoTeam ON Promos.ID = PromoTeam.promo_id INNER JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id INNER JOIN Staff ON Promos.manager_id = Staff.ID WHERE Promos.promo_id = \''+ req.body.PromoId + '\' AND Promos.is_project = 0 AND Promos.promo_id LIKE \''+ req.body.PromoId +'_\'', (error, data) => {
+    const request = pool.request();
+    request.query('SELECT * FROM Promos INNER JOIN PromoTeam ON Promos.ID = PromoTeam.promo_id INNER JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id INNER JOIN Staff ON Promos.manager_id = Staff.ID WHERE Promos.promo_id = \''+ req.body.PromoId + '\' AND Promos.is_project = 0 AND Promos.promo_id LIKE \''+ req.body.PromoId +'_\'', (error, data) => {
         if(error) {
             console.error(error);
             res.send(JSON.parse(JSON.stringify(error)));
         }
         else {
-            res.send(JSON.parse(JSON.stringify(data)));
+            res.send(JSON.parse(JSON.stringify(data.recordset)));
         }
     });
 })
@@ -1350,7 +1351,8 @@ app.post('/rolodex', jsonParser, (req, res) => {
         query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
     }
     query += ' ORDER BY last_name, first_name, client_company, project_id;';
-    pool.query(query, (error, ProjData) => {
+    const request = pool.request();
+    request.query(query, (error, ProjData) => {
         if(error) {
             console.error(error);
             res.send(JSON.parse(JSON.stringify(error)));
@@ -1373,7 +1375,7 @@ app.post('/rolodex', jsonParser, (req, res) => {
                 query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
             }
             query += ' ORDER BY last_name, first_name, client_company, promo_id;';
-            pool.query(query, (err, ProData) => {
+            request.query(query, (err, ProData) => {
                 if(err) {
                     console.error(err);
                     res.send(JSON.parse(JSON.stringify(err)));
