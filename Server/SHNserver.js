@@ -1317,7 +1317,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
 
 app.post('/searchPromos', jsonParser, (req, res) => {
     const request = pool.request();
-    request.query('SELECT * FROM Promos INNER JOIN PromoTeam ON Promos.ID = PromoTeam.promo_id INNER JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id INNER JOIN Staff ON Promos.manager_id = Staff.ID WHERE Promos.promo_id = \''+ req.body.PromoId + '\' AND Promos.is_project = 0 AND Promos.promo_id LIKE \''+ req.body.PromoId +'_\'', (error, data) => {
+    request.query('SELECT * FROM Promos INNER JOIN PromoTeam ON Promos.ID = PromoTeam.promo_id RIGHT JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id LEFT JOIN Staff ON Promos.manager_id = Staff.ID WHERE (Promos.promo_id = \''+ req.body.PromoId + '\' OR Promos.promo_id LIKE \''+ req.body.PromoId +'_\') AND Promos.is_project = 0', (error, data) => {
         if(error) {
             console.error(error);
             res.send(JSON.parse(JSON.stringify(error)));
