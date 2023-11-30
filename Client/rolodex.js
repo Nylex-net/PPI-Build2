@@ -88,7 +88,7 @@ function toTable(json) {
     currResults.result = null;
     currResults.map.clear();
     console.log(json);
-    if(json[0].length == 0 && json[1].length == 0) {
+    if(json[0].recordset.length == 0 && json[1].recordset.length == 0) {
         document.getElementById('results').innerHTML = 'No results';
         return;
     }
@@ -102,12 +102,12 @@ function toTable(json) {
         syntax += addRow(entry, false);
     });
     syntax += '</table>';
-    if(json[0].length + json[1].length === 0) {
+    if(json[0].recordset.length+ json[1].recordset.length === 0) {
         document.getElementById('results').innerHTML = 'No Results<br>';
     }
     else {
-        document.getElementById('results').innerHTML = (json[0].length + json[1].length) + ' Results<br>' + syntax;
-        currResults.result =  (json[0].length + json[1].length) + ' Results<br>' + syntax;
+        document.getElementById('results').innerHTML = (json[0].recordset.length + json[1].recordset.length) + ' Results<br>' + syntax;
+        currResults.result =  (json[0].recordset.length + json[1].recordset.length) + ' Results<br>' + syntax;
     }
 }
 
@@ -130,34 +130,34 @@ function addRow(entry, isProj) {
     return row + '</tr>';
 }
 
-function expand(ID) {
-    let index = 0;
-    while(document.getElementById('Rolo').rows[index].cells[0].innerHTML != ID.toString() && index < document.getElementById('Rolo').rows.length) {
-        index++;
-    }
-    if(index >= document.getElementById('Rolo').rows.length) {
-        alert("Error: Couldn't find row.");
-        return;
-    }
-    let newRow = document.getElementById('Rolo').insertRow(index + 1);
-    let nullCell = newRow.insertCell(0);
-    let newCell1 = newRow.insertCell(1);
-    let newCell2 = newRow.insertCell(2);
-    let newCell3 = newRow.insertCell(3);
-    let newCell4 = newRow.insertCell(4);
-    let newCell5 = newRow.insertCell(5);
-    newRow.insertCell(6);
-    let newCell7 = newRow.insertCell(7);
-    newCell1.innerHTML = (currResults.map.get(ID.toString()).Address2_1 != undefined && currResults.map.get(ID.toString()).Address2_1 != null) ? "2nd Address: " + currResults.map.get(ID.toString()).Address2_1:"2nd Address:";
-    newCell2.innerHTML = (currResults.map.get(ID.toString()).PhoneH1 != null && currResults.map.get(ID.toString()).PhoneH1 != undefined) ? 'Home Phone: ' + currResults.map.get(ID.toString()).PhoneH1:'Home Phone:';
-    newCell3.innerHTML = (currResults.map.get(ID.toString()).Cell1 != null && currResults.map.get(ID.toString()).Cell1 != undefined) ? 'Cell: ' + currResults.map.get(ID.toString()).Cell1:'Cell:';
-    newCell4.innerHTML = (currResults.map.get(ID.toString()).Fax1 != null && currResults.map.get(ID.toString()).Fax1 != undefined) ? 'Fax: ' + currResults.map.get(ID.toString()).Fax1:'Fax:';
-    newCell5.innerHTML = (currResults.map.get(ID.toString()).OfficeMailingLists1 != null && currResults.map.get(ID.toString()).OfficeMailingLists1 != undefined && ID.length <= 7) ? 'Mailing list: ' + currResults.map.get(ID.toString()).OfficeMailingLists1:'';
-    newCell7.innerHTML = '<button type="button" id="edit" onclick="edit(\''+ ID +'\');">Edit</button>';
+// function expand(ID) {
+//     let index = 0;
+//     while(document.getElementById('Rolo').rows[index].cells[0].innerHTML != ID.toString() && index < document.getElementById('Rolo').rows.length) {
+//         index++;
+//     }
+//     if(index >= document.getElementById('Rolo').rows.length) {
+//         alert("Error: Couldn't find row.");
+//         return;
+//     }
+//     let newRow = document.getElementById('Rolo').insertRow(index + 1);
+//     let nullCell = newRow.insertCell(0);
+//     let newCell1 = newRow.insertCell(1);
+//     let newCell2 = newRow.insertCell(2);
+//     let newCell3 = newRow.insertCell(3);
+//     let newCell4 = newRow.insertCell(4);
+//     let newCell5 = newRow.insertCell(5);
+//     newRow.insertCell(6);
+//     let newCell7 = newRow.insertCell(7);
+//     newCell1.innerHTML = (currResults.map.get(ID.toString()).Address2_1 != undefined && currResults.map.get(ID.toString()).Address2_1 != null) ? "2nd Address: " + currResults.map.get(ID.toString()).Address2_1:"2nd Address:";
+//     newCell2.innerHTML = (currResults.map.get(ID.toString()).PhoneH1 != null && currResults.map.get(ID.toString()).PhoneH1 != undefined) ? 'Home Phone: ' + currResults.map.get(ID.toString()).PhoneH1:'Home Phone:';
+//     newCell3.innerHTML = (currResults.map.get(ID.toString()).Cell1 != null && currResults.map.get(ID.toString()).Cell1 != undefined) ? 'Cell: ' + currResults.map.get(ID.toString()).Cell1:'Cell:';
+//     newCell4.innerHTML = (currResults.map.get(ID.toString()).Fax1 != null && currResults.map.get(ID.toString()).Fax1 != undefined) ? 'Fax: ' + currResults.map.get(ID.toString()).Fax1:'Fax:';
+//     newCell5.innerHTML = (currResults.map.get(ID.toString()).OfficeMailingLists1 != null && currResults.map.get(ID.toString()).OfficeMailingLists1 != undefined && ID.length <= 7) ? 'Mailing list: ' + currResults.map.get(ID.toString()).OfficeMailingLists1:'';
+//     newCell7.innerHTML = '<button type="button" id="edit" onclick="edit(\''+ ID +'\');">Edit</button>';
 
-    document.getElementById(ID).innerHTML = 'Less';
-    document.getElementById(ID).onclick = function() {hide(ID.toString());};
-}
+//     document.getElementById(ID).innerHTML = 'Less';
+//     document.getElementById(ID).onclick = function() {hide(ID.toString());};
+// }
 
 function hide(ID) {
     let index = 0;
@@ -332,6 +332,7 @@ function preparePost(Id, proj) {
     '","home_phone":"'+ format(homePhone) +
     '","cell":"'+ format(cell) +
     '","fax":"'+ format(fax) +
+    '","sentBy":"'+ activeUser +
     '","email":"'+ format(document.getElementById('email').value.trim()) +'"}';
 
     const JsonString = JSON.parse(JSON.stringify(sql));
