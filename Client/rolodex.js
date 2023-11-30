@@ -332,7 +332,7 @@ function preparePost(Id, proj) {
     '","home_phone":"'+ format(homePhone) +
     '","cell":"'+ format(cell) +
     '","fax":"'+ format(fax) +
-    '","sentBy":"'+ activeUser +
+    '","CreatedBy":"'+ activeUser +
     '","email":"'+ format(document.getElementById('email').value.trim()) +'"}';
 
     const JsonString = JSON.parse(JSON.stringify(sql));
