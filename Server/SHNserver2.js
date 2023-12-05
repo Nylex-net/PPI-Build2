@@ -741,11 +741,11 @@ app.post('/updater', jsonParser, (req, res) => {
                 doc.end();
                 
                 // Append the content to the file
-                fs.appendFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + '\n', (err) => {
+                fs.appendFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + ' (edited).\n', (err) => {
                     if (err) {
                         console.error('Error appending to the file to '+dir + '/log.txt'+':', err);
                         // Write the content to the file
-                        fs.writeFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + '\n', (err) => {
+                        fs.writeFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + ' (edited).\n', (err) => {
                             if (err) {
                             console.error('Error creating the file to '+dir + '/log.txt'+':', err);
                             }
