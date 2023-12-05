@@ -185,8 +185,6 @@ span.astrick {
 	text-align: center;
 	font-size: 30px;
 	color: black;
-	-webkit-text-stroke-color: white;
-	-webkit-text-stroke-width: 1px;
 }
 
 a {

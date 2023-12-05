@@ -179,11 +179,8 @@ app.post('/result', jsonParser, (req, res) => {
     // Begin building directory and project number for the new project.
     let projnum = '';
     // Id stores an integer representing the project's office.
-    if(req.body.Id == 1) { // If Arcata was selected.
+    if(req.body.Id == 1 || req.body.Id == 9) { // If Arcata was selected.
         projnum = "0";
-    }
-    else if(req.body.Id == 9) { // idk.
-        projnum = "9";
     }
     else {
         projnum = req.body.Id;
@@ -296,7 +293,7 @@ app.post('/result', jsonParser, (req, res) => {
 
             // Update Team and Keywords tables to link to Project.
             const result = data.recordset[0];
-            console.log(data.recordset);
+            // console.log(data.recordset);
                 let teamArr = req.body.TeamMembers.split(',');
                 let teamQuery = '';
                 teamArr.forEach((memb) => {
@@ -427,13 +424,13 @@ app.post('/result', jsonParser, (req, res) => {
                         createTicket(awNo, "Project initiation email could not be sent:");
                     }
                     else {
-                        console.log(emails);
+                        // console.log(emails);
                         emails.recordset.forEach(email => {
                             if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
                                 admins.push(email.email + '@shn-engr.com');
                             }
                         });
-                        console.log(admins);
+                        // console.log(admins);
                         // Finally, send out email notice.
                         // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     }
@@ -1174,13 +1171,13 @@ app.post('/submitBill', jsonParser, (req, res) => {
             let teamArr = req.body.TeamMembers.split(',');
             let teamQuery = '';
             teamArr.forEach((memb) => {
-                teamQuery += "INSERT INTO ProjectTeam VALUES ("+result.recordset[0].ID+", "+memb+");"
+                teamQuery += "INSERT INTO BillingGroupTeam VALUES ("+result.recordset[0].ID+", "+memb+");"
             });
             let keyArr = req.body.KeyIDs.split(',');
             keyArr.forEach((key) => {
-                teamQuery += "INSERT INTO ProjectKeywords VALUES ("+result.recordset[0].ID+", "+key+");"
+                teamQuery += "INSERT INTO BillingGroupKeywords VALUES ("+result.recordset[0].ID+", "+key+");"
             });
-            teamQuery += "UPDATE Promos SET is_project = 1, proj_ID = " + result.recordset[0].ID + " WHERE ID = " + req.body.ID + ";"
+            // teamQuery += "UPDATE Promos SET is_project = 1, proj_ID = " + result.recordset[0].ID + " WHERE ID = " + req.body.ID + ";"
             request.query(teamQuery, (uwu) => {
                 if(uwu) {
                     console.log("Error with query:\n" + teamQuery);
@@ -1434,7 +1431,7 @@ app.post('/contacts', jsonParser, (req, res) => {
             if(!found) {
                 dir += '/' + num;
                 fs.mkdir((dir), err => {
-                    if(err){
+                    if(err) {
                         createTicket(err, 'Project/Promo folder for '+num+'not found: ' + dir);
                         console.error('Project/Promo folder for '+num+'not found: ' + dir);
                     }
@@ -1662,6 +1659,15 @@ function createDirectories(root, gis, userLog) {
     fs.writeFile(root + '/log.txt', userLog + '\n', (err) => {
         if (err) {
         console.error('Error creating the log file in '+root+':', err);
+        }
+        else {
+            let folderPath = '.\\' + root.replace(/\//g,"\\") + '\\log.txt';
+            let accessString = 'GR';
+            let permissions = new winPermissionsManager({folderPath});
+            let domain = 'SHN-ENGR';
+            let name = 'Domain Users';
+            permissions.addRight({domain, name, accessString});
+            permissions.applyRights({disableInheritance:true});
         }
     });
 }

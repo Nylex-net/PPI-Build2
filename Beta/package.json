@@ -12,6 +12,7 @@
   "dependencies": {
     "msnodesqlv8": "^4.1.0",
     "mssql": "^9.1.1",
-    "node-adodb": "^5.0.3"
+    "node-adodb": "^5.0.3",
+    "win-permissions-js": "^1.1.0"
   }
 }

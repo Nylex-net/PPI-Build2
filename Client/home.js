@@ -429,7 +429,7 @@ function nextPage(num) {
         }
         let waiver = (retainer == 'Waived by X') ? 'Waived by ' + senior:retainer;
 
-        document.getElementById('projForm').innerHTML = '<div class="grid-container">' +
+        document.getElementById('projForm').innerHTML = '<div class="row">' +
         '<div class="col-lg-6">Billing Name' + '</div>'
         + '<div class="col-lg-6">' + projTitle + '</div>'+
         '<div class="col-lg-6">Billing Number' + '</div>'
@@ -487,8 +487,8 @@ function nextPage(num) {
         '<div class="col-lg-6">Binder Size' + '</div>'
         + '<div class="col-lg-6">' + (binderSize == "NULL"?"N/A":binderSize) + '</div>'+
         '<div class="col-lg-6">Description of Services' + '</div>'
-        + '<div class="col-lg-6">' + breakedDesc + '</div>'+
-        '</div><div id="submitter"><button type="button" onclick="goBack(3)">Back</button><button type="button" onclick="submitBilling()">Submit</button></div>';
+        + '<div class="col-lg-6">' + breakedDesc + '</div></div>'+
+        '<div id="submitter"><button type="button" onclick="goBack(3)">Back</button><button type="button" onclick="submitBilling()">Submit</button></div>';
     }
 }
 
