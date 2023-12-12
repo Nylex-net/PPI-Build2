@@ -189,7 +189,7 @@ function populateData() {
                 ((element.City1==null || element.City1=="NULL" || element.City1=="")?"Eureka":element.City1.replace(/'/gi, "''"))+"', '"+
                 ((element.State1==null||element.State1=="NULL"||element.State1=="")?"CA":element.State1.replace(/'/gi, "''"))+"', '"+
                 ((element.Zip1==null||element.Zip1=="NULL"||element.Zip1=="")?"95501":element.Zip1.replace(/'/gi, "''"))+"', '"+
-                ((element.PhoneW1==null || element.PhoneW1=="NULL" || element.PhoneW1=="")?"(000)000-0000":element.PhoneW1.replace(/'/gi, "''"))+"', NULL, "+
+                ((element.PhoneW1==null || element.PhoneW1=="NULL" || element.PhoneW1=="")?"000-000-0000":element.PhoneW1.replace(/'/gi, "''"))+"', NULL, "+
                 (element.PhoneH1==null || element.PhoneH1=="NULL"|| element.PhoneH1==""?"NULL":"'"+element.PhoneH1.replace(/'/gi, "''")+"'")+", "+
                 (element.Cell1==null || element.Cell1=="NULL" || element.Cell1==""?"NULL":"'"+element.Cell1.replace(/'/gi, "''")+"'")+", "+
                 (element.Fax1==null || element.Fax1=="NULL"|| element.Fax1==""?"NULL":"'"+element.Fax1.replace(/'/gi, "''")+"'")+", '"+
