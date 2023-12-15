@@ -1074,7 +1074,7 @@ app.post('/billMe', jsonParser, (req, res) => {
     // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
     // console.log('Project Number is ' + req.body.ProjectNumber + ', and Description is ' + req.body.Description);
     const request = pool.request();
-    request.query('SELECT Projects.*, Staff.ID AS staff_id, Staff.first AS staff_first, Staff.last AS staff_last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id = \''+ req.body.ProjectNumber +'\' OR Projects.project_id LIKE \''+ req.body.ProjectNumber +'_\'', (error, data) => {
+    request.query('SELECT Projects.*, Staff.ID AS staff_id, Staff.first AS staff_first, Staff.last AS staff_last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE (Projects.project_id = \''+ req.body.ProjectNumber +'\' OR Projects.project_id LIKE \''+ req.body.ProjectNumber +'_\') AND Projects.closed = 0;', (error, data) => {
         if(error) {
             console.log(error);
             res.send(JSON.stringify(error));
@@ -1314,7 +1314,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
 
 app.post('/searchPromos', jsonParser, (req, res) => {
     const request = pool.request();
-    request.query('SELECT * FROM Promos INNER JOIN PromoTeam ON Promos.ID = PromoTeam.promo_id RIGHT JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id LEFT JOIN Staff ON Promos.manager_id = Staff.ID WHERE (Promos.promo_id = \''+ req.body.PromoId + '\' OR Promos.promo_id LIKE \''+ req.body.PromoId +'_\') AND Promos.is_project = 0', (error, data) => {
+    request.query('SELECT * FROM Promos INNER JOIN PromoTeam ON Promos.ID = PromoTeam.promo_id RIGHT JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id LEFT JOIN Staff ON Promos.manager_id = Staff.ID WHERE (Promos.promo_id = \''+ req.body.PromoId + '\' OR Promos.promo_id LIKE \''+ req.body.PromoId +'_\') AND Promos.is_project = 0 AND Promos.closed = 0;', (error, data) => {
         if(error) {
             console.error(error);
             res.send(JSON.parse(JSON.stringify(error)));
