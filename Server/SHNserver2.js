@@ -394,6 +394,7 @@ app.post('/updater', jsonParser, (req, res) => {
     const num = (isProject)?req.body.project_id:req.body.promo_id;
     // let dir = PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
     let dir = DEMO_PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
+    dir += ((!isBillingGroup && (req.body.closed == true || req.body.closed == 1))?'/ClosedJobs':'');
     dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
     dir += (isProject)?'':'/Promos';
     if(!fs.exists(dir)) {
