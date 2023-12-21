@@ -1151,13 +1151,13 @@ app.post('/submitBill', jsonParser, (req, res) => {
     });
 
     // Get first occurring Project entry for cooresponding project.
-    const query = "INSERT INTO BillingGroups (project_ID, group_number, group_name, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, group_location, "+
+    const query = "INSERT INTO BillingGroups (project_ID, group_number, group_name, closed, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, group_location, "+
     "latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, "+
-    "prevailing_wage, agency_name, special_billing_instructions, binder_size, description_service)"+
-    " OUTPUT inserted.* VALUES ("+req.body.ProjectID+", '"+req.body.BillingNum+"', '"+req.body.BillingName+"', "+req.body.AutoCAD_Project+", "+ req.body.GIS_Project+", "+req.body.NewMgr+", "+req.body.QAQC+", '"+myDate+
+    "special_billing_instructions, binder_size, description_service)"+
+    " OUTPUT inserted.* VALUES ("+req.body.ProjectID+", '"+req.body.BillingNum+"', '"+req.body.BillingName+"', "+ 0 + ", " +req.body.AutoCAD_Project+", "+ req.body.GIS_Project+", "+req.body.NewMgr+", "+req.body.QAQC+", '"+myDate+
     "', '"+ req.body.StartDate +"', '"+ req.body.CloseDate +"', '"+ req.body.ProjectLocation +"', "+ req.body.Latitude +", "+ req.body.Longitude +", "+ (req.body.ServiceArea == "NULL"?"NULL":"'"+req.body.ServiceArea+"'") +", "+ req.body.TotalContract +", '"+
     req.body.Retainer +"', "+(req.body.RetainerPaid == "NULL" || isNaN(req.body.RetainerPaid) ?"NULL":req.body.RetainerPaid)+", "+(req.body.waiver == "NULL"?req.body.waiver:"'"+req.body.waiver+"'")+", "+req.body.ProfileCode+", "+req.body.ContractType+", '"+
-    req.body.InvoiceFormat+"', '"+req.body.ClientContractPONumber+"', "+ req.body.OutsideMarkup +", "+req.body.PREVAILING_WAGE+", "+(req.body.agency == "NULL"?"NULL":"'"+req.body.agency+"'")+", "+
+    req.body.InvoiceFormat+"', '"+req.body.ClientContractPONumber+"', "+ req.body.OutsideMarkup +", "+
     (req.body.SpecialBillingInstructins == "NULL"?"NULL":"'"+req.body.SpecialBillingInstructins+"'") + ", "+ (req.body.BinderSize == "NULL"?"NULL":req.body.BinderSize) +", '"+req.body.DescriptionService+"');";
 
     const request = pool.request();
@@ -1228,7 +1228,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
                             ["Contract Type",req.body.contactTypeName,'-','-'],
                             ["Client Contract/PO #", req.body.ClientContractPONumber,'-','-'],
                             ["Outside Markup", req.body.OutsideMarkup,'-','-'],
-                            ["Prevailing Wage", (req.body.PREVAILING_WAGE == 1?"Yes":"No"),'-','-'],
+                            // ["Prevailing Wage", (req.body.PREVAILING_WAGE == 1?"Yes":"No"),'-','-'],
                             ["Billing Instructions", removeEscapeQuote(req.body.SpecialBillingInstructins).toString(),'-','-'],
                             ["AutoCAD Project", (req.body.AutoCAD_Project == 1)?'Yes':'No','-','-'],
                             ["GIS Project", (req.body.GIS_Project == 1)?'Yes':'No','-','-'],

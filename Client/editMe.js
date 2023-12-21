@@ -178,11 +178,11 @@ function manager(currPage) {
             document.getElementById('invoiceFormat').value = (userData[0].invoice_format == null?"B":userData[0].invoice_format);
             document.getElementById('PO').value = userData[0].client_contract_PO;
             document.getElementById('OutMark').value = userData[0].outside_markup;
-            if(userData[0].prevailing_wage != 0) {
-                document.getElementById('wage').value = '1';
-                agentBruh();
-                document.getElementById('agency').value = userData[0].agency_name;
-            }
+            // if(userData[0].prevailing_wage != 0) {
+            //     document.getElementById('wage').value = '1';
+            //     agentBruh();
+            //     document.getElementById('agency').value = userData[0].agency_name;
+            // }
             document.getElementById('billInst').value = userData[0].special_billing_instructions;
             document.getElementById('binder').value = (userData[0].binder_size == null || userData[0].binder_size == "NULL"?"NULL":userData[0].binder_size);
             document.getElementById('describe').value = userData[0].description_service;
@@ -744,10 +744,10 @@ function getPage(num) {
             + '<div class="col-lg-6">' + userData[0].client_contract_PO + '</div>'+
             '<div class="col-lg-6">Outside Markup' + '</div>'
             + '<div class="col-lg-6">' + userData[0].outside_markup + '</div>'+
-            '<div class="col-lg-6">Prevailige Wage' + '</div>'
-            + '<div class="col-lg-6">' + (userData[0].prevailing_wage == 1?"Yes":"No") + '</div>'+
-            '<div class="col-lg-6">Agency' + '</div>'
-            + '<div class="col-lg-6">' + (userData[0].prevailing_wage == 1?userData[0].agency_name:"N/A") + '</div>'+
+            // '<div class="col-lg-6">Prevailige Wage' + '</div>'
+            // + '<div class="col-lg-6">' + (userData[0].prevailing_wage == 1?"Yes":"No") + '</div>'+
+            // '<div class="col-lg-6">Agency' + '</div>'
+            // + '<div class="col-lg-6">' + (userData[0].prevailing_wage == 1?userData[0].agency_name:"N/A") + '</div>'+
             '<div class="col-lg-6">Special Billing Instructions' + '</div>'
             + '<div class="col-lg-6">' + userData[0].special_billing_instructions + '</div>'+
             '<div class="col-lg-6">AutoCAD Job' + '</div>'
