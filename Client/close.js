@@ -88,9 +88,6 @@ function closeProject(ID, isProj, isBillNye, daBos) {
  * @returns 
  */
 function starter(res) {
-    if (postData.projID == undefined || postData.projID == null || postData.ClosedBy.includes('@')) { // If user logs in but wasn't closing a project.
-        return;
-    }
     const postData = {
         projID: closer,
         isProject: proggy,
@@ -98,6 +95,9 @@ function starter(res) {
         ClosedBy: res.account.name,
         userID: userID
     };
+    if (postData.projID == undefined || postData.projID == null || postData.ClosedBy.includes('@')) { // If user logs in but wasn't closing a project.
+        return;
+    }
     console.log(postData);
     try {
         const response = fetch('https://e-hv-ppi.shn-engr.com:3001/closeMe', {

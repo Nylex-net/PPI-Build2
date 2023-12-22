@@ -21,6 +21,7 @@ var jsonParser = bodyParser.json();
 const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\PPI\\Database\\SHN_Project_Backup.mdb;";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
 const jsonData = require('./config.json');
+const { readdir, readdirSync } = require('fs');
 
 // Directory for production environment.
 // process.chdir("P:\\");
@@ -132,6 +133,14 @@ app.post('/closeMe', jsonParser, (req, res) => {
             console.log(err);
         }
         else {
+            if(req.body.isProject && !req.body.isBillingGroup) {
+                // If we're closing a project, so do its cooresponding Billing Groups.
+                request.query('UPDATE BillingGroups SET closed = 1 WHERE Project_ID = ' + req.body.projID + ';', (error, foo) => {
+                    if(error) {
+                        console.log("Could not close Project's billing groups.\n" + error);
+                    }
+                });
+            }
             let nutty = moveProject(myJson.userID, myJson.ClosedBy); // function returns null if directory is not found.
             let response = '{"Status":"Success"}';
             if(nutty == null) {
@@ -1149,6 +1158,13 @@ app.post('/delete', jsonParser, (req, res) => {
 // Used by the close API to move contents into the cooresponding office's closed jobs folder.
 function moveProject(ID, closer) {
     // let dir = 'P:';
+    let billingBruh = false;
+    let billingPoops = null;
+    if(ID.includes(',')) {
+        billingPoops = ID.substring(ID.indexOf(',')+1);
+        ID = ID.substring(0,ID.indexOf(','));
+        billingBruh = true;
+    }
     let dir = DEMO_PATH + ((!isNaN(ID[0]))? getDir(Number(ID[0])):getDir(0)); // Get office directory.
     dir += (!isNaN(ID[1] + ID[2]) && Number(ID[1] + ID[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + ID[1] + ID[2]:'/20' + ID[1] + ID[2]; // Get project year.
     const projYear = (!isNaN(ID[1] + ID[2]) && Number(ID[1] + ID[2]) > new Date().getFullYear().toString().slice(-2))?Number('19' + ID[1] + ID[2]):Number("20" + ID[1] + ID[2]);
@@ -1172,7 +1188,7 @@ function moveProject(ID, closer) {
         }
         // Move file only if a file was found.
         if(filer != null) {
-            let dest = DEMO_PATH + closedJobDirDemo(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'');
+            let dest = DEMO_PATH + closedJobDirDemo(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'') + filer;
             if(!fs.existsSync(dest)) {
                 fs.mkdir((dest), err => {
                     // if(err){
@@ -1180,12 +1196,39 @@ function moveProject(ID, closer) {
                     // }
                 });
             }
-            console.log("Moving to " + dest + filer)
-            fs.moveSync(dir, dest + filer, { overwrite: true }, (err) => {
+            if(billingBruh) {
+                dirFiles = readdirSync(dir);
+                let billExists = false;
+                let billName = null;
+                for(let file of dirFiles) {
+                    if(file.substring(0, 4).includes(billingPoops)) {
+                        // filer = '/' + billingPoops;
+                        billExists = true;
+                        dir += '/' + file;
+                        billName = file;
+                        break;
+                    }
+                }
+                if(billExists && billName != null) {
+                    dest += '/' + billName;
+                    if(!fs.existsSync(dest)) {
+                        fs.mkdir((dest), err => {
+                            // if(err){
+                            //     throw err;
+                            // }
+                        });
+                    }
+                }
+                else {
+                    console.log("Billing Group " + billingPoops + " cannot be found in directory " + dir);
+                }
+            }
+            console.log("Moving to " + dest)
+            fs.moveSync(dir, dest, { overwrite: true }, (err) => {
                 if(err) {
                     console.log(err);
                 }
-                console.log(dest + filer);
+                console.log(dest);
             });
             fs.mkdir((dir), error => {
                 if(error){
@@ -1195,7 +1238,7 @@ function moveProject(ID, closer) {
                     // Create a PDF for the original location for the user to know that the project/promo has closed.
                     const doc = new PDFDocument();
                     doc.pipe(fs.createWriteStream(dir + '/Closed_'+ ID +'.pdf'));
-                    doc.font('Helvetica-Bold').text('This project was closed on ' + new Date().toDateString() + ' by '+closer+'.\nMoved to ' + dest + filer);
+                    doc.font('Helvetica-Bold').text('This '+ (billingBruh?'Billing Group':'Project') +' was closed on ' + new Date().toDateString() + ' by '+closer+'.\nMoved to ' + dest);
                     doc.end();
                 }
             });
