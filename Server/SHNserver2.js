@@ -80,6 +80,12 @@ async function establishConnection() {
 establishConnection();
 // projects API returns the project info in projects, plus the first and last name of the Project Manager.
 
+pool.on('connectTimeout', () => {
+    console.log('Connection timed out.');
+    console.log('Reinitiating the connection...');
+    establishConnection();
+  });
+
 app.post('/projects', jsonParser, (req, res) => {
     const request = pool.request();
     request.query('SELECT Projects.*, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id LIKE \'%'+req.body.projID+'%\' ORDER BY Projects.project_id, Staff.last, Staff.first, Projects.client_company, Projects.project_title, Projects.description_service;', (err, data) => {
@@ -97,7 +103,16 @@ app.post('/projects', jsonParser, (req, res) => {
                 }
                 else {
                     result.push(homo);
-                    res.send(JSON.stringify(result));
+                    request.query('SELECT BillingGroups.*, Projects.project_id, Projects.ID AS ProjectID, Projects.client_company, Staff.first, Staff.last FROM BillingGroups JOIN Projects ON BillingGroups.Project_ID = Projects.ID JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id LIKE \'%'+req.body.projID+'%\';',(error, bababooey) => {
+                        if(error) {
+                            console.error(error);
+                            res.send(JSON.stringify(error));
+                        }
+                        else {
+                            result.push(bababooey);
+                            res.send(JSON.stringify(result));
+                        }
+                    });
                 }
             });
         }
@@ -110,7 +125,7 @@ app.post('/closeMe', jsonParser, (req, res) => {
     const myJson = req.body;
     // console.log("UPDATE " + (req.body.isProject?"Projects":"Promos") + " SET closed = 1 WHERE ID = " + req.body.projID + ";");
     const request = pool.request();
-    request.query("UPDATE " + (req.body.isProject?"Projects":"Promos") + " SET closed = 1 WHERE ID = " + req.body.projID + ";", (err, bar) => {
+    request.query("UPDATE " + (req.body.isProject && req.body.isBillingGroup?"BillingGroups":(req.body.isProject?"Projects":"Promos")) + " SET closed = 1 WHERE ID = " + req.body.projID + ";", (err, bar) => {
         if(err) {
             createTicket(err, "Could not close:");
             res.send(JSON.parse(JSON.stringify(err)));
@@ -684,7 +699,7 @@ app.post('/updater', jsonParser, (req, res) => {
                 subtitler = "Promo Updated";
             }
             const doc = new PDFDocument();
-            doc.pipe(fs.createWriteStream(dir + '/'+(isBillingGroup?req.body.group_number:num)+'.pdf'));
+            doc.pipe(fs.createWriteStream(dir + '/Setup/'+(isBillingGroup?req.body.group_number:num)+'.pdf'));
         
             // PDF table creation runs asynchronously.
             (async function(){

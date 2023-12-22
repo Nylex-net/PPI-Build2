@@ -88,12 +88,18 @@ async function establishConnection() {
 }
 
   pool.on('requestTimeout', (err) => {
-    console.error('Connection timed out:', err);
+    console.log('Connection timed out:', err);
     console.log('Reinitiating the connection...');
     establishConnection();
   });
 
 establishConnection();
+
+pool.on('connectTimeout', () => {
+    console.log('Connection timed out.');
+    console.log('Reinitiating the connection...');
+    establishConnection();
+  });
 // Change source directory accordingly.
 app.use(cors());
 
@@ -323,9 +329,13 @@ app.post('/result', jsonParser, (req, res) => {
             if(projnum.length > 6 && projnum[6] == 'A') {
                 removeA = projnum.substring(0,6);
             }
+
+            // Create the directories for Project.
+            createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
+
             // Begin creating PDF document.
             const doc = new PDFDocument();
-            doc.pipe(fs.createWriteStream(dir + '/'+ removeA +'.pdf'));
+            doc.pipe(fs.createWriteStream(dir + '/Setup/'+ removeA +'.pdf'));
             (async function(){
                 // table 
                 for(let ifNull of Object.keys(req.body)) {
@@ -398,9 +408,6 @@ app.post('/result', jsonParser, (req, res) => {
                 // });
                 // done!
                 doc.end();
-
-                // Create the directories for Project.
-                createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
             
                 // Start of array of who to notify of this creation.
                 const admins = jsonData.email.admins;
@@ -432,7 +439,7 @@ app.post('/result', jsonParser, (req, res) => {
                         });
                         // console.log(admins);
                         // Finally, send out email notice.
-                        // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
+                        // emailPersonel(removeA +'.pdf', dir + '/Setup/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     }
                 });
             })();
@@ -592,9 +599,12 @@ app.post('/promo', jsonParser, (req, res) => {
                 removeA = projnum.substring(0,10);
             }
     
+            // Create directories for Promo folder.
+            createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
+
             // Start creation of PDF document.
             const doc = new PDFDocument();
-            const myPath = dir + '/'+ removeA +'.pdf';
+            const myPath = dir + '/Setup/'+ removeA +'.pdf';
             doc.pipe(fs.createWriteStream(myPath));
     
             (async function(){
@@ -662,9 +672,6 @@ app.post('/promo', jsonParser, (req, res) => {
                 });
                 // done!
                 doc.end();
-    
-                // Create directories for Promo folder.
-                createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
     
                 // Array to store contacts of who to notify of this creation.
                 const admins = jsonData.email.admins;
@@ -856,6 +863,8 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                     }
                 });
             }
+
+            // Create the Project Directories.
             createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
     
             let removeA = projnum;
@@ -864,7 +873,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             }
     
                 const doc = new PDFDocument();
-                doc.pipe(fs.createWriteStream(dir + '/'+ removeA +'.pdf'));
+                doc.pipe(fs.createWriteStream(dir + '/Setup/'+ removeA +'.pdf'));
                     
                 (async function(){
                     // table
@@ -939,8 +948,8 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                     // done!
                     doc.end();
     
-                    // Create the directories for Project.
-                    createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
+                    // // Create the directories for Project.
+                    // createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
     
                     // Start of array of who to notify of this creation.
                     const admins = jsonData.email.admins;
@@ -970,7 +979,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                             });
                         }
                         // Finally, send out email notice.
-                        // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
+                        // emailPersonel(removeA +'.pdf', dir + '/Setup/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     });
                   })();
             res.send(JSON.parse(JSON.stringify('{"Status":"'+ projnum +'"}')));
@@ -1196,7 +1205,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
                 // console.log("Directory is " + dir);
                 createDirectories(dir, false, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
                 const doc = new PDFDocument();
-                doc.pipe(fs.createWriteStream(dir + '/'+ req.body.BillingNum +'.pdf'));
+                doc.pipe(fs.createWriteStream(dir + '/Setup/'+ req.body.BillingNum +'.pdf'));
                 // Content of PDF.
                 (async function(){
                     // table
@@ -1299,7 +1308,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
                             });
                         }
                         // Finally, send out email notice.
-                        // emailPersonel(removeA +'.pdf', dir + '/'+ removeA +'.pdf', 'Billing Group ' + req.body.BillingNum + ' has been initialized for Project ' + projFolder +'!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
+                        // emailPersonel(removeA +'.pdf', dir + '/Setup/'+ removeA +'.pdf', 'Billing Group ' + req.body.BillingNum + ' has been initialized for Project ' + projFolder +'!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     });
                 })();
                 res.send(JSON.parse('{"Status":"Success"}'));
