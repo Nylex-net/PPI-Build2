@@ -1008,7 +1008,7 @@ app.post('/verify', jsonParser, (req, res) => {
  */
 
 app.post('/prevWage', jsonParser, (req, res) => {
-    const query = (req.body.isAdmin?'SELECT * FROM PrevailingWage;':'SELECT * FROM PrevailingWage WHERE display = 1;');
+    const query = (req.body.isAdmin?'SELECT * FROM PrevailingWage ORDER BY office, project_id;':'SELECT * FROM PrevailingWage WHERE display = 1 ORDER BY office, project_id;');
     const request = pool.request();
     request.query(query, (err, data) => {
         if(err) {
