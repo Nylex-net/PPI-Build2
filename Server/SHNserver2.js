@@ -1007,8 +1007,8 @@ app.post('/verify', jsonParser, (req, res) => {
  * List projects with prevailing wage.
  */
 
-app.get('/prevWage', (req, res) => {
-    const query = 'SELECT Projects.project_id AS Project, Projects.closed AS ProjectClosed, Projects.SHNOffice_ID AS Office, Projects.prevailing_wage AS ProjectPrevailingWage, BillingGroups.group_number AS BillingGroup, BillingGroups.prevailing_wage AS BillingPrevailingWage FROM BillingGroups RIGHT JOIN Projects ON Projects.ID = BillingGroups.project_ID WHERE Projects.prevailing_wage = 1 OR BillingGroups.prevailing_wage = 1 ORDER BY ProjectClosed, Office, Project, BillingGroup;';
+app.post('/prevWage', jsonParser, (req, res) => {
+    const query = (req.body.isAdmin?'SELECT * FROM PrevailingWage;':'SELECT * FROM PrevailingWage WHERE display = 1;');
     const request = pool.request();
     request.query(query, (err, data) => {
         if(err) {
