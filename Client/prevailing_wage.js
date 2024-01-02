@@ -33,11 +33,11 @@ function listWage(admin) {
         return result; // returns to the ".then" statement's data below for processing.
     }).then(data => {
         document.getElementById("results").innerHTML = '<p>Processing...</p>';
-        let table = '<tr><th>Project</th><th>Billing Groups</th><th>Office</th>'+(admin?'<th>Display</th>':'')+'</tr>';
+        let table = '<tr><th>Project</th><th>Billing Groups</th><th>Office</th>'+(admin?'<th>Display</th><th>Edit</th>':'')+'</tr>';
         for(let json = 0; json < data.length; json++) {
             table += '<tr><td>'+ data[json].project_id + '</td><td>' + (data[json].BillGrp != 'NULL' || data[json].BillGrp != null?data[json].BillGrp:'') + '</td><td>'+
             (data[json].office == 2?'klamath Falls':(data[json].office == 4?'Willits':(data[json].office == 5?'Redding':(data[json].office == 6?'Coos Bay':'Eureka')))) +
-            '</td>'+ (admin?('<td>'+(data[json].display || data[json].display == 1?'Yes':'No')+'</td>'):'') + '</tr>';
+            '</td>'+ (admin?('<td>'+(data[json].display || data[json].display == 1?'Yes':'No')+'</td><td><button type="button" onclick="editWage('+ data[json] +')">Edit</button></td>'):'') + '</tr>';
 
             // if(data[json].BillingGroup != null) {
             //     table += data[json].BillingGroup + (data[json].BillingPrevailingWage?'*':'') +',';
@@ -65,6 +65,17 @@ function listWage(admin) {
         console.error(error);
 
     });
+}
+
+function editWage(json) {
+    const table = '<tr><td>Project ID</td><td><input type="text" id="project" maxlength="10" required></td></tr>'+
+        '<tr><td>Billing Groups</td><td><input type="text" id="BillGrp" maxlength="255"></td></tr>'+
+        '<tr><td>Office</td><td><select name="office" id="office" title="Office Location" required><option value="-1" selected>-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></td></tr>'+
+        '<tr><td>Dsiplay</td><td><input type="checkbox" id="display" name="display" title="display" placeholder="display"/></td></tr>';
+    document.getElementById("results").innerHTML = table;
+    document.getElementById("project").value = json.project_id;
+    document.getElementById.apply("office").value = json.office;
+    document.getElementById("display").checked = (json.dsiplay == 1?true:false);
 }
 
 window.addEventListener("DOMContentLoaded", signIn(), false);
