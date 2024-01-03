@@ -1,7 +1,9 @@
 const HOST = 'e-hv-ppi';
+let activeUser = '';
 
 async function starter(res) {
-    activeUser = res.account.name;
+    // activeUser = res.account.name;
+    activeUser = res;
     const isAdmin = (await verify(res.account.homeAccountId.split('.')[0])).result;
     listWage(isAdmin);
     if(isAdmin) {
@@ -76,6 +78,7 @@ function editWage(json) {
     document.getElementById("project").value = json.project_id;
     document.getElementById.apply("office").value = json.office;
     document.getElementById("display").checked = (json.dsiplay == 1?true:false);
+    document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+activeUser+')">Back</button><button type="button" onclick="update()">Update</button>';
 }
 
 window.addEventListener("DOMContentLoaded", signIn(), false);
