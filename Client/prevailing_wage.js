@@ -39,7 +39,7 @@ function listWage(admin) {
         for(let json = 0; json < data.length; json++) {
             table += '<tr><td>'+ data[json].project_id + '</td><td>' + (data[json].BillGrp != 'NULL' || data[json].BillGrp != null?data[json].BillGrp:'') + '</td><td>'+
             (data[json].office == 2?'klamath Falls':(data[json].office == 4?'Willits':(data[json].office == 5?'Redding':(data[json].office == 6?'Coos Bay':'Eureka')))) +
-            '</td>'+ (admin?('<td>'+(data[json].display || data[json].display == 1?'Yes':'No')+'</td><td><button type="button" onclick="editWage('+ data[json] +')">Edit</button></td>'):'') + '</tr>';
+            '</td>'+ (admin?('<td>'+(data[json].display || data[json].display == 1?'Yes':'No')+'</td><td><button type="button" onclick="editWage('+ JSON.stringify({ID:data[json].ID, project_id:data[json].project_id, BillGrp: data[json].BillGrp, office: data[json].office, display: data[json].display}).replace(/"/g, "'") +');">Edit</button></td>'):'') + '</tr>';
 
             // if(data[json].BillingGroup != null) {
             //     table += data[json].BillingGroup + (data[json].BillingPrevailingWage?'*':'') +',';
@@ -76,9 +76,48 @@ function editWage(json) {
         '<tr><td>Dsiplay</td><td><input type="checkbox" id="display" name="display" title="display" placeholder="display"/></td></tr>';
     document.getElementById("results").innerHTML = table;
     document.getElementById("project").value = json.project_id;
-    document.getElementById.apply("office").value = json.office;
-    document.getElementById("display").checked = (json.dsiplay == 1?true:false);
-    document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+activeUser+')">Back</button><button type="button" onclick="update()">Update</button>';
+    document.getElementById("BillGrp").value = json.BillGrp;
+    document.getElementById("office").value = json.office;
+    document.getElementById("display").checked = (json.dsiplay == 1 || json.display?true:false);
+    document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'") +');">Back</button><button type="button" onclick="update('+ json.ID +');">Update</button>';
+}
+
+function update(ID) {
+    if(document.getElementById("project").value == undefined || document.getElementById("BillGrp").value == undefined) {
+        alert("Something appears to be wrong.  Try fixing inputs, or contact help if issue persists.");
+        return;
+    }
+    if(document.getElementById("project").value.trim() == '' || document.getElementById("BillGrp").value.trim() == '' || document.getElementById("office").value == -1) {
+        alert("Please fix your inputs.");
+        return;
+    }
+    document.getElementById("admins").innerHTML = '<p>Updating ...</p>'
+    const wage = {
+        ID:ID,
+        project_id: document.getElementById("project").value.trim(),
+        BillGrp: document.getElementById("BillGrp").value.trim(),
+        office: document.getElementById("office").value,
+        display: document.getElementById("display").checked
+    };
+    fetch("https://"+HOST+".shn-engr.com:3001/updateWage", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(wage)
+    }).then(response => { // Makes a call for employees.
+        if(response.status == 200) {
+            starter(activeUser);
+        }
+        else {
+            document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'")+');">Back</button><button type="button" onclick="update('+ wage.ID +');">Update</button>'+
+        '<br><p>Sorry, something went wrong.</p>';
+        }
+    }).catch((error) => {
+        console.error(error);
+        document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'")+');">Back</button><button type="button" onclick="update('+ wage.ID +');">Update</button>'+
+        '<br><p>Sorry, something went wrong.</p>';
+    });
 }
 
 window.addEventListener("DOMContentLoaded", signIn(), false);

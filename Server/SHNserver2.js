@@ -1022,6 +1022,26 @@ app.post('/prevWage', jsonParser, (req, res) => {
 });
 
 /**
+ * List projects with prevailing wage.
+ */
+
+app.post('/updateWage', jsonParser, (req, res) => {
+    const query = 'UPDATE PrevailingWage SET project_id = \''+ req.body.project_id +'\', BillGrp = \''+ req.body.BillGrp +'\', office = '+ req.body.office +', display = '+ (req.body.display == true || req.body.display == 'true' || req.body.display == 1?1:0) +' WHERE ID = '+ req.body.ID +';';
+    const request = pool.request();
+    request.query(query, (err, data) => {
+        if(err) {
+            console.error(err);
+            res.status(500);
+            res.send(JSON.parse(JSON.stringify('{"status":"nah"}')));
+        }
+        else {
+            res.status(200);
+            res.send(JSON.parse(JSON.stringify('{"status":"success"}')));
+        }
+    });
+});
+
+/**
  * Upload API used to update PM tools.
  */
 /*
