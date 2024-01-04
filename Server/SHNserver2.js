@@ -1026,7 +1026,7 @@ app.post('/prevWage', jsonParser, (req, res) => {
  */
 
 app.post('/updateWage', jsonParser, (req, res) => {
-    const query = 'UPDATE PrevailingWage SET project_id = \''+ req.body.project_id +'\', BillGrp = \''+ req.body.BillGrp +'\', office = '+ req.body.office +', display = '+ (req.body.display == true || req.body.display == 'true' || req.body.display == 1?1:0) +' WHERE ID = '+ req.body.ID +';';
+    const query = 'UPDATE PrevailingWage SET project_id = \''+ req.body.project_id.replace(/'/g, "''") +'\', BillGrp = \''+ req.body.BillGrp.replace(/'/g, "''") +'\', office = '+ req.body.office +', display = '+ (req.body.display == true || req.body.display == 'true' || req.body.display == 1?1:0) +' WHERE ID = '+ req.body.ID +';';
     const request = pool.request();
     request.query(query, (err, data) => {
         if(err) {

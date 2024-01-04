@@ -91,6 +91,10 @@ function update(ID) {
         alert("Please fix your inputs.");
         return;
     }
+    if(document.getElementById("project").value.includes("'") || document.getElementById("project").value.includes("\"") || document.getElementById("BillGrp").value.includes("'") || document.getElementById("BillGrp").value.includes("\"")) {
+        alert("No quotation marks, please.");
+        return;
+    }
     document.getElementById("admins").innerHTML = '<p>Updating ...</p>'
     const wage = {
         ID:ID,
