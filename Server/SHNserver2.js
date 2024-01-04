@@ -1022,13 +1022,53 @@ app.post('/prevWage', jsonParser, (req, res) => {
 });
 
 /**
- * List projects with prevailing wage.
+ * Updates an existing prevailing wage.
  */
 
 app.post('/updateWage', jsonParser, (req, res) => {
     const query = 'UPDATE PrevailingWage SET project_id = \''+ req.body.project_id.replace(/'/g, "''") +'\', BillGrp = \''+ req.body.BillGrp.replace(/'/g, "''") +'\', office = '+ req.body.office +', display = '+ (req.body.display == true || req.body.display == 'true' || req.body.display == 1?1:0) +' WHERE ID = '+ req.body.ID +';';
     const request = pool.request();
     request.query(query, (err, data) => {
+        if(err) {
+            console.error(err);
+            res.status(500);
+            res.send(JSON.parse(JSON.stringify('{"status":"nah"}')));
+        }
+        else {
+            res.status(200);
+            res.send(JSON.parse(JSON.stringify('{"status":"success"}')));
+        }
+    });
+});
+
+/**
+ * Adds a new entry for prevailing wages.
+ */
+
+app.post('/addWage', jsonParser, (req, res) => {
+    const query = 'INSERT INTO PrevailingWage (project_id, BillGrp, office, display) VALUES (\''+ req.body.project_id.replace(/'/g, "''") +'\', \''+ req.body.BillGrp.replace(/'/g, "''") +'\', '+ req.body.office +', '+ (req.body.display == true || req.body.display == 'true' || req.body.display == 1?1:0) +');';
+    const request = pool.request();
+    request.query(query, (err, pepe) => {
+        if(err) {
+            console.error(err);
+            res.status(500);
+            res.send(JSON.parse(JSON.stringify('{"status":"nah"}')));
+        }
+        else {
+            res.status(200);
+            res.send(JSON.parse(JSON.stringify('{"status":"success"}')));
+        }
+    });
+});
+
+/**
+ * Deletes an entry for prevailing wages.
+ */
+
+app.post('/deleteWage', jsonParser, (req, res) => {
+    const query = 'DELETE FROM PrevailingWage WHERE ID = '+ req.body.ID +';';
+    const request = pool.request();
+    request.query(query, (err, oof) => {
         if(err) {
             console.error(err);
             res.status(500);
