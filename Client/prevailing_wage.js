@@ -131,13 +131,13 @@ function editWage(json) {
     const table = '<tr><td>Project ID</td><td><input type="text" id="project" maxlength="10" required></td></tr>'+
         '<tr><td>Billing Groups</td><td><input type="text" id="BillGrp" maxlength="255"></td></tr>'+
         '<tr><td>Office</td><td><select name="office" id="office" title="Office Location" required><option value="-1" selected>-Select-</option><option value="0">Eureka</option><option value="1">Arcata</option><option value="2">Klamath Falls</option><option value="4">Willits</option><option value="5">Redding</option><option value="6">Coos Bay</option><option value="9">Corporate</option></select></td></tr>'+
-        '<tr><td>Dsiplay</td><td><input type="checkbox" id="display" name="display" title="display" placeholder="display"/></td></tr>';
+        '<tr><td>Display</td><td><input type="checkbox" id="display" name="display" title="display" placeholder="display"/></td></tr>';
     document.getElementById("results").innerHTML = table;
     document.getElementById("project").value = json.project_id;
     document.getElementById("BillGrp").value = json.BillGrp;
     document.getElementById("office").value = json.office;
     document.getElementById("display").checked = (json.dsiplay == 1 || json.display?true:false);
-    document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'") +');">Back</button><button type="button" onclick="update('+ json.ID +', '+ json.project_id +');">Update</button>';
+    document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'") +');">Back</button><button type="button" onclick="update('+ json.ID +', \''+ json.project_id.toString() +'\');">Update</button><br><button type="button" onclick="deleteWage('+ json.ID +', \''+ json.project_id.toString() +'\');">Delete</button>';
 }
 
 function update(ID, project) {
@@ -153,7 +153,7 @@ function update(ID, project) {
         alert("No quotation marks, please.");
         return;
     }
-    if(existing.includes(document.getElementById("project").value.trim()) && document.getElementById("project").value.trim() != project) {
+    if(existing.includes(document.getElementById("project").value.trim()) && document.getElementById("project").value.trim() != project.toString()) {
         alert("Project number already exists on this page.");
         return;
     }
@@ -176,14 +176,38 @@ function update(ID, project) {
             starter(activeUser);
         }
         else {
-            document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'")+');">Back</button><button type="button" onclick="update('+ wage.ID +', '+ project +');">Update</button>'+
+            document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'")+');">Back</button><button type="button" onclick="update('+ ID +', \''+ project.toString() +'\');">Update</button><br><button type="button" onclick="deleteWage('+ ID +', \''+project.toString()+'\');">Delete</button>'+
         '<br><p>Sorry, something went wrong.</p>';
         }
     }).catch((error) => {
         console.error(error);
-        document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'")+');">Back</button><button type="button" onclick="update('+ wage.ID +', '+ project +');">Update</button>'+
+        document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'")+');">Back</button><button type="button" onclick="update('+ ID +', \''+ project.toString() +'\');">Update</button><br><button type="button" onclick="deleteWage('+ ID +', \''+ project.toString() +'\');">Delete</button>'+
         '<br><p>Sorry, something went wrong.</p>';
     });
+}
+
+function deleteWage(ID, project) {
+    if(confirm("Are you sure you want to delete this entry from Prevailing Wage?")) {
+        fetch("https://"+HOST+".shn-engr.com:3001/deleteWage", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ID:ID})
+        }).then(response => { // Makes a call for employees.
+            if(response.status == 200) {
+                starter(activeUser);
+            }
+            else {
+                document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'")+');">Back</button><button type="button" onclick="update('+ ID +', \''+ project.toString() +'\');">Update</button><br><button type="button" onclick="deleteWage('+ ID +', \''+ project.toString() +'\');">Delete</button>'+
+            '<br><p>Sorry, something went wrong.</p>';
+            }
+        }).catch((error) => {
+            console.error(error);
+            document.getElementById("admins").innerHTML = '<button type="button" onclick="starter('+JSON.stringify(activeUser).replace(/"/g, "'")+');">Back</button><button type="button" onclick="update('+ ID +', \''+ project.toString() +'\');">Update</button><br><button type="button" onclick="deleteWage('+ ID +', \''+ project.toString() +'\');">Delete</button>'+
+            '<br><p>Sorry, something went wrong.</p>';
+        });
+    }
 }
 
 window.addEventListener("DOMContentLoaded", signIn(), false);
