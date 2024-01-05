@@ -979,9 +979,14 @@ app.post('/getPath', jsonParser, (req, res) => {
 
 /**
  * Verifies if the user logging into the edit page has the privileges to edit.
+ * For the special end-of-year projects, update the query to the following string and restart this server script:
+ * 
+ * 'SELECT * FROM Staff WHERE active = 1 AND MS_account_ID = \'' + req.body.ID + '\' AND (permission = 1 OR permission = 3);'
+ * 
+ * This allows for only the admins to create projects.
  */
 app.post('/verify', jsonParser, (req, res) => {
-    const query = 'SELECT * FROM Staff WHERE Active = 1 AND MS_account_ID = \'' + req.body.ID + '\';';
+    const query = 'SELECT * FROM Staff WHERE active = 1 AND MS_account_ID = \'' + req.body.ID + '\';';
     const request = pool.request();
     request.query(query, (err, data) => {
         if(err) {

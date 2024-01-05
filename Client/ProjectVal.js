@@ -1767,11 +1767,36 @@ function formatPhoneNumber(phoneNumber) {
     return phoneNumber;
 }
 
-// Event listener to call getPage(1) when the window loads to start the Project Initiation Form on Page 1.
+// Event listener to call signIn() when the window loads to start the Project Initiation Form on Page 1.
 
 window.addEventListener("load", signIn(), false);
 
-function starter(res) {
+/**
+ * Confirms with the database that the user is an admin.
+ * @param {String} id 
+ * @returns Boolean 
+ */
+async function verify(id) {
+    const response = await fetch('https://'+HOST+'.shn-engr.com:3001/verify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ID:id})
+    });
+    return await response.json();
+}
+
+async function starter(res) {
     activeUser = res.account.name;
+    
+    // Uncomment below lines for special beginning of year projects.
+
+    // const isAdmin = (await verify(res.account.homeAccountId.split('.')[0])).result;
+    // if(isAdmin) {
+    //     getPage(1);
+    // }
+
+    // Comment out line for special beginning of year projects.
     getPage(1);
 }
