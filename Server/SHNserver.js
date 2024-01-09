@@ -1340,7 +1340,24 @@ app.post('/searchPromos', jsonParser, (req, res) => {
 
 app.post('/rolodex', jsonParser, (req, res) => {
     // Starting of query.
-    let query = 'SELECT ID, project_id, client_company, first_name, last_name, job_title, mailing_list, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Projects WHERE ';
+    let query = 'SELECT ID, client_company, first_name, last_name, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Rolodex WHERE ';
+    if(req.body.by == 'Job') {
+        query += 'job_title LIKE \'%'+ req.body.search +'%\'';
+    }
+    else if(req.body.by == 'First') {
+        query += 'first_name LIKE \'%'+ req.body.search +'%\'';
+    }
+    else if(req.body.by == 'Last') {
+        query += 'last_name LIKE \'%'+ req.body.search +'%\'';
+    }
+    else if(req.body.by == 'Comp') {
+        query += 'client_company LIKE \'%'+ req.body.search +'%\'';
+    }
+    else { // Default "All."
+        query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
+    }
+    query += ' ORDER BY last_name, first_name, client_company;';
+    query += 'SELECT ID, project_id, client_company, first_name, last_name, job_title, mailing_list, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Projects WHERE ';
     if(req.body.by == 'Job') {
         query += 'job_title LIKE \'%'+ req.body.search +'%\'';
     }
@@ -1357,6 +1374,23 @@ app.post('/rolodex', jsonParser, (req, res) => {
         query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
     }
     query += ' ORDER BY last_name, first_name, client_company, project_id;';
+    query += 'SELECT ID, promo_id, client_company, first_name, last_name, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Promos WHERE ';
+    if(req.body.by == 'Job') {
+        query += 'job_title LIKE \'%'+ req.body.search +'%\'';
+    }
+    else if(req.body.by == 'First') {
+        query += 'first_name LIKE \'%'+ req.body.search +'%\'';
+    }
+    else if(req.body.by == 'Last') {
+        query += 'last_name LIKE \'%'+ req.body.search +'%\'';
+    }
+    else if(req.body.by == 'Comp') {
+        query += 'client_company LIKE \'%'+ req.body.search +'%\'';
+    }
+    else { // Default "All."
+        query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
+    }
+    query += ' ORDER BY last_name, first_name, client_company, promo_id;';
     const request = pool.request();
     request.query(query, (error, ProjData) => {
         if(error) {
@@ -1364,35 +1398,11 @@ app.post('/rolodex', jsonParser, (req, res) => {
             res.send(JSON.parse(JSON.stringify(error)));
         }
         else {
-            query = 'SELECT ID, promo_id, client_company, first_name, last_name, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Promos WHERE ';
-            if(req.body.by == 'Job') {
-                query += 'job_title LIKE \'%'+ req.body.search +'%\'';
-            }
-            else if(req.body.by == 'First') {
-                query += 'first_name LIKE \'%'+ req.body.search +'%\'';
-            }
-            else if(req.body.by == 'Last') {
-                query += 'last_name LIKE \'%'+ req.body.search +'%\'';
-            }
-            else if(req.body.by == 'Comp') {
-                query += 'client_company LIKE \'%'+ req.body.search +'%\'';
-            }
-            else { // Default "All."
-                query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
-            }
-            query += ' ORDER BY last_name, first_name, client_company, promo_id;';
-            request.query(query, (err, ProData) => {
-                if(err) {
-                    console.error(err);
-                    res.send(JSON.parse(JSON.stringify(err)));
-                }
-                else {
-                    const result = new Array();
-                    result.push(ProjData);
-                    result.push(ProData);
-                    res.send(JSON.parse(JSON.stringify(result)));
-                }
-            });
+            const result = new Array();
+            result.push(ProjData.recordsets[0]);
+            result.push(ProjData.recordsets[1]);
+            result.push(ProjData.recordsets[2]);
+            res.send(JSON.parse(JSON.stringify(result)));
         }
     });
 });

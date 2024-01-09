@@ -88,7 +88,7 @@ function toTable(json) {
     currResults.result = null;
     currResults.map.clear();
     console.log(json);
-    if(json[0].recordset.length == 0 && json[1].recordset.length == 0) {
+    if(json[0][0].length + json[0][1].length + json[0][2].length == 0) {
         document.getElementById('results').innerHTML = 'No results';
         return;
     }
