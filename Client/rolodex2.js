@@ -88,30 +88,37 @@ function toTable(json) {
     currResults.result = null;
     currResults.map.clear();
     console.log(json);
-    if(json[0][0].length + json[0][1].length + json[0][2].length == 0) {
+    if(json[0].length + json[1].length + json[2].length == 0) {
         document.getElementById('results').innerHTML = 'No results';
         return;
     }
-    let syntax = '<table id="Rolo"><tr><th><strong>ID</strong></th><th><strong>Company</strong></th><th><strong>Name</strong></th><th><strong>Job Title</strong></th><th><strong>Address</strong></th><th><strong>Phone</strong></th><th><strong>Email</strong></th><th><strong>Info</strong></th></tr>';
-    json[0].recordset.forEach(entry => {
-        currResults.map.set(entry.project_id, entry);
-        syntax += addRow(entry, true);
-    });
-    json[1].recordset.forEach(entry => {
-        currResults.map.set(entry.promo_id, entry);
-        syntax += addRow(entry, false);
+    let syntax = '<table><tr><th><strong>Company</strong></th><th><strong>Name</strong></th><th><strong>Job Title</strong></th><th><strong>Address</strong></th><th><strong>Work Phone</strong></th><th><strong>Email</strong></th><th><strong>Edit</strong></th></tr>';
+    json[0].forEach(entry => {
+        currResults.map.set(entry.ID, entry);
+        syntax += '<tr><td>'+ entry.client_company +'</td><td>'+ entry.last_name + ', ' + entry.first_name +'</td><td>' + entry.job_title + '</td><td>'+ entry.address1 +'</td><td>'+ entry.work_phone +'</td><td>'+ entry.email +'</td><td><button type="button" id="'+ entry.ID + '" onclick="edit(\''+ entry.ID +'\', true);">Edit</button></td></tr>';
+        // syntax += addRow(entry, true);
     });
     syntax += '</table>';
-    if(json[0].recordset.length+ json[1].recordset.length === 0) {
+    syntax += '<h3>From Projects and Promos</h3><table><tr><th><strong>ID</strong></th><th><strong>Company</strong></th><th><strong>Name</strong></th><th><strong>Job Title</strong></th><th><strong>Address</strong></th><th><strong>Phone</strong></th><th><strong>Email</strong></th></tr>';
+    json[1].forEach(entry => {
+        // currResults.map.set(entry.project_id, entry);
+        syntax += addRow(entry);
+    });
+    json[2].forEach(entry => {
+        // currResults.map.set(entry.promo_id, entry);
+        syntax += addRow(entry);
+    });
+    syntax += '</table>';
+    if(json[0].length+ json[1].length + json[2].length === 0) {
         document.getElementById('results').innerHTML = 'No Results<br>';
     }
     else {
-        document.getElementById('results').innerHTML = (json[0].recordset.length + json[1].recordset.length) + ' Results<br>' + syntax;
-        currResults.result =  (json[0].recordset.length + json[1].recordset.length) + ' Results<br>' + syntax;
+        document.getElementById('results').innerHTML = (json[0].length + json[1].length + json[2].length) + ' Results<br>' + syntax;
+        // currResults.result =  (json[0].recordset.length + json[1].recordset.length) + ' Results<br>' + syntax;
     }
 }
 
-function addRow(entry, isProj) {
+function addRow(entry) {
     let row = '<tr>';
     if(entry.hasOwnProperty('project_id')) {
         row += '<td>' + entry.project_id + '</td>';
@@ -120,13 +127,13 @@ function addRow(entry, isProj) {
         row += '<td>' + entry.promo_id + '</td>';
     }
     row += (entry.client_company != null || entry.client_company != undefined) ? '<td>'+ entry.client_company +'</td>':'<td></td>';
-    row += (entry.first_name != null || entry.first_name != undefined) ? '<td>'+ entry.first_name + ' ':'<td>';
-    row += (entry.last_name != null || entry.last_name != undefined) ? entry.last_name + '</td>':'</td>';
+    row += (entry.last_name != null || entry.last_name != undefined) ? '<td>'+ entry.last_name +", ":'<td>';
+    row += (entry.first_name != null || entry.first_name != undefined) ? entry.first_name + '</td>':'</td>';
     row += (entry.job_title != null || entry.job_title != undefined) ? '<td>'+ entry.job_title +'</td>':'<td></td>';
     row += (entry.address1 != null || entry.address1 != undefined) ? '<td>'+ entry.address1 + ' ' + entry.city + ', ' + entry.state + ' ' + entry.zip_code + '</td>':'<td></td>';
     row += (entry.work_phone != null || entry.work_phone != undefined) ? '<td>'+ entry.work_phone +'</td>':'<td></td>';
     row += ((entry.email != null || entry.email != undefined) && entry.email.includes('@')) ? '<td><a href="mailto:'+entry.email+'">'+ entry.email +'</a></td>':'<td></td>';
-    row += (isProj) ? '<td><button type="button" id="'+ entry.ID + '" onclick="edit(\''+ entry.project_id +'\', true);">Edit</button></td>':'<td><button type="button" id="'+ entry.ID + '" onclick="edit(\''+ entry.promo_id + '\', false);">Edit</button></td>';
+    // row += (isProj) ? '<td><button type="button" id="'+ entry.ID + '" onclick="edit(\''+ entry.project_id +'\', true);">Edit</button></td>':'<td><button type="button" id="'+ entry.ID + '" onclick="edit(\''+ entry.promo_id + '\', false);">Edit</button></td>';
     return row + '</tr>';
 }
 
