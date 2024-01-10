@@ -137,49 +137,6 @@ function addRow(entry) {
     return row + '</tr>';
 }
 
-// function expand(ID) {
-//     let index = 0;
-//     while(document.getElementById('Rolo').rows[index].cells[0].innerHTML != ID.toString() && index < document.getElementById('Rolo').rows.length) {
-//         index++;
-//     }
-//     if(index >= document.getElementById('Rolo').rows.length) {
-//         alert("Error: Couldn't find row.");
-//         return;
-//     }
-//     let newRow = document.getElementById('Rolo').insertRow(index + 1);
-//     let nullCell = newRow.insertCell(0);
-//     let newCell1 = newRow.insertCell(1);
-//     let newCell2 = newRow.insertCell(2);
-//     let newCell3 = newRow.insertCell(3);
-//     let newCell4 = newRow.insertCell(4);
-//     let newCell5 = newRow.insertCell(5);
-//     newRow.insertCell(6);
-//     let newCell7 = newRow.insertCell(7);
-//     newCell1.innerHTML = (currResults.map.get(ID.toString()).Address2_1 != undefined && currResults.map.get(ID.toString()).Address2_1 != null) ? "2nd Address: " + currResults.map.get(ID.toString()).Address2_1:"2nd Address:";
-//     newCell2.innerHTML = (currResults.map.get(ID.toString()).PhoneH1 != null && currResults.map.get(ID.toString()).PhoneH1 != undefined) ? 'Home Phone: ' + currResults.map.get(ID.toString()).PhoneH1:'Home Phone:';
-//     newCell3.innerHTML = (currResults.map.get(ID.toString()).Cell1 != null && currResults.map.get(ID.toString()).Cell1 != undefined) ? 'Cell: ' + currResults.map.get(ID.toString()).Cell1:'Cell:';
-//     newCell4.innerHTML = (currResults.map.get(ID.toString()).Fax1 != null && currResults.map.get(ID.toString()).Fax1 != undefined) ? 'Fax: ' + currResults.map.get(ID.toString()).Fax1:'Fax:';
-//     newCell5.innerHTML = (currResults.map.get(ID.toString()).OfficeMailingLists1 != null && currResults.map.get(ID.toString()).OfficeMailingLists1 != undefined && ID.length <= 7) ? 'Mailing list: ' + currResults.map.get(ID.toString()).OfficeMailingLists1:'';
-//     newCell7.innerHTML = '<button type="button" id="edit" onclick="edit(\''+ ID +'\');">Edit</button>';
-
-//     document.getElementById(ID).innerHTML = 'Less';
-//     document.getElementById(ID).onclick = function() {hide(ID.toString());};
-// }
-
-function hide(ID) {
-    let index = 0;
-    while(document.getElementById('Rolo').rows[index].cells[0].innerHTML != ID && index < document.getElementById('Rolo').rows.length) {
-        index++;
-    }
-    if(index >= document.getElementById('Rolo').rows.length) {
-        alert("Error: Couldn't find row.");
-        return;
-    }
-    document.getElementById('Rolo').deleteRow(index + 1);
-    document.getElementById(ID).innerHTML = 'More';
-    document.getElementById(ID).onclick = function() {expand(ID.toString());};
-}
-
 function edit(id, isProj) {
     globalID = id;
     isProject = isProj;
@@ -197,7 +154,6 @@ function starter(res) {
 
     document.getElementById('inserter').innerHTML = '<div class="container"><div class="row">' + 
     '<div class="col-lg-4"><label for="comp">Company </label></div><div class="col-lg-8"><input type="text" id="comp" name="comp" maxlength="255" value="'+json.client_company+'" required/></div>' +
-    ((isProject)?'<div class="col-lg-4"><label for="office">Office Mailing List </label></div><div class="col-lg-8"><input type="checkbox" id="xmas" name="xmas" title="xmas" placeholder="Christmas">Christmas <input type="checkbox" id="house" name="house" title="house" placeholder="Open House">Open House</div>':'') +
     '<div class="col-lg-4"><label for="first">First Name </label></div><div class="col-lg-8"><input type="text" id="first" name="first" maxlength="255" value="'+ json.first_name +'" required/></div>'+
     '<div class="col-lg-4"><label for="last"> Last Name </label></div><div class="col-lg-8"><input type="text" id="last" name="last" maxlength="255" value="'+ json.last_name +'" required/></div>'+
     '<div class="col-lg-4"><label for="title">Job Title </label></div><div class="col-lg-8"><input type="text" id="title" name="title" maxlength="255" value="'+ json.job_title +'"/></div>'+
