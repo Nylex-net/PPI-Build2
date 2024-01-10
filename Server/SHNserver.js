@@ -1340,7 +1340,7 @@ app.post('/searchPromos', jsonParser, (req, res) => {
 
 app.post('/rolodex', jsonParser, (req, res) => {
     // Starting of query.
-    let query = 'SELECT ID, client_company, first_name, last_name, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Rolodex WHERE ';
+    let query = 'SELECT * FROM Rolodex WHERE ';
     if(req.body.by == 'Job') {
         query += 'job_title LIKE \'%'+ req.body.search +'%\'';
     }
@@ -1412,12 +1412,27 @@ app.post('/rolodex', jsonParser, (req, res) => {
  */
 
 app.post('/contacts', jsonParser, (req, res) => {
-    const sql = 'UPDATE '+(Boolean(req.body.isProject)?'Projects':'Promos')+' SET client_company = \''+ req.body.client_company +'\', first_name = \''+ req.body.first_name + 
-    '\', last_name = \'' + req.body.last_name + '\', job_title = ' + (req.body.job_title == '' || req.body.job_title == null?'NULL':'\''+req.body.job_title + '\'') + ', '+
-    ((req.body.hasOwnProperty('mailing_list'))?' mailing_list = '+(req.body.mailing_list == '' || req.body.mailing_list == null?'NULL':'\''+ req.body.mailing_list+'\'') + ', ':'') +'address1 = \'' + req.body.address1 + '\', address2 = ' + (req.body.address2 == '' || req.body.address2 == null?'NULL':'\''+req.body.address2 + '\'') + ', city = \'' + req.body.city +
-    '\', state = \'' + req.body.state + '\', zip_code = \'' + req.body.zip_code + '\', work_phone = \'' + req.body.work_phone +
-    '\', home_phone = ' + (req.body.home_phone == '' || req.body.home_phone == null?'NULL':'\''+req.body.home_phone + '\'')  + ', cell = '+ (req.body.cell == '' || req.body.cell == null?'NULL':'\''+req.body.cell + '\'') + ', fax = ' + (req.body.fax == '' || req.body.fax == null?'NULL':'\''+req.body.fax + '\'') + ', email = \'' + req.body.email + '\'' +
-    ' OUTPUT inserted.'+(Boolean(req.body.isProject)?'project_id':'promo_id')+', inserted.closed WHERE ID = '+ req.body.ID + ';';
+    const sql = 'UPDATE Rolodex SET client_company = \''+ req.body.client_company +
+    '\', client_abbreviation = '+ (req.body.client_abbreviation == 'NULL'?'NULL':"'"+req.body.client_abbreviation+"'") +
+    ', first_name = \''+ req.body.first_name + 
+    '\', last_name = \'' + req.body.last_name +
+    '\', relationship = '+(req.body.relationship == 'NULL'?'NULL':"'"+req.body.relationship+"'") +
+    ', job_title = ' + (req.body.job_title == '' || req.body.job_title == null || req.body.job_title == 'NULL'?'NULL':'\''+req.body.job_title + '\'') + ', '+
+    'address1 = ' + (req.body.address1 == 'NULL'?'NULL':"'"+req.body.address1+"'") +
+    ', address2 = ' + (req.body.address2 == 'NULL'?'NULL':"'"+req.body.address2+"'") +
+    ', city = ' + (req.body.city == 'NULL'?'NULL':"'"+req.body.city+"'") +
+    ', state = \'' + req.body.state +
+    '\', zip_code = ' + (req.body.zip_code == 'NULL'?'NULL':"'"+req.body.zip_code+"'") +
+    ', work_phone = ' + (req.body.work_phone == 'NULL'?'NULL':"'"+req.body.work_phone+"'") +
+    ', extension = ' + (req.body.extension == 'NULL'?'NULL':"'"+req.body.extension+"'") +
+    ', home_phone = ' + (req.body.home_phone == 'NULL'?'NULL':'\''+req.body.home_phone + '\'')  +
+    ', cell = '+ (req.body.cell == 'NULL'?'NULL':'\''+req.body.cell + '\'') +
+    ', fax = ' + (req.body.fax == 'NULL'?'NULL':'\''+req.body.fax + '\'') +
+    ', email = ' + (req.body.email == 'NULL'?'NULL':'\''+req.body.email + '\'')+
+    ', created = GETDATE()' +
+    ', last_edited = ' + (req.body.CreatedBy == 'NULL'?'NULL':'\''+req.body.CreatedBy + '\'')+ 
+    ' WHERE ID = '+ req.body.ID +';';
+    // console.log(sql);
     const request = pool.request();
     request.query(sql, (err, deez) => {
         if(err) {
@@ -1425,62 +1440,62 @@ app.post('/contacts', jsonParser, (req, res) => {
             res.send(JSON.parse(JSON.stringify(err)));
         }
         else {
-            const isProject = Boolean(req.body.isProject);
-            const num = (isProject?deez.recordset[0].project_id:deez.recordset[0].promo_id);
-            let dir = DEMO_PATH + getDir(num[0]) + (deez.recordset[0].closed == 1?'/ClosedJobs':'');
-            dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
-            dir += (isProject)?'':'/Promos';
-            if(!fs.existsSync(dir)) {
-                fs.mkdir((dir), err => {
-                    if(err){
-                        createTicket(err, "Promos folder not found:");
-                        throw err;
-                    }
-                });
-            }
-            let dirFiles = fs.readdirSync(dir);
-            let found = false;
-            for(let file of dirFiles) {
-                if(file.substring(0, 12).includes(num)) {
-                    dir += '/' + file;
-                    found = true;
-                    break;
-                }
-            }
-            if(!found) {
-                dir += '/' + num;
-                fs.mkdir((dir), err => {
-                    if(err) {
-                        createTicket(err, 'Project/Promo folder for '+num+'not found: ' + dir);
-                        console.error('Project/Promo folder for '+num+'not found: ' + dir);
-                    }
-                });
-            }
-            const mydate = new Date().toString();
-            fs.appendFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + ' (rolodex edit).\n', (err) => {
-                if (err) {
-                    console.error('Error appending to the file to '+dir + '/log.txt'+':', err);
-                    // Write the content to the file
-                    fs.writeFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + ' (rolodex edit).\n', (err) => {
-                        if (err) {
-                        console.error('Error creating the file to '+dir + '/log.txt'+':', err);
-                        }
-                        else {
-                            const folderPath = dir + '/log.txt';
-                            const permissions = new winPermissionsManager({folderPath});
-                            let accessString = 'GA';
-                            const domain = 'SHN-ENGR';
-                            let name = 'Administrator';
-                            accessString = 'GA';
-                            permissions.addRight({domain, name, accessString});
-                            name = 'Marketing';
-                            accessString = 'GR';
-                            permissions.addRight({domain, name, accessString});
-                            permissions.applyRights({disableInheritance:true});
-                        }
-                    });
-                }
-            });
+            // const isProject = Boolean(req.body.isProject);
+            // const num = (isProject?deez.recordset[0].project_id:deez.recordset[0].promo_id);
+            // let dir = DEMO_PATH + getDir(num[0]) + (deez.recordset[0].closed == 1?'/ClosedJobs':'');
+            // dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
+            // dir += (isProject)?'':'/Promos';
+            // if(!fs.existsSync(dir)) {
+            //     fs.mkdir((dir), err => {
+            //         if(err){
+            //             createTicket(err, "Promos folder not found:");
+            //             throw err;
+            //         }
+            //     });
+            // }
+            // let dirFiles = fs.readdirSync(dir);
+            // let found = false;
+            // for(let file of dirFiles) {
+            //     if(file.substring(0, 12).includes(num)) {
+            //         dir += '/' + file;
+            //         found = true;
+            //         break;
+            //     }
+            // }
+            // if(!found) {
+            //     dir += '/' + num;
+            //     fs.mkdir((dir), err => {
+            //         if(err) {
+            //             createTicket(err, 'Project/Promo folder for '+num+'not found: ' + dir);
+            //             console.error('Project/Promo folder for '+num+'not found: ' + dir);
+            //         }
+            //     });
+            // }
+            // const mydate = new Date().toString();
+            // fs.appendFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + ' (rolodex edit).\n', (err) => {
+            //     if (err) {
+            //         console.error('Error appending to the file to '+dir + '/log.txt'+':', err);
+            //         // Write the content to the file
+            //         fs.writeFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + ' (rolodex edit).\n', (err) => {
+            //             if (err) {
+            //             console.error('Error creating the file to '+dir + '/log.txt'+':', err);
+            //             }
+            //             else {
+            //                 const folderPath = dir + '/log.txt';
+            //                 const permissions = new winPermissionsManager({folderPath});
+            //                 let accessString = 'GA';
+            //                 const domain = 'SHN-ENGR';
+            //                 let name = 'Administrator';
+            //                 accessString = 'GA';
+            //                 permissions.addRight({domain, name, accessString});
+            //                 name = 'Marketing';
+            //                 accessString = 'GR';
+            //                 permissions.addRight({domain, name, accessString});
+            //                 permissions.applyRights({disableInheritance:true});
+            //             }
+            //         });
+            //     }
+            // });
             res.statusCode = 200;
             res.send(JSON.parse('{"Status":"Success"}'));
         }
