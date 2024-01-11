@@ -98,7 +98,7 @@ function toTable(json) {
         syntax += '<tr><td>'+ entry.client_company +'</td><td>'+ entry.last_name + ', ' + entry.first_name +'</td><td>' + (entry.job_title == null?'':entry.job_title) + '</td><td>'+ (entry.address1 == null?'':entry.address1) + '<br>' + (entry.city == null?'':entry.city) + ', ' + entry.state + ' ' + (entry.zip_code == null?'':entry.zip_code) + '</td><td>'+ (entry.work_phone == null?'':entry.work_phone) +'</td><td>'+ (entry.email == null?'':entry.email) +'</td><td><button type="button" id="'+ entry.ID + '" onclick="edit('+ entry.ID +');">Edit</button></td></tr>';
         // syntax += addRow(entry, true);
     });
-    syntax += '</table><br><button type="button" onclick="add();">Add Entry</button><br>';
+    syntax += '</table><br><br>';
     syntax += '<h3>Projects and Promos</h3><table><tr><th><strong>ID</strong></th><th><strong>Company</strong></th><th><strong>Name</strong></th><th><strong>Job Title</strong></th><th><strong>Address</strong></th><th><strong>Phone</strong></th><th><strong>Email</strong></th></tr>';
     json[1].forEach(entry => {
         // currResults.map.set(entry.project_id, entry);
@@ -180,7 +180,7 @@ function starter(res) {
         '<div class="col-lg-4"><label for="fax">Fax </label></div><div class="col-lg-8"><input type="tel" id="fax" name="fax" value="'+ json.fax +'" maxlength="12"></div>'+
         '<div class="col-lg-4"><label for="email">Email </label></div><div class="col-lg-8"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" value="'+ json.email +'" ></div>'+
         '</div></div>'+
-        '<div id="submitter"><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+json.ID+')">Submit</button></div>';
+        '<div id="submitter"><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+json.ID+')">Submit</button><br><br><button type="button" onclick="deleteMe('+json.ID+')">Delete</button></div>';
         document.getElementById('state').value = json.state;
     }
     else {
@@ -363,6 +363,31 @@ function preparePost(Id) {
         document.getElementById('submitter').innerHTML = '<p>An error ocurred. Please contact help.</p><br><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+ Id +')">Submit</button>';
         console.log(error);
     });
+}
+
+function deleteMe(ID) {
+    if(confirm("Are you sure you want to delete this entry from the Rolodex?")) {
+        if(confirm("Are you sure you want to delete this entry from Prevailing Wage?")) {
+            fetch("https://"+HOST+".shn-engr.com:3001/deleteRolo", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ID:ID})
+            }).then(response => { // Makes a call for employees.
+                if(response.status == 200) {
+                    editing = null;
+                    starter(activeUser);
+                }
+                else {
+                    document.getElementById("submitter").innerHTML = '<p>Something went wrong.  Try again or contact help.</p><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+ID+')">Submit</button><br><br><button type="button" onclick="deleteMe('+ID+')">Delete</button>';
+                }
+            }).catch((error) => {
+                console.error(error);
+                document.getElementById("submitter").innerHTML = '<p>There seems to be an error on our end.  Please let us know.</p><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+ID+')">Submit</button><br><br><button type="button" onclick="deleteMe('+ID+')">Delete</button>';
+            });
+        }
+    }
 }
 
 let currResults = {

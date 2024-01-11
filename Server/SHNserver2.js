@@ -1087,6 +1087,26 @@ app.post('/deleteWage', jsonParser, (req, res) => {
 });
 
 /**
+ * Deletes an entry from Rolodex.
+ */
+
+app.post('/deleteRolo', jsonParser, (req, res) => {
+    const query = 'DELETE FROM Rolodex WHERE ID = '+ req.body.ID +';';
+    const request = pool.request();
+    request.query(query, (err, oof) => {
+        if(err) {
+            console.error(err);
+            res.status(500);
+            res.send(JSON.parse(JSON.stringify('{"status":"nah"}')));
+        }
+        else {
+            res.status(200);
+            res.send(JSON.parse(JSON.stringify('{"status":"success"}')));
+        }
+    });
+});
+
+/**
  * Upload API used to update PM tools.
  */
 /*
