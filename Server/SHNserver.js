@@ -1412,7 +1412,27 @@ app.post('/rolodex', jsonParser, (req, res) => {
  */
 
 app.post('/contacts', jsonParser, (req, res) => {
-    const sql = 'UPDATE Rolodex SET client_company = \''+ req.body.client_company +
+    const sql = (req.body.ID === null? 'INSERT INTO Rolodex (client_company, client_abbreviation, first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, extension, home_phone, cell, fax, email, last_edited) '+
+    'VALUES (\''+ req.body.client_company + '\', '+
+    (req.body.client_abbreviation == 'NULL'?'NULL':"'"+req.body.client_abbreviation+"'")+', '+
+    '\''+ req.body.first_name +'\', '+
+    '\''+ req.body.last_name +'\', '+
+    (req.body.relationship == 'NULL'?'NULL':"'"+req.body.relationship+"'") +', '+
+    (req.body.job_title == '' || req.body.job_title == null || req.body.job_title == 'NULL'?'NULL':'\''+req.body.job_title + '\'') + ', '+
+    (req.body.address1 == 'NULL'?'NULL':"'"+req.body.address1+"'") + ', '+
+    (req.body.address2 == 'NULL'?'NULL':"'"+req.body.address2+"'") + ', '+
+    (req.body.city == 'NULL'?'NULL':"'"+req.body.city+"'") + ', '+
+    '\'' + req.body.state + '\', '+
+    (req.body.zip_code == 'NULL'?'NULL':"'"+req.body.zip_code+"'") + ', '+
+    (req.body.work_phone == 'NULL'?'NULL':"'"+req.body.work_phone+"'") + ', ' +
+    (req.body.extension == 'NULL'?'NULL':"'"+req.body.extension+"'") + ', ' +
+    (req.body.home_phone == 'NULL'?'NULL':"'"+req.body.home_phone+"'") + ', ' +
+    (req.body.cell == 'NULL'?'NULL':"'"+req.body.cell+"'") + ', ' +
+    (req.body.fax == 'NULL'?'NULL':"'"+req.body.fax+"'") + ', ' +
+    (req.body.email == 'NULL'?'NULL':"'"+req.body.email+"'") + ', ' +
+    (req.body.CreatedBy == 'NULL'?'NULL':'\''+req.body.CreatedBy + '\'')+
+    ');'
+    :'UPDATE Rolodex SET client_company = \''+ req.body.client_company +
     '\', client_abbreviation = '+ (req.body.client_abbreviation == 'NULL'?'NULL':"'"+req.body.client_abbreviation+"'") +
     ', first_name = \''+ req.body.first_name + 
     '\', last_name = \'' + req.body.last_name +
@@ -1431,7 +1451,7 @@ app.post('/contacts', jsonParser, (req, res) => {
     ', email = ' + (req.body.email == 'NULL'?'NULL':'\''+req.body.email + '\'')+
     ', created = GETDATE()' +
     ', last_edited = ' + (req.body.CreatedBy == 'NULL'?'NULL':'\''+req.body.CreatedBy + '\'')+ 
-    ' WHERE ID = '+ req.body.ID +';';
+    ' WHERE ID = '+ req.body.ID +';');
     // console.log(sql);
     const request = pool.request();
     request.query(sql, (err, deez) => {

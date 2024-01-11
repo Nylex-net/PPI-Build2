@@ -1,5 +1,5 @@
 let globalID;
-let isProject;
+let editing = null;
 let activeUser;
 /**
  * find() takes user input to search the database.
@@ -95,10 +95,10 @@ function toTable(json) {
     let syntax = '<table><tr><th><strong>Company</strong></th><th><strong>Name</strong></th><th><strong>Job Title</strong></th><th><strong>Address</strong></th><th><strong>Work Phone</strong></th><th><strong>Email</strong></th><th><strong>Edit</strong></th></tr>';
     json[0].forEach(entry => {
         currResults.map.set(entry.ID, entry);
-        syntax += '<tr><td>'+ entry.client_company +'</td><td>'+ entry.last_name + ', ' + entry.first_name +'</td><td>' + (entry.job_title == null?'':entry.job_title) + '</td><td>'+ (entry.address1 == null?'':entry.address1) + '<br>' + (entry.city == null?'':entry.city) + ', ' + entry.state + ' ' + (entry.zip_code == null?'':entry.zip_code) + '</td><td>'+ (entry.work_phone == null?'':entry.work_phone) +'</td><td>'+ (entry.email == null?'':entry.email) +'</td><td><button type="button" id="'+ entry.ID + '" onclick="edit('+ entry.ID +', true);">Edit</button></td></tr>';
+        syntax += '<tr><td>'+ entry.client_company +'</td><td>'+ entry.last_name + ', ' + entry.first_name +'</td><td>' + (entry.job_title == null?'':entry.job_title) + '</td><td>'+ (entry.address1 == null?'':entry.address1) + '<br>' + (entry.city == null?'':entry.city) + ', ' + entry.state + ' ' + (entry.zip_code == null?'':entry.zip_code) + '</td><td>'+ (entry.work_phone == null?'':entry.work_phone) +'</td><td>'+ (entry.email == null?'':entry.email) +'</td><td><button type="button" id="'+ entry.ID + '" onclick="edit('+ entry.ID +');">Edit</button></td></tr>';
         // syntax += addRow(entry, true);
     });
-    syntax += '</table>';
+    syntax += '</table><br><button type="button" onclick="add();">Add Entry</button><br>';
     syntax += '<h3>Projects and Promos</h3><table><tr><th><strong>ID</strong></th><th><strong>Company</strong></th><th><strong>Name</strong></th><th><strong>Job Title</strong></th><th><strong>Address</strong></th><th><strong>Phone</strong></th><th><strong>Email</strong></th></tr>';
     json[1].forEach(entry => {
         // currResults.map.set(entry.project_id, entry);
@@ -137,42 +137,74 @@ function addRow(entry) {
     return row + '</tr>';
 }
 
-function edit(id, isProj) {
+function edit(id) {
     globalID = id;
-    isProject = isProj;
+    editing = true;
+    signIn();
+}
+
+function add() {
+    editing = false;
     signIn();
 }
 
 function starter(res) {
+    if(typeof editing !== 'boolean') { // Don't add or edit entry if the user is only signing in. 
+        return;
+    }
     state.scroller = window.scrollY;
     state.prevHTML = document.getElementById('inserter').innerHTML;
     activeUser = res.account.name;
-    let json = currResults.map.get(globalID);
-    for(let key of Object.keys(json)) {
-        json[key] = (json[key] == null || json[key] == undefined ? '':json[key]);
-    }
+    if(editing) {
+        let json = currResults.map.get(globalID);
+        for(let key of Object.keys(json)) {
+            json[key] = (json[key] == null || json[key] == undefined ? '':json[key]);
+        }
 
-    document.getElementById('inserter').innerHTML = '<div class="container"><div class="row">' + 
-    '<div class="col-lg-4"><label for="comp">Company </label></div><div class="col-lg-8"><input type="text" id="comp" name="comp" maxlength="255" value="'+json.client_company+'" required/></div>' +
-    '<div class="col-lg-4"><label for="comp">Company Abbreviation</label></div><div class="col-lg-8"><input type="text" id="compAbbrev" name="compAbbrev" maxlength="255" value="'+json.client_abbreviation+'"/></div>' +
-    '<div class="col-lg-4"><label for="first">First Name </label></div><div class="col-lg-8"><input type="text" id="first" name="first" maxlength="255" value="'+ json.first_name +'" required/></div>'+
-    '<div class="col-lg-4"><label for="last"> Last Name </label></div><div class="col-lg-8"><input type="text" id="last" name="last" maxlength="255" value="'+ json.last_name +'" required/></div>'+
-    '<div class="col-lg-4"><label for="relation"> Relationship </label></div><div class="col-lg-8"><input type="text" id="relation" name="relation" maxlength="255" value="'+ json.relationship +'" required/></div>'+
-    '<div class="col-lg-4"><label for="title">Job Title </label></div><div class="col-lg-8"><input type="text" id="title" name="title" maxlength="255" value="'+ json.job_title +'"/></div>'+
-    '<div class="col-lg-4"><label for="add1">Address </label></div><div class="col-lg-8"><input type="text" id="add1" name="add1" maxlength="255" value="'+ json.address1 +'"/></div>'+
-    '<div class="col-lg-4"><label for="add2">Second Adddress </label></div><div class="col-lg-8"><input type="text" id="add2" name="add2" maxlength="255" value="'+ json.address2 +'"/></div>'+
-    '<div class="col-lg-4"><label for="city">City </label></div><div class="col-lg-8"><input type="text" id="city" name="city" maxlength="255" value="'+ json.city +'"/></div>'+
-    '<div class="col-lg-4"><label for="state">State </label></div><div class="col-lg-8"><select name="state" id="state" size="1"><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
-    '<div class="col-lg-4"><label for="zip">Zip </label></div><div class="col-lg-8"><input type="text" id="zip" name="zip" maxlength="20" value="'+ json.zip_code +'"></div>'+
-    '<div class="col-lg-4"><label for="WP">Work Phone </label></div><div class="col-lg-8"><input type="tel" id="WP" name="WP" maxlength="12" value="'+json.work_phone+'"></div>'+
-    '<div class="col-lg-4"><label for="ext">Work Extension </label></div><div class="col-lg-8"><input type="text" id="ext" name="ext" maxlength="3" value="'+json.extension+'"></div>'+
-    '<div class="col-lg-4"><label for="HP">Home Phone </label></div><div class="col-lg-8"><input type="tel" id="HP" name="HP" value="'+json.home_phone+'" maxlength="12"></div>'+
-    '<div class="col-lg-4"><label for="cell">Cell </label></div><div class="col-lg-8"><input type="tel" id="cell" name="cell" value="'+ json.cell +'" maxlength="12"></div>'+
-    '<div class="col-lg-4"><label for="fax">Fax </label></div><div class="col-lg-8"><input type="tel" id="fax" name="fax" value="'+ json.fax +'" maxlength="12"></div>'+
-    '<div class="col-lg-4"><label for="email">Email </label></div><div class="col-lg-8"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" value="'+ json.email +'" required></div>'+
-    '</div></div>'+
-    '<div id="submitter"><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+json.ID+')">Submit</button></div>';
-    document.getElementById('state').value = json.state;
+        document.getElementById('inserter').innerHTML = '<div class="container"><div class="row">' + 
+        '<div class="col-lg-4"><label for="comp">Company </label></div><div class="col-lg-8"><input type="text" id="comp" name="comp" maxlength="255" value="'+json.client_company+'" required/></div>' +
+        '<div class="col-lg-4"><label for="comp">Company Abbreviation</label></div><div class="col-lg-8"><input type="text" id="compAbbrev" name="compAbbrev" maxlength="255" value="'+json.client_abbreviation+'"/></div>' +
+        '<div class="col-lg-4"><label for="first">First Name </label></div><div class="col-lg-8"><input type="text" id="first" name="first" maxlength="255" value="'+ json.first_name +'" required/></div>'+
+        '<div class="col-lg-4"><label for="last"> Last Name </label></div><div class="col-lg-8"><input type="text" id="last" name="last" maxlength="255" value="'+ json.last_name +'" required/></div>'+
+        '<div class="col-lg-4"><label for="relation"> Relationship </label></div><div class="col-lg-8"><input type="text" id="relation" name="relation" maxlength="255" value="'+ json.relationship +'"/></div>'+
+        '<div class="col-lg-4"><label for="title">Job Title </label></div><div class="col-lg-8"><input type="text" id="title" name="title" maxlength="255" value="'+ json.job_title +'"/></div>'+
+        '<div class="col-lg-4"><label for="add1">Address </label></div><div class="col-lg-8"><input type="text" id="add1" name="add1" maxlength="255" value="'+ json.address1 +'"/></div>'+
+        '<div class="col-lg-4"><label for="add2">Second Adddress </label></div><div class="col-lg-8"><input type="text" id="add2" name="add2" maxlength="255" value="'+ json.address2 +'"/></div>'+
+        '<div class="col-lg-4"><label for="city">City </label></div><div class="col-lg-8"><input type="text" id="city" name="city" maxlength="255" value="'+ json.city +'"/></div>'+
+        '<div class="col-lg-4"><label for="state">State </label></div><div class="col-lg-8"><select name="state" id="state" size="1"><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
+        '<div class="col-lg-4"><label for="zip">Zip </label></div><div class="col-lg-8"><input type="text" id="zip" name="zip" maxlength="20" value="'+ json.zip_code +'"></div>'+
+        '<div class="col-lg-4"><label for="WP">Work Phone </label></div><div class="col-lg-8"><input type="tel" id="WP" name="WP" maxlength="12" value="'+json.work_phone+'"></div>'+
+        '<div class="col-lg-4"><label for="ext">Work Extension </label></div><div class="col-lg-8"><input type="text" id="ext" name="ext" maxlength="3" value="'+json.extension+'"></div>'+
+        '<div class="col-lg-4"><label for="HP">Home Phone </label></div><div class="col-lg-8"><input type="tel" id="HP" name="HP" value="'+json.home_phone+'" maxlength="12"></div>'+
+        '<div class="col-lg-4"><label for="cell">Cell </label></div><div class="col-lg-8"><input type="tel" id="cell" name="cell" value="'+ json.cell +'" maxlength="12"></div>'+
+        '<div class="col-lg-4"><label for="fax">Fax </label></div><div class="col-lg-8"><input type="tel" id="fax" name="fax" value="'+ json.fax +'" maxlength="12"></div>'+
+        '<div class="col-lg-4"><label for="email">Email </label></div><div class="col-lg-8"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" value="'+ json.email +'" ></div>'+
+        '</div></div>'+
+        '<div id="submitter"><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+json.ID+')">Submit</button></div>';
+        document.getElementById('state').value = json.state;
+    }
+    else {
+        document.getElementById('inserter').innerHTML = '<div class="container"><div class="row">' + 
+        '<div class="col-lg-4"><label for="comp">Company </label></div><div class="col-lg-8"><input type="text" id="comp" name="comp" maxlength="255" value="" required/></div>' +
+        '<div class="col-lg-4"><label for="comp">Company Abbreviation</label></div><div class="col-lg-8"><input type="text" id="compAbbrev" name="compAbbrev" maxlength="255" value=""/></div>' +
+        '<div class="col-lg-4"><label for="first">First Name </label></div><div class="col-lg-8"><input type="text" id="first" name="first" maxlength="255" value="" required/></div>'+
+        '<div class="col-lg-4"><label for="last"> Last Name </label></div><div class="col-lg-8"><input type="text" id="last" name="last" maxlength="255" value="" required/></div>'+
+        '<div class="col-lg-4"><label for="relation"> Relationship </label></div><div class="col-lg-8"><input type="text" id="relation" name="relation" maxlength="255" value=""/></div>'+
+        '<div class="col-lg-4"><label for="title">Job Title </label></div><div class="col-lg-8"><input type="text" id="title" name="title" maxlength="255" value=""/></div>'+
+        '<div class="col-lg-4"><label for="add1">Address </label></div><div class="col-lg-8"><input type="text" id="add1" name="add1" maxlength="255" value=""/></div>'+
+        '<div class="col-lg-4"><label for="add2">Second Adddress </label></div><div class="col-lg-8"><input type="text" id="add2" name="add2" maxlength="255" value=""/></div>'+
+        '<div class="col-lg-4"><label for="city">City </label></div><div class="col-lg-8"><input type="text" id="city" name="city" maxlength="255" value=""/></div>'+
+        '<div class="col-lg-4"><label for="state">State </label></div><div class="col-lg-8"><select name="state" id="state" size="1"><option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option><option value="AR">Arkansas</option><option value="CA" selected="selected">California</option><option value="CO">Colorado</option><option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">Dist of Columbia</option><option value="FL">Florida</option><option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option><option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option><option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option><option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option><option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option><option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option></select></div>'+
+        '<div class="col-lg-4"><label for="zip">Zip </label></div><div class="col-lg-8"><input type="text" id="zip" name="zip" maxlength="20" value=""></div>'+
+        '<div class="col-lg-4"><label for="WP">Work Phone </label></div><div class="col-lg-8"><input type="tel" id="WP" name="WP" maxlength="12" value=""></div>'+
+        '<div class="col-lg-4"><label for="ext">Work Extension </label></div><div class="col-lg-8"><input type="text" id="ext" name="ext" maxlength="3" value=""></div>'+
+        '<div class="col-lg-4"><label for="HP">Home Phone </label></div><div class="col-lg-8"><input type="tel" id="HP" name="HP" value="" maxlength="12"></div>'+
+        '<div class="col-lg-4"><label for="cell">Cell </label></div><div class="col-lg-8"><input type="tel" id="cell" name="cell" value="" maxlength="12"></div>'+
+        '<div class="col-lg-4"><label for="fax">Fax </label></div><div class="col-lg-8"><input type="tel" id="fax" name="fax" value="" maxlength="12"></div>'+
+        '<div class="col-lg-4"><label for="email">Email </label></div><div class="col-lg-8"><input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="75" value=""></div>'+
+        '</div></div>'+
+        '<div id="submitter"><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+null+')">Submit</button></div>';
+    }
 
     // if(isProject) {
     //     if(json.mailing_list.includes("ouse")) {
@@ -284,7 +316,7 @@ function preparePost(Id) {
     //     mailer += (document.getElementById('xmas').checked)?((document.getElementById('house').checked)?' || Christmas':'Christmas'):'';
     // }
 
-    let sql = '{"ID":"'+Id+'"'+
+    let sql = '{"ID":'+Id+
     ',"client_company":"'+ format(document.getElementById('comp').value.trim()) +
     '","client_abbreviation":"'+format((document.getElementById('compAbbrev').value.trim() == ''?'NULL':document.getElementById('compAbbrev').value.trim()))+
     // (Boolean(proj)?'","mailing_list":"'+ mailer:'') +
