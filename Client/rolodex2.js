@@ -1,6 +1,7 @@
 let globalID;
 let editing = null;
 let activeUser;
+const HOST = 'e-hv-ppi';
 /**
  * find() takes user input to search the database.
  */
@@ -367,26 +368,23 @@ function preparePost(Id) {
 
 function deleteMe(ID) {
     if(confirm("Are you sure you want to delete this entry from the Rolodex?")) {
-        if(confirm("Are you sure you want to delete this entry from Prevailing Wage?")) {
-            fetch("https://"+HOST+".shn-engr.com:3001/deleteRolo", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ID:ID})
-            }).then(response => { // Makes a call for employees.
-                if(response.status == 200) {
-                    editing = null;
-                    starter(activeUser);
-                }
-                else {
-                    document.getElementById("submitter").innerHTML = '<p>Something went wrong.  Try again or contact help.</p><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+ID+')">Submit</button><br><br><button type="button" onclick="deleteMe('+ID+')">Delete</button>';
-                }
-            }).catch((error) => {
-                console.error(error);
-                document.getElementById("submitter").innerHTML = '<p>There seems to be an error on our end.  Please let us know.</p><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+ID+')">Submit</button><br><br><button type="button" onclick="deleteMe('+ID+')">Delete</button>';
-            });
-        }
+        fetch("https://"+HOST+".shn-engr.com:3001/deleteRolo", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ID:ID})
+        }).then(response => { // Makes a call for employees.
+            if(response.status == 200) {
+                location.reload();
+            }
+            else {
+                document.getElementById("submitter").innerHTML = '<p>Something went wrong.  Try again or contact help.</p><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+ID+')">Submit</button><br><br><button type="button" onclick="deleteMe('+ID+')">Delete</button>';
+            }
+        }).catch((error) => {
+            console.error(error);
+            document.getElementById("submitter").innerHTML = '<p>There seems to be an error on our end.  Please let us know.</p><button type="button" onclick="back()">Back</button><button type="button" onclick="preparePost('+ID+')">Submit</button><br><br><button type="button" onclick="deleteMe('+ID+')">Delete</button>';
+        });
     }
 }
 
