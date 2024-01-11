@@ -95,7 +95,7 @@ function toTable(json) {
     let syntax = '<table><tr><th><strong>Company</strong></th><th><strong>Name</strong></th><th><strong>Job Title</strong></th><th><strong>Address</strong></th><th><strong>Work Phone</strong></th><th><strong>Email</strong></th><th><strong>Edit</strong></th></tr>';
     json[0].forEach(entry => {
         currResults.map.set(entry.ID, entry);
-        syntax += '<tr><td>'+ entry.client_company +'</td><td>'+ entry.last_name + ', ' + entry.first_name +'</td><td>' + (entry.job_title == null?'':entry.job_title) + '</td><td>'+ (entry.address1 == null?'':entry.address1) + ', ' + (entry.city == null?'':entry.city) + ', ' + entry.state + ' ' + (entry.zip_code == null?'':entry.zip_code) + '</td><td>'+ (entry.work_phone == null?'':entry.work_phone) +'</td><td>'+ (entry.email == null?'':entry.email) +'</td><td><button type="button" id="'+ entry.ID + '" onclick="edit('+ entry.ID +', true);">Edit</button></td></tr>';
+        syntax += '<tr><td>'+ entry.client_company +'</td><td>'+ entry.last_name + ', ' + entry.first_name +'</td><td>' + (entry.job_title == null?'':entry.job_title) + '</td><td>'+ (entry.address1 == null?'':entry.address1) + '<br>' + (entry.city == null?'':entry.city) + ', ' + entry.state + ' ' + (entry.zip_code == null?'':entry.zip_code) + '</td><td>'+ (entry.work_phone == null?'':entry.work_phone) +'</td><td>'+ (entry.email == null?'':entry.email) +'</td><td><button type="button" id="'+ entry.ID + '" onclick="edit('+ entry.ID +', true);">Edit</button></td></tr>';
         // syntax += addRow(entry, true);
     });
     syntax += '</table>';
