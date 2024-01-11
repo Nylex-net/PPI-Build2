@@ -1354,7 +1354,7 @@ app.post('/rolodex', jsonParser, (req, res) => {
         query += 'client_company LIKE \'%'+ req.body.search +'%\'';
     }
     else { // Default "All."
-        query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
+        query += 'client_company LIKE \'%'+ req.body.search +'%\' OR client_abbreviation LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR relationship LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\' OR address1 LIKE \'%'+ req.body.search +'%\' OR address2 LIKE \'%'+ req.body.search +'%\' OR city LIKE \'%'+ req.body.search +'%\' OR state LIKE \'%'+ req.body.search +'%\' OR zip_code LIKE \'%'+ req.body.search +'%\' OR work_phone LIKE \'%'+ req.body.search +'%\'OR extension LIKE \'%'+ req.body.search +'%\' OR home_phone LIKE \'%'+ req.body.search +'%\' OR cell LIKE \'%'+ req.body.search +'%\' OR fax LIKE \'%'+ req.body.search +'%\' OR email LIKE \'%'+ req.body.search +'%\' OR last_edited LIKE \'%'+ req.body.search +'%\'';
     }
     query += ' ORDER BY last_name, first_name, client_company;';
     query += 'SELECT ID, project_id, client_company, first_name, last_name, job_title, mailing_list, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Projects WHERE ';
@@ -1371,7 +1371,7 @@ app.post('/rolodex', jsonParser, (req, res) => {
         query += 'client_company LIKE \'%'+ req.body.search +'%\'';
     }
     else { // Default "All."
-        query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
+        query += 'client_company LIKE \'%'+ req.body.search +'%\' OR client_abbreviation LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR relationship LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\' OR address1 LIKE \'%'+ req.body.search +'%\' OR address2 LIKE \'%'+ req.body.search +'%\' OR city LIKE \'%'+ req.body.search +'%\' OR state LIKE \'%'+ req.body.search +'%\' OR zip_code LIKE \'%'+ req.body.search +'%\' OR work_phone LIKE \'%'+ req.body.search +'%\'OR ext LIKE \'%'+ req.body.search +'%\' OR home_phone LIKE \'%'+ req.body.search +'%\' OR cell LIKE \'%'+ req.body.search +'%\' OR fax LIKE \'%'+ req.body.search +'%\' OR email LIKE \'%'+ req.body.search +'%\'';
     }
     query += ' ORDER BY last_name, first_name, client_company, project_id;';
     query += 'SELECT ID, promo_id, client_company, first_name, last_name, job_title, address1, address2, city, state, zip_code, work_phone, home_phone, cell, email, fax, created FROM Promos WHERE ';
@@ -1388,7 +1388,7 @@ app.post('/rolodex', jsonParser, (req, res) => {
         query += 'client_company LIKE \'%'+ req.body.search +'%\'';
     }
     else { // Default "All."
-        query += 'client_company LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\'';
+        query += 'client_company LIKE \'%'+ req.body.search +'%\' OR client_abbreviation LIKE \'%'+ req.body.search +'%\' OR first_name LIKE \'%'+ req.body.search +'%\' OR last_name LIKE \'%'+ req.body.search +'%\' OR relationship LIKE \'%'+ req.body.search +'%\' OR job_title LIKE \'%'+ req.body.search +'%\' OR address1 LIKE \'%'+ req.body.search +'%\' OR address2 LIKE \'%'+ req.body.search +'%\' OR city LIKE \'%'+ req.body.search +'%\' OR state LIKE \'%'+ req.body.search +'%\' OR zip_code LIKE \'%'+ req.body.search +'%\' OR work_phone LIKE \'%'+ req.body.search +'%\'OR ext LIKE \'%'+ req.body.search +'%\' OR home_phone LIKE \'%'+ req.body.search +'%\' OR cell LIKE \'%'+ req.body.search +'%\' OR fax LIKE \'%'+ req.body.search +'%\' OR email LIKE \'%'+ req.body.search +'%\'';
     }
     query += ' ORDER BY last_name, first_name, client_company, promo_id;';
     const request = pool.request();
