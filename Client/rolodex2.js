@@ -163,7 +163,7 @@ function starter(res) {
         }
 
         document.getElementById('inserter').innerHTML = '<div class="container"><div class="row">' + 
-        '<div class="col-lg-4"><label for="comp">Company </label></div><div class="col-lg-8"><input type="text" id="comp" name="comp" maxlength="255" value="'+json.client_company+'" required/></div>' +
+        '<div class="col-lg-4"><label for="comp">Company </label></div><div class="col-lg-8"><input type="text" id="comp" name="comp" maxlength="255" value="'+json.client_company+'"/></div>' +
         '<div class="col-lg-4"><label for="comp">Company Abbreviation</label></div><div class="col-lg-8"><input type="text" id="compAbbrev" name="compAbbrev" maxlength="255" value="'+json.client_abbreviation+'"/></div>' +
         '<div class="col-lg-4"><label for="first">First Name </label></div><div class="col-lg-8"><input type="text" id="first" name="first" maxlength="255" value="'+ json.first_name +'" required/></div>'+
         '<div class="col-lg-4"><label for="last"> Last Name </label></div><div class="col-lg-8"><input type="text" id="last" name="last" maxlength="255" value="'+ json.last_name +'" required/></div>'+
@@ -186,7 +186,7 @@ function starter(res) {
     }
     else {
         document.getElementById('inserter').innerHTML = '<div class="container"><div class="row">' + 
-        '<div class="col-lg-4"><label for="comp">Company </label></div><div class="col-lg-8"><input type="text" id="comp" name="comp" maxlength="255" value="" required/></div>' +
+        '<div class="col-lg-4"><label for="comp">Company </label></div><div class="col-lg-8"><input type="text" id="comp" name="comp" maxlength="255" value=""/></div>' +
         '<div class="col-lg-4"><label for="comp">Company Abbreviation</label></div><div class="col-lg-8"><input type="text" id="compAbbrev" name="compAbbrev" maxlength="255" value=""/></div>' +
         '<div class="col-lg-4"><label for="first">First Name </label></div><div class="col-lg-8"><input type="text" id="first" name="first" maxlength="255" value="" required/></div>'+
         '<div class="col-lg-4"><label for="last"> Last Name </label></div><div class="col-lg-8"><input type="text" id="last" name="last" maxlength="255" value="" required/></div>'+
@@ -281,7 +281,7 @@ function back() {
 
 function preparePost(Id) {
     // Test against required user selections and fields to determine if values are valid.
-    if(document.getElementById('comp').value.trim() == '' || document.getElementById('first').value.trim() == '' || document.getElementById('last').value.trim() == '') {
+    if(document.getElementById('first').value.trim() == '' || document.getElementById('last').value.trim() == '') {
         alert("Please fill all required fields, and/or fix invalid fields.");
         return false;
     }
@@ -318,7 +318,7 @@ function preparePost(Id) {
     // }
 
     let sql = '{"ID":'+Id+
-    ',"client_company":"'+ format(document.getElementById('comp').value.trim()) +
+    ',"client_company":"'+ format((document.getElementById('comp').value.trim() == ''?'NULL':document.getElementById('comp').value.trim())) +
     '","client_abbreviation":"'+format((document.getElementById('compAbbrev').value.trim() == ''?'NULL':document.getElementById('compAbbrev').value.trim()))+
     // (Boolean(proj)?'","mailing_list":"'+ mailer:'') +
     '","first_name":"'+ format(document.getElementById('first').value.trim()) +

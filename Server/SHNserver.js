@@ -1413,7 +1413,7 @@ app.post('/rolodex', jsonParser, (req, res) => {
 
 app.post('/contacts', jsonParser, (req, res) => {
     const sql = (req.body.ID === null? 'INSERT INTO Rolodex (client_company, client_abbreviation, first_name, last_name, relationship, job_title, address1, address2, city, state, zip_code, work_phone, extension, home_phone, cell, fax, email, last_edited) '+
-    'VALUES (\''+ req.body.client_company + '\', '+
+    'VALUES ('+ (req.body.client_company == 'NULL'?'NULL':"'"+req.body.client_company+"'") + ', '+
     (req.body.client_abbreviation == 'NULL'?'NULL':"'"+req.body.client_abbreviation+"'")+', '+
     '\''+ req.body.first_name +'\', '+
     '\''+ req.body.last_name +'\', '+
@@ -1432,8 +1432,8 @@ app.post('/contacts', jsonParser, (req, res) => {
     (req.body.email == 'NULL'?'NULL':"'"+req.body.email+"'") + ', ' +
     (req.body.CreatedBy == 'NULL'?'NULL':'\''+req.body.CreatedBy + '\'')+
     ');'
-    :'UPDATE Rolodex SET client_company = \''+ req.body.client_company +
-    '\', client_abbreviation = '+ (req.body.client_abbreviation == 'NULL'?'NULL':"'"+req.body.client_abbreviation+"'") +
+    :'UPDATE Rolodex SET client_company = '+ (req.body.client_company == 'NULL'?'NULL':"'"+req.body.client_company+"'") +
+    ', client_abbreviation = '+ (req.body.client_abbreviation == 'NULL'?'NULL':"'"+req.body.client_abbreviation+"'") +
     ', first_name = \''+ req.body.first_name + 
     '\', last_name = \'' + req.body.last_name +
     '\', relationship = '+(req.body.relationship == 'NULL'?'NULL':"'"+req.body.relationship+"'") +
@@ -1457,6 +1457,7 @@ app.post('/contacts', jsonParser, (req, res) => {
     request.query(sql, (err, deez) => {
         if(err) {
             console.error(err + '\n' + sql);
+            res.statusCode = 500;
             res.send(JSON.parse(JSON.stringify(err)));
         }
         else {
