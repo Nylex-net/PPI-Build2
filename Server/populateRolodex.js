@@ -46,11 +46,24 @@ function populateRolodex() {
     connection.query('SELECT * FROM Rolodex').then(data => {
         let query = '';
         data.forEach((element) => {
-            query += "INSERT INTO Rolodex ("+
-            (element.Company == null || element.Company == 'NULL' || element.Company == ''?'client_company, ':'')+
-            'first_name, last_name, '+
-            
-            +") VALUES ("+");";
+            query += "INSERT INTO Rolodex (client_company, first_name, last_name, job_title, address1, city, state, zip_code, work_phone, home_phone, cell, fax, email, created, last_edited"+
+            ") VALUES ("+
+            (element.Company == null || element.Company == 'NULL' || element.Company == ''?'NULL, ':'\''+element.Company.replace(/'/gi, "''")+'\', ')+
+            (element.First == null || element.First == 'NULL' || element.First == ''?'\'\', ':'\''+element.First.replace(/'/gi, "''")+'\', ')+
+            (element.Last == null || element.Last == 'NULL' || element.Last == ''?'\'\', ':'\''+element.Last.replace(/'/gi, "''")+'\', ')+
+            (element.JobTitle == null || element.JobTitle == 'NULL' || element.JobTitle == ''?'NULL, ':'\''+element.JobTitle.replace(/'/gi, "''")+'\', ')+
+            (element.Address == null || element.Address == 'NULL' || element.Address == ''?'NULL, ':'\''+element.Address.replace(/'/gi, "''")+'\', ')+
+            (element.City == null || element.City == 'NULL' || element.City == ''?'NULL, ':'\''+element.City.replace(/'/gi, "''")+'\', ')+
+            (element.State == null || element.State == 'NULL' || element.State == ''?'NULL, ':'\''+element.State.replace(/'/gi, "''")+'\', ')+
+            (element.Zip == null || element.Zip == 'NULL' || element.Zip == ''?'NULL, ':'\''+element.Zip.replace(/'/gi, "''")+'\', ')+
+            (element.WorkPhone == null || element.WorkPhone == 'NULL' || element.WorkPhone == ''?'NULL, ':'\''+element.WorkPhone.replace(/'/gi, "''")+'\', ')+
+            (element.HomePhone == null || element.HomePhone == 'NULL' || element.HomePhone == ''?'NULL, ':'\''+element.HomePhone.replace(/'/gi, "''")+'\', ')+
+            (element.CellPhone == null || element.CellPhone == 'NULL' || element.CellPhone == ''?'NULL, ':'\''+element.CellPhone.replace(/'/gi, "''")+'\', ')+
+            (element.Fax == null || element.Fax == 'NULL' || element.Fax == ''?'NULL, ':'\''+element.Fax.replace(/'/gi, "''")+'\', ')+
+            (element.EMail == null || element.EMail == 'NULL' || element.EMail == ''?'NULL, ':'\''+element.EMail.replace(/'/gi, "''")+'\', ')+
+            ((element.DTStamp != null && element.DTStamp != '' && !isNaN(Date.parse(element.DTStamp)) && new Date(element.DTStamp) instanceof Date)? ('\'' + (new Date(element.DTStamp).getMonth() + 1) + "/" + (new Date(element.DTStamp).getDate()) + "/" + (new Date(element.DTStamp).getFullYear()) +'\', '):'GETDATE(), ')+ // (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
+            (element.SubmitBy == null || element.SubmitBy == 'NULL' || element.SubmitBy == ''?'\'\'':'\''+element.SubmitBy.replace(/'/gi, "''")+'\'')+
+            ");";
         });
         pool.query(query, (err, rows) => {
             if(err) {
