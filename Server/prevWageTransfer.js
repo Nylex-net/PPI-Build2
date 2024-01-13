@@ -13,3 +13,46 @@ const pool = new sql.ConnectionPool({
     // }
 });
 
+// connect to your database
+pool.connect(err => {
+    if(err) {
+        console.error(err);
+    }
+    else {
+        console.log("Connected!");
+        // create Request object
+        // query to the database and get the records
+        pool.query('USE PPI;SET XACT_ABORT OFF;', function (err, recordset) {
+                
+            if (err) {
+                console.log(err);
+                pool.close();
+                process.exit();
+            }
+            else {
+                prevailingWage();
+            }
+        });
+    }
+});
+
+function prevailingWage() {
+    const request = pool.request();
+    request.query('SELECT Projects.project_id, Projects.SHNOffice_ID, Projects.closed, BillingGroups.group_number, BillingGroups.closed FROM Projects LEFT JOIN BillingGroups ON Projects.ID = BillingGroups.project_ID WHERE Projects.prevailing_wage = 1 ORDER BY Projects.SHNOffice_ID, Projects.project_id, BillingGroups.group_number;', (err, gyatt)=> {
+        if(err) {
+            console.error(err);
+        }
+        else {
+            console.log(gyatt.recordset);
+            const rizzler = new Map();
+            gyatt.recordset.forEach((record) => {
+                if(!rizzler.has(record.project_id) && record.group_number != null && record.group_number != '') {
+                    rizzler.set(record.project_id, record.group_number + (record.closed[1] == null?'':'*'));
+                }
+                else if(record.group_number != null && record.group_number != '') {
+                    rizzler.set(record.project_id, rizzler.get(record.project_id) +',' + record.group_number + (record.closed[1] == null?'':'*'));
+                }
+            });
+        }
+    });
+}
