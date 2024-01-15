@@ -210,4 +210,32 @@ function deleteWage(ID, project) {
     }
 }
 
-window.addEventListener("DOMContentLoaded", signIn(), false);
+// Lists Prevailing wages with the assumption that the user is not logged in.
+function defaultWage() {
+    const admin = false;
+    document.getElementById("results").innerHTML += '<p>Getting Prevailing Wages. Please wait...</p>';
+    fetch("https://"+HOST+".shn-engr.com:3001/prevWage", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({isAdmin:false})
+    }).then(response => { // Makes a call for employees.
+        const result = response.json();
+        return result; // returns to the ".then" statement's data below for processing.
+    }).then(data => {
+        document.getElementById("results").innerHTML = '<p>Processing...</p>';
+        let table = '<tr><th>Project</th><th>Billing Groups</th><th>Office</th>'+(admin?'<th>Display</th><th>Edit</th>':'')+'</tr>';
+        existing.length = 0;
+        for(let json = 0; json < data.length; json++) {
+            table += '<tr><td>'+ data[json].project_id + '</td><td>' + (data[json].BillGrp != 'NULL' && data[json].BillGrp != null?data[json].BillGrp:'') + '</td><td>'+
+            (data[json].office == 2?'klamath Falls':(data[json].office == 4?'Willits':(data[json].office == 5?'Redding':(data[json].office == 6?'Coos Bay':'Eureka')))) +
+            '</td>'+ (admin?('<td>'+(data[json].display || data[json].display == 1?'Yes':'No')+'</td><td><button type="button" onclick="editWage('+ JSON.stringify({ID:data[json].ID, project_id:data[json].project_id, BillGrp: data[json].BillGrp, office: data[json].office, display: data[json].display}).replace(/"/g, "'") +');">Edit</button></td>'):'') + '</tr>';
+            existing.push(data[json].project_id);
+        }
+        document.getElementById("results").innerHTML = table;
+        signIn();
+    });
+}
+
+window.addEventListener("DOMContentLoaded", defaultWage(), false);
