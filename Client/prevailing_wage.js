@@ -86,7 +86,7 @@ function add() {
         alert("Something appears to be wrong.  Try fixing inputs, or contact help if issue persists.");
         return;
     }
-    if(document.getElementById("project").value.trim() == '' || document.getElementById("BillGrp").value.trim() == '' || document.getElementById("office").value == -1) {
+    if(document.getElementById("project").value.trim() == '' || document.getElementById("office").value == -1) {
         alert("Please fix your inputs.");
         return;
     }
@@ -101,7 +101,7 @@ function add() {
 
     const wage = {
         project_id: document.getElementById("project").value.trim(),
-        BillGrp: document.getElementById("BillGrp").value.trim(),
+        BillGrp: (document.getElementById("BillGrp").value.trim() == ''?'NULL':document.getElementById("BillGrp").value.trim()),
         office: document.getElementById("office").value,
         display: document.getElementById("display").checked
     };
@@ -145,7 +145,7 @@ function update(ID, project) {
         alert("Something appears to be wrong.  Try fixing inputs, or contact help if issue persists.");
         return;
     }
-    if(document.getElementById("project").value.trim() == '' || document.getElementById("BillGrp").value.trim() == '' || document.getElementById("office").value == -1) {
+    if(document.getElementById("project").value.trim() == '' || document.getElementById("office").value == -1) {
         alert("Please fix your inputs.");
         return;
     }
@@ -161,7 +161,7 @@ function update(ID, project) {
     const wage = {
         ID:ID,
         project_id: document.getElementById("project").value.trim(),
-        BillGrp: document.getElementById("BillGrp").value.trim(),
+        BillGrp: (document.getElementById("BillGrp").value.trim() == ''?'NULL':document.getElementById("BillGrp").value.trim()),
         office: document.getElementById("office").value,
         display: document.getElementById("display").checked
     };
