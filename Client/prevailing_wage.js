@@ -39,7 +39,7 @@ function listWage(admin) {
         let table = '<tr><th>Project</th><th>Billing Groups</th><th>Office</th>'+(admin?'<th>Display</th><th>Edit</th>':'')+'</tr>';
         existing.length = 0;
         for(let json = 0; json < data.length; json++) {
-            table += '<tr><td>'+ data[json].project_id + '</td><td>' + (data[json].BillGrp != 'NULL' || data[json].BillGrp != null?data[json].BillGrp:'') + '</td><td>'+
+            table += '<tr><td>'+ data[json].project_id + '</td><td>' + (data[json].BillGrp != 'NULL' && data[json].BillGrp != null?data[json].BillGrp:'') + '</td><td>'+
             (data[json].office == 2?'klamath Falls':(data[json].office == 4?'Willits':(data[json].office == 5?'Redding':(data[json].office == 6?'Coos Bay':'Eureka')))) +
             '</td>'+ (admin?('<td>'+(data[json].display || data[json].display == 1?'Yes':'No')+'</td><td><button type="button" onclick="editWage('+ JSON.stringify({ID:data[json].ID, project_id:data[json].project_id, BillGrp: data[json].BillGrp, office: data[json].office, display: data[json].display}).replace(/"/g, "'") +');">Edit</button></td>'):'') + '</tr>';
 
