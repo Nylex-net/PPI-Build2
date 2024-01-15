@@ -42,15 +42,30 @@ function prevailingWage() {
         if(err) {
             console.error(err);
         }
-        else {
-            console.log(gyatt.recordset);
-            const rizzler = new Map();
+        else { // gyatt is our query results.
+            // console.log(gyatt.recordset);
+            const rizzler = new Map(); // rizzler is where we'll store our results in the form of a map object to associate billing groups with projects.
+            const office = new Map();
             gyatt.recordset.forEach((record) => {
-                if(!rizzler.has(record.project_id) && record.group_number != null && record.group_number != '') {
-                    rizzler.set(record.project_id, record.group_number + (record.closed[1] == null?'':'*'));
+                if(!rizzler.has(record.project_id + (record.closed[0]?'*':''))) {
+                    rizzler.set((record.project_id + (record.closed[0]?'*':'')), (record.group_number == null?'NULL':record.group_number + (record.closed[1] == null || record.closed[1] == false?'':'*')));
+                    office.set((record.project_id + (record.closed[0]?'*':'')), record.SHNOffice_ID);
                 }
                 else if(record.group_number != null && record.group_number != '') {
-                    rizzler.set(record.project_id, rizzler.get(record.project_id) +',' + record.group_number + (record.closed[1] == null?'':'*'));
+                    rizzler.set((record.project_id + (record.closed[0]?'*':'')), rizzler.get(record.project_id + (record.closed[0]?'*':'')) +',' + record.group_number + (record.closed[1] == null || record.closed[1] == false?'':'*'));
+                }
+            });
+            let query = '';
+            rizzler.forEach((value, key) => {
+                query += 'INSERT INTO PrevailingWage (project_id, BillGrp, office) VALUES (\''+
+                key + '\', ' + (value == 'NULL'?'NULL':"'"+value+"'") + ', ' + office.get(key)
+                +');';
+                // console.log(`Key is ${key} and value is ${value}`);
+            });
+            // console.log(query);
+            request.query(query, (err)=> {
+                if(err) {
+                    console.error(err);
                 }
             });
         }
