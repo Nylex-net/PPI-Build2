@@ -185,7 +185,7 @@ app.post('/result', jsonParser, (req, res) => {
     // Begin building directory and project number for the new project.
     let projnum = '';
     // Id stores an integer representing the project's office.
-    if(req.body.Id == 1 || req.body.Id == 9) { // If Arcata was selected.
+    if(req.body.Id == 1) { // If Arcata was selected.
         projnum = "0";
     }
     else {
