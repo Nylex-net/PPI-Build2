@@ -53,7 +53,7 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
 // Directory for testing environment.
 const PATH = "P:";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
-process.chdir(DEMO_PATH);
+process.chdir(PATH);
 
 // create application/json parser
 var jsonParser = bodyParser.json();
@@ -1140,7 +1140,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
     const mydate = new Date();
     let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
-    let dir = DEMO_PATH + getDir(req.body.ProjectId[0]) + '/20' + req.body.ProjectId[1] + req.body.ProjectId[2]; // + '/' + req.body.ProjectId + '-' + removeSpace(data[0].ProjectTitle) + '/';
+    let dir = PATH + getDir(req.body.ProjectId[0]) + '/20' + req.body.ProjectId[1] + req.body.ProjectId[2]; // + '/' + req.body.ProjectId + '-' + removeSpace(data[0].ProjectTitle) + '/';
     // let ArcataOffice = false;
     // let ArcDir = '';
     let projFolder = req.body.ProjectId;

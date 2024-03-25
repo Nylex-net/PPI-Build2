@@ -20,15 +20,16 @@ app.use(fileUpload());
 var jsonParser = bodyParser.json();
 const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\PPI\\Database\\SHN_Project_Backup.mdb;";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
+const PATH = "P:";
 const jsonData = require('./config.json');
 const { readdir, readdirSync } = require('fs');
 
 // Directory for production environment.
-// process.chdir("P:\\");
+process.chdir("P:\\");
 
 // Directory for testing environment.
-process.chdir("P:\\");
-const PATH = "P:";
+// process.chdir("P:\\");
+
 // Certificates
 const options = {
     key: fs.readFileSync('C:\\xampp\\apache\\conf\\ssl.key\\key.pem'),
@@ -417,7 +418,7 @@ app.post('/updater', jsonParser, (req, res) => {
     let isBillingGroup = (req.body.isWhat == -1?true:false);
     const num = (isProject)?req.body.project_id:req.body.promo_id;
     // let dir = PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
-    let dir = DEMO_PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
+    let dir = PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
     dir += ((!isBillingGroup && (req.body.closed == true || req.body.closed == 1))?'/ClosedJobs':'');
     dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
     dir += (isProject)?'':'/Promos';
@@ -1250,7 +1251,7 @@ function moveProject(ID, closer) {
         ID = ID.substring(0,ID.indexOf(','));
         billingBruh = true;
     }
-    let dir = DEMO_PATH + ((!isNaN(ID[0]))? getDir(Number(ID[0])):getDir(0)); // Get office directory.
+    let dir = PATH + ((!isNaN(ID[0]))? getDir(Number(ID[0])):getDir(0)); // Get office directory.
     dir += (!isNaN(ID[1] + ID[2]) && Number(ID[1] + ID[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + ID[1] + ID[2]:'/20' + ID[1] + ID[2]; // Get project year.
     const projYear = (!isNaN(ID[1] + ID[2]) && Number(ID[1] + ID[2]) > new Date().getFullYear().toString().slice(-2))?Number('19' + ID[1] + ID[2]):Number("20" + ID[1] + ID[2]);
     const isPromo = (ID.length > 7)?true:false;
@@ -1273,7 +1274,7 @@ function moveProject(ID, closer) {
         }
         // Move file only if a file was found.
         if(filer != null) {
-            let dest = DEMO_PATH + closedJobDirDemo(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'') + filer;
+            let dest = PATH + closedJobDirDemo(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'') + filer;
             if(!fs.existsSync(dest)) {
                 fs.mkdir((dest), err => {
                     // if(err){
