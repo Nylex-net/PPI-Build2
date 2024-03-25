@@ -8,3 +8,11 @@ This form makes most use of JavaScript and Node.js. The file SHNserver.js is the
 The initiation forms dynamically update the webpage by redacting and inserting new HTML into the webpage. It essentially behaves as if the form is made up of multiple pages. The requests the forms make are to update the options based on who currently works for SHN, what keywords are available, and what profile codes are currently available. Linked to the forms is a page to search for projects with similar descriptions, projects with same project numbers, or both if needed. The last page shows a summary of what the user inputted into the system. Once the information sends correctly, it will prompt the user of the form's success of submitting, and asks the user whether to initialize another project or promo, or to go back to the home page.
 
 Other functionalities include adding billing groups to pre-initialized projects, converting a promo to a project, searching the database, and editing Promos and Projects.
+
+The tools used for this project include the following:
+
+- Node.js to run the server-side scripts.
+- NPM libraries for special server-side functionalities.
+- PM2, a production process manager for Node.js.
+- Certify The Web, a GUI to generate SSL Certificates for certain functionalities to work.
+- XAMPP to run the client-side files (i.e. HTML, CSS, JavaScript).
