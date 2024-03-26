@@ -1,5 +1,6 @@
 const sql = require('mssql');
 const jsonData = require('./config.json');
+const fs = require('fs');
 
 const pool = new sql.ConnectionPool({
     user: jsonData.mssqlPROD.user,
