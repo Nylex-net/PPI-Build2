@@ -72,3 +72,15 @@ function prevailingWage() {
         }
     });
 }
+
+function logError(errMsg) {
+    const logFileName = '/logs/rolodex/error.log';
+    const logMessage = `${new Date().toISOString()} - ${errorMsg}\n`;
+
+    // Append error message to the log file
+    fs.appendFile(logFileName, logMessage, (err) => {
+        if (err) {
+            console.error('Error writing to log file:', err);
+        }
+    });
+}
