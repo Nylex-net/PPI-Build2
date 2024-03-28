@@ -3,7 +3,7 @@ const ADODB = require('node-adodb');
 const fs = require('fs');
 // const Pool = require('generic-pool');
 // const config = require('./config.json');
-const DATABASE_PATH = "N:\\Database\\New folder\\Rolodex.mdb;";
+const DATABASE_PATH = "\\\\newvision.shn-engr.com\\Webs\\Database\\New folder\\Rolodex.mdb;";
 // const query = "SELECT * FROM master.dbo.Staff";
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 const jsonData = require('./config.json');
