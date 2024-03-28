@@ -66,16 +66,16 @@ function prevailingWage() {
             // console.log(query);
             request.query(query, (err)=> {
                 if(err) {
-                    console.error(err);
+                    logError(err, './logs/prevailingWage/error.log');
                 }
             });
         }
     });
 }
 
-function logError(errMsg) {
-    const logFileName = '/logs/rolodex/error.log';
-    const logMessage = `${new Date().toISOString()} - ${errorMsg}\n`;
+function logError(errMsg, log) {
+    const logFileName = log;
+    const logMessage = `${new Date().toISOString()} - ${errMsg}\n`;
 
     // Append error message to the log file
     fs.appendFile(logFileName, logMessage, (err) => {
