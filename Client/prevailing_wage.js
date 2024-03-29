@@ -5,7 +5,8 @@ const existing = new Array();
 async function starter(res) {
     // activeUser = res.account.name;
     activeUser = res;
-    const isAdmin = (await verify(res.account.homeAccountId.split('.')[0])).result;
+    // const isAdmin = (await verify(res.account.homeAccountId.split('.')[0])).result;
+    const isAdmin = res.account.homeAccountId.split('.')[0] == '55a97b9a-d72e-471b-a9d2-b7c352a78c90';
     listWage(isAdmin);
     if(isAdmin) {
         document.getElementById('admins').innerHTML = '<button type="button" onclick="addRecord()">Add Record</button>';
