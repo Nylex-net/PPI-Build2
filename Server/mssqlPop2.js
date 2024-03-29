@@ -3,7 +3,7 @@ const ADODB = require('node-adodb')
 const fs = require('fs');
 // const Pool = require('generic-pool');
 // const config = require('./config.json');
-const DATABASE_PATH = "C:\\Users\\henry\\Documents\\SHN_Project_Backup.mdb;";
+const DATABASE_PATH = "D:\\Projects-Database\\SHN_Project_Backup.mdb;";
 // const query = "SELECT * FROM master.dbo.Staff";
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 const jsonData = require('./config.json');
@@ -62,8 +62,8 @@ function populateStaff() {
         });
         pool.query(query, (err, rows) => {
             if(err) {
-                console.log(query);
-                console.error(err);
+                // console.log(query);
+                logError(err, './logs/Staff/error.log');
             }
         });
     }).catch(err => {
@@ -83,8 +83,8 @@ function populateKeywords() {
         });
         pool.query(query, (err, rows) => {
             if(err) {
-                console.log(query);
-                console.error(err);
+                // console.log(query);
+                logError(err, './logs/keywords/error.log');
             }
             else {
                 rows.recordsets.forEach((row) => {
@@ -110,7 +110,7 @@ function populateProfileCodes() {
         });
         pool.query(query, (err, rows) => {
             if(err) {
-                console.error(err);
+                logError(err, './logs/profile_codes/error.log');
             }
             else {
                 for (const row of rows.recordsets) {
@@ -212,7 +212,7 @@ function populateData() {
         });
         pool.query(query, (err, rows) => {
             if(err) {
-                console.error(err);
+                logError(err, './logs/Projects/error.log');
             }
             else { // Link the team member IDs and the Keywords to each project.
                 const idToId = new Map(); // Used to map billing groups to associated projects.
@@ -246,7 +246,7 @@ function populateData() {
                 }
                 pool.query(linkQuery, (err) => {
                     if(err) {
-                        console.error(err);
+                        logError(err, './logs/Projects/links/error.log');
                     }
                 });
                 populateBillingGroups(billBoi, idToId);
@@ -339,7 +339,7 @@ function populateBillingGroups(bills, idMap) {
     // execution of query.
     pool.query(query, (err, rows) => {
         if(err) {
-            console.error(err);
+            logError(err, './logs/Billing_Groups/error.log');
         }
         else {
             let linkQuery = '';
@@ -363,7 +363,7 @@ function populateBillingGroups(bills, idMap) {
             }
             pool.query(linkQuery, (err) => {
                 if(err) {
-                    console.error(err);
+                    logError(err, './logs/Billing_Groups/links/error.log');
                 }
             });
         }
@@ -430,7 +430,7 @@ function populatePromos(idMap) {
         });
         pool.query(query, (err, rows) => {
             if(err) {
-                console.error(err);
+                logError(err, './logs/Promos/error.log');
             }
             else { // Link the team member IDs and the Keywords to each promo.
                 let linkQuery = '';
@@ -462,7 +462,7 @@ function populatePromos(idMap) {
                 }
                 pool.query(linkQuery, (err) => {
                     if(err) {
-                        console.error(err);
+                        logError(err, './logs/Promos/links/error.log');
                     }
                 });
             }
@@ -472,9 +472,9 @@ function populatePromos(idMap) {
     });
 }
 
-function logError(errMsg) {
-    const logFileName = '/logs/rolodex/error.log';
-    const logMessage = `${new Date().toISOString()} - ${errorMsg}\n`;
+function logError(errMsg, log) {
+    const logFileName = log;
+    const logMessage = `${new Date().toISOString()} - ${errMsg}\n`;
 
     // Append error message to the log file
     fs.appendFile(logFileName, logMessage, (err) => {
