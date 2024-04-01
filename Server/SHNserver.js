@@ -439,7 +439,7 @@ app.post('/result', jsonParser, (req, res) => {
                         });
                         // console.log(admins);
                         // Finally, send out email notice.
-                        // emailPersonel(removeA +'.pdf', dir + '/Setup/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
+                        emailPersonel(removeA +'.pdf', dir + '/Setup/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     }
                 });
             })();
@@ -702,7 +702,7 @@ app.post('/promo', jsonParser, (req, res) => {
                             }
                         });
                         // Finally, send out email notice.
-                        // emailPersonel(removeA +'.pdf', myPath, 'Promo with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Promo with ID ' + projnum + ' initialized.');
+                        emailPersonel(removeA +'.pdf', myPath, 'Promo with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Promo with ID ' + projnum + ' initialized.');
                     }
                 });
             })();
@@ -979,7 +979,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                             });
                         }
                         // Finally, send out email notice.
-                        // emailPersonel(removeA +'.pdf', dir + '/Setup/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
+                        emailPersonel(removeA +'.pdf', dir + '/Setup/'+ removeA +'.pdf', 'Project with ID ' + projnum + ' has been initialized!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     });
                   })();
             res.send(JSON.parse(JSON.stringify('{"Status":"'+ projnum +'"}')));
@@ -1308,7 +1308,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
                             });
                         }
                         // Finally, send out email notice.
-                        // emailPersonel(removeA +'.pdf', dir + '/Setup/'+ removeA +'.pdf', 'Billing Group ' + req.body.BillingNum + ' has been initialized for Project ' + projFolder +'!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
+                        emailPersonel(removeA +'.pdf', dir + '/Setup/'+ removeA +'.pdf', 'Billing Group ' + req.body.BillingNum + ' has been initialized for Project ' + projFolder +'!<br>See PDF for more.', admins, 'Project with ID ' + projnum + ' initialized.');
                     });
                 })();
                 res.send(JSON.parse('{"Status":"Success"}'));
