@@ -843,13 +843,13 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             let teamArr = req.body.TeamMembers.split(',');
             let teamQuery = '';
             teamArr.forEach((memb) => {
-                teamQuery += "INSERT INTO ProjectTeam VALUES ("+memes.recordset[0].ID+", "+memb+");"
+                teamQuery += "INSERT INTO ProjectTeam VALUES ("+memes.recordset[0].ID+", "+memb+");";
             });
             let keyArr = req.body.KeyIDs.split(',');
             keyArr.forEach((key) => {
-                teamQuery += "INSERT INTO ProjectKeywords VALUES ("+memes.recordset[0].ID+", "+key+");"
+                teamQuery += "INSERT INTO ProjectKeywords VALUES ("+memes.recordset[0].ID+", "+key+");";
             });
-            teamQuery += "UPDATE Promos SET is_project = 1, proj_ID = " + memes.recordset[0].ID + " WHERE ID = " + req.body.ID + ";"
+            teamQuery += "UPDATE Promos SET is_project = 1, proj_ID = " + memes.recordset[0].ID + " WHERE ID = " + req.body.ID.split(',')[0] + ";"
             request.query(teamQuery, (uwu) => {
                 if(uwu) {
                     console.log("Error with query:\n" + teamQuery);
@@ -884,7 +884,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                     }
                     const table = {
                       title: "Promo to Project",
-                      subtitle: "Promo " + req.body.PromoId + " converted to Project " + removeA,
+                      subtitle: "Promo " + req.body.PromoId.split(',')[0] + " converted to Project " + removeA,
                       headers: ["Name", "User Input", "Client", "Info"],
                       rows: [
                         [ "Project", removeA , "Client Company", removeEscapeQuote(req.body.ClientCompany1).toString()],

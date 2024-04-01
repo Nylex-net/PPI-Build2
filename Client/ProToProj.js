@@ -217,7 +217,7 @@ function starter(res) {
     cell = chosenJson.cell;
     fax = chosenJson.fax;
     email = chosenJson.email;
-    binderSize = (chosenJson.binder_size == null || chosenJson.binder_size == "NULL" || chosenJson.binder_size == "" || isNaN(chosenJson.binder_size) ? "NA":chosenJson.binder_size);
+    binderSize = (chosenJson.binder_size == null || chosenJson.binder_size == "NULL" || chosenJson.binder_size == "" || isNaN(chosenJson.binder_size) ? "NULL":chosenJson.binder_size);
     descOfServ = chosenJson.description_service;
 
     rizz.forEach(entry => {
