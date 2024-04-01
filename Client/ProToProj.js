@@ -86,7 +86,7 @@ let officeName2;
 let profCodeName = '';
 let contactTypeName;
 let invoiceName;
-let selectedPromo;
+let selectedPromo = null;
 let activeUser = '';
 let workPhoneInput;
 let homePhoneInput;
