@@ -480,7 +480,7 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'SHNOffice_ID = ' + req.body.SHNOffice_ID + ', ';
         query += 'total_contract = ' + (req.body.total_contract == 'NULL' || req.body.total_contract == null ? 'NULL':req.body.total_contract) + ', ';
         query += 'exempt_agreement = ' + req.body.exempt_agreement + ', ';
-        query += 'why = ' + (req.body.why == 'NULL' || req.body.why == null?'NULL':req.body.why.replace(/'/gi, "''")) + ', ';
+        query += 'why = ' + (req.body.why == 'NULL' || req.body.why == null?'NULL':'\''+req.body.why.replace(/'/gi, "''")+ '\'') + ', ';
         query += 'retainer = \'' + req.body.retainer.replace(/'/gi, "''") + '\', ';
         query += 'retainer_paid = ' + (req.body.retainer_paid == 'NULL'|| req.body.retainer_paid == null ? 'NULL':req.body.retainer_paid) + ', ';
         query += 'waived_by = '+ (req.body.waived_by == 'NULL' || req.body.waived_by == null ?'NULL':'\''+req.body.waived_by.replace(/'/gi, "''") + '\'') + ', ';
@@ -582,8 +582,8 @@ app.post('/updater', jsonParser, (req, res) => {
     const request = pool.request();
     request.query(query, (err, data) => {
         if(err) {
-            createTicket(err, "Cannot update initiation:");
             console.log(err);
+            createTicket(err, "Cannot update initiation:");
             res.send(JSON.parse(JSON.stringify(err)));
         }
         else {
