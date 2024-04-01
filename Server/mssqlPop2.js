@@ -3,7 +3,7 @@ const ADODB = require('node-adodb')
 const fs = require('fs');
 // const Pool = require('generic-pool');
 // const config = require('./config.json');
-const DATABASE_PATH = "D:\\Projects-Database\\SHN_Project_Backup.mdb;";
+const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\SHN_Project_Backup.mdb;";
 // const query = "SELECT * FROM master.dbo.Staff";
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 const jsonData = require('./config.json');
@@ -284,9 +284,9 @@ function populateBillingGroups(bills, idMap) {
             // Build query string.
             query += "IF NOT EXISTS (SELECT 1 FROM BillingGroups WHERE project_ID = "+(idMap.get(element.Projectid))+" AND group_number = '"+(billCosby)+"') "+
             "BEGIN TRY INSERT INTO BillingGroups (project_ID, group_number, group_name, closed, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, "+
-            "group_location, latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_id, invoice_format, " +
-            "client_contract_PO, outside_markup, agency_name, special_billing_instructions, binder_size, description_service"+") OUTPUT inserted.* VALUES (" +
-            idMap.get(element.Projectid) + ", " + billCosby + ", '" +
+            "group_location, latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, " +
+            "client_contract_PO, outside_markup, special_billing_instructions, binder_size, description_service"+") OUTPUT inserted.* VALUES (" +
+            idMap.get(element.Projectid) + ", '" + billCosby + "', '" +
             (element.BillingTitle == null || element.BillingTitle == "NULL" || element.BillingTitle == ""?"[NO TITLE]":element.BillingTitle.replace(/'/gi, "''"))+"', "+
             (element.Closed_by_PM===-1?1:0) + ", " +
             (element.AutoCAD_Project == -1?1:0)+", "+
@@ -339,7 +339,7 @@ function populateBillingGroups(bills, idMap) {
     // execution of query.
     pool.query(query, (err, rows) => {
         if(err) {
-            logError(err, './logs/Billing_Groups/error.log');
+            logError(err + '\n' +query, './logs/Billing_Groups/error.log');
         }
         else {
             let linkQuery = '';
