@@ -303,11 +303,13 @@ app.post('/result', jsonParser, (req, res) => {
                 let teamArr = req.body.TeamMembers.split(',');
                 let teamQuery = '';
                 teamArr.forEach((memb) => {
-                    teamQuery += "INSERT INTO ProjectTeam VALUES ("+result.ID+", "+memb+");"
+                    teamQuery += "INSERT INTO ProjectTeam VALUES ("+result.ID+", "+memb+");";
                 });
                 let keyArr = req.body.KeyIDs.split(',');
                 keyArr.forEach((key) => {
-                    teamQuery += "INSERT INTO ProjectKeywords VALUES ("+result.ID+", "+key+");"
+                    if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                        teamQuery += "INSERT INTO ProjectKeywords VALUES ("+result.ID+", "+key+");";
+                    }
                 });
                 request.query(teamQuery, (uwu) => {
                     if(uwu) {
@@ -572,11 +574,13 @@ app.post('/promo', jsonParser, (req, res) => {
             let teamArr = req.body.TeamMembers.split(',');
             let teamQuery = '';
             teamArr.forEach((memb) => {
-                teamQuery += "INSERT INTO PromoTeam VALUES ("+result.ID+", "+memb+");"
+                teamQuery += "INSERT INTO PromoTeam VALUES ("+result.ID+", "+memb+");";
             });
             let keyArr = req.body.KeyIDs.split(',');
             keyArr.forEach((key) => {
-                teamQuery += "INSERT INTO PromoKeywords VALUES ("+result.ID+", "+key+");"
+                if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                    teamQuery += "INSERT INTO PromoKeywords VALUES ("+result.ID+", "+key+");";
+                }
             });
             request.query(teamQuery, (uwu) => {
                 if(uwu) {
@@ -847,7 +851,9 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             });
             let keyArr = req.body.KeyIDs.split(',');
             keyArr.forEach((key) => {
-                teamQuery += "INSERT INTO ProjectKeywords VALUES ("+memes.recordset[0].ID+", "+key+");";
+                if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                    teamQuery += "INSERT INTO ProjectKeywords VALUES ("+memes.recordset[0].ID+", "+key+");";
+                }
             });
             teamQuery += "UPDATE Promos SET is_project = 1, proj_ID = " + memes.recordset[0].ID + " WHERE ID = " + req.body.ID.split(',')[0] + ";"
             request.query(teamQuery, (uwu) => {
@@ -1180,11 +1186,13 @@ app.post('/submitBill', jsonParser, (req, res) => {
             let teamArr = req.body.TeamMembers.split(',');
             let teamQuery = '';
             teamArr.forEach((memb) => {
-                teamQuery += "INSERT INTO BillingGroupTeam VALUES ("+result.recordset[0].ID+", "+memb+");"
+                teamQuery += "INSERT INTO BillingGroupTeam VALUES ("+result.recordset[0].ID+", "+memb+");";
             });
             let keyArr = req.body.KeyIDs.split(',');
             keyArr.forEach((key) => {
-                teamQuery += "INSERT INTO BillingGroupKeywords VALUES ("+result.recordset[0].ID+", "+key+");"
+                if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                    teamQuery += "INSERT INTO BillingGroupKeywords VALUES ("+result.recordset[0].ID+", "+key+");";
+                }
             });
             // teamQuery += "UPDATE Promos SET is_project = 1, proj_ID = " + result.recordset[0].ID + " WHERE ID = " + req.body.ID + ";"
             request.query(teamQuery, (uwu) => {

@@ -596,11 +596,13 @@ app.post('/updater', jsonParser, (req, res) => {
                 let idType = (isProject && !isBillingGroup?'project_id':(isProject && isBillingGroup?'billing_id':'promo_id'));
                 let teamQuery = "DELETE FROM "+teamType+" WHERE "+idType+" = "+ result.ID +";DELETE FROM "+keyType+" WHERE "+(isBillingGroup?"group_id":idType)+" = "+ result.ID +";";
                 teamArr.forEach((memb) => {
-                    teamQuery += "INSERT INTO "+teamType+" VALUES ("+result.ID+", "+memb+");"
+                    teamQuery += "INSERT INTO "+teamType+" VALUES ("+result.ID+", "+memb+");";
                 });
                 let keyArr = req.body.keyIDs.split(',');
                 keyArr.forEach((key) => {
-                    teamQuery += "INSERT INTO "+keyType+" VALUES ("+result.ID+", "+key+");"
+                    if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                        teamQuery += "INSERT INTO "+keyType+" VALUES ("+result.ID+", "+key+");";
+                    }
                 });
                 request.query(teamQuery, (uwu) => {
                     if(uwu) {
