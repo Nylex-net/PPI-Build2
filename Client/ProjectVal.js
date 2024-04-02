@@ -1506,7 +1506,7 @@ function fillPage(newPage) { // Parameter newPage is the page to load the previo
         document.getElementById('invoiceFormat').value = invoiceFormat;
         document.getElementById('PO').value = contractPONum;
         document.getElementById('OutMark').value = outsideMarkup;
-        document.getElementById('wage').value = (prevWage == "0")?'0':"1";
+        document.getElementById('wage').value = prevWage;
         if(prevWage != "0") {
             agency();
             document.getElementById("agency").value = agency_name;
