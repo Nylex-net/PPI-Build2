@@ -600,7 +600,7 @@ app.post('/updater', jsonParser, (req, res) => {
                 });
                 let keyArr = req.body.keyIDs.split(',');
                 keyArr.forEach((key) => {
-                    if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                    if(!isNaN(key) && key != null && key != '') { // If-statement in case the user uses custom keywords and no pre-defines ones.
                         teamQuery += "INSERT INTO "+keyType+" VALUES ("+result.ID+", "+key+");";
                     }
                 });

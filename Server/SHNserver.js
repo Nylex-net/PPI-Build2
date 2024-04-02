@@ -307,7 +307,7 @@ app.post('/result', jsonParser, (req, res) => {
                 });
                 let keyArr = req.body.KeyIDs.split(',');
                 keyArr.forEach((key) => {
-                    if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                    if(!isNaN(key) && key != null && key != '') { // If-statement in case the user uses custom keywords and no pre-defines ones.
                         teamQuery += "INSERT INTO ProjectKeywords VALUES ("+result.ID+", "+key+");";
                     }
                 });
@@ -578,7 +578,7 @@ app.post('/promo', jsonParser, (req, res) => {
             });
             let keyArr = req.body.KeyIDs.split(',');
             keyArr.forEach((key) => {
-                if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                if(!isNaN(key) && key != null && key != '') { // If-statement in case the user uses custom keywords and no pre-defines ones.
                     teamQuery += "INSERT INTO PromoKeywords VALUES ("+result.ID+", "+key+");";
                 }
             });
@@ -851,7 +851,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             });
             let keyArr = req.body.KeyIDs.split(',');
             keyArr.forEach((key) => {
-                if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                if(!isNaN(key) && key != null && key != '') { // If-statement in case the user uses custom keywords and no pre-defines ones.
                     teamQuery += "INSERT INTO ProjectKeywords VALUES ("+memes.recordset[0].ID+", "+key+");";
                 }
             });
@@ -1190,7 +1190,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
             });
             let keyArr = req.body.KeyIDs.split(',');
             keyArr.forEach((key) => {
-                if(!isNaN(key)) { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                if(!isNaN(key) && key != null && key != '') { // If-statement in case the user uses custom keywords and no pre-defines ones.
                     teamQuery += "INSERT INTO BillingGroupKeywords VALUES ("+result.recordset[0].ID+", "+key+");";
                 }
             });
