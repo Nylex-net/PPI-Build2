@@ -198,7 +198,7 @@ function billForm() {
                 totalContract = (jsonMap[0].total_contract == null || jsonMap[0].total_contract == undefined)?'0':jsonMap[0].total_contract;
                 invoiceFormat = (jsonMap[0].invoice_format == null || jsonMap[0].invoice_format == undefined)?'B':jsonMap[0].invoice_format;
                 outsideMarkup = jsonMap[0].outside_markup;
-                prevWage = jsonMap[0].prevailing_wage;
+                prevWage = (jsonMap[0].prevailing_wage == 1 || jsonMap[0].prevailing_wage == true?1:0);
                 specBillInstr = (jsonMap[0].special_billing_instructions == null || jsonMap[0].special_billing_instructions == undefined)?'':jsonMap[0].special_billing_instructions;
                 binderSize = (jsonMap[0].binder_size == null || jsonMap[0].binder_size == undefined || jsonMap[0].binder_size == '')?'NULL':jsonMap[0].binder_size;
                 descOfServ = jsonMap[0].description_service;

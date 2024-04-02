@@ -178,7 +178,7 @@ function manager(currPage) {
             document.getElementById('invoiceFormat').value = (userData[0].invoice_format == null?"B":userData[0].invoice_format);
             document.getElementById('PO').value = userData[0].client_contract_PO;
             document.getElementById('OutMark').value = userData[0].outside_markup;
-            document.getElementById('wage').value = userData[0].prevailing_wage;
+            document.getElementById('wage').value = (userData[0].prevailing_wage == true || userData[0].prevailing_wage == 1?1:0);
             // if(userData[0].prevailing_wage != 0) {
             //     document.getElementById('wage').value = '1';
             //     agentBruh();
@@ -199,7 +199,7 @@ function manager(currPage) {
             document.getElementById('invoiceFormat').value = (userData[0].invoice_format == null?"B":userData[0].invoice_format);
             document.getElementById('PO').value = userData[0].client_contract_PO;
             document.getElementById('OutMark').value = userData[0].outside_markup;
-            if(userData[0].prevailing_wage != 0) {
+            if(userData[0].prevailing_wage != 0 && userData[0].prevailing_wage != false) {
                 document.getElementById('wage').value = '1';
                 agentBruh();
                 document.getElementById('agency').value = userData[0].agency_name;
