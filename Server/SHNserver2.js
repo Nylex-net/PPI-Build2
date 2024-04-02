@@ -528,7 +528,7 @@ app.post('/updater', jsonParser, (req, res) => {
         query += 'invoice_format = '+ (req.body.invoice_format == 'NULL' || req.body.invoice_format == null ? 'NULL': '\'' + req.body.invoice_format.replace(/'/gi, "''") + '\'') +', ';
         query += 'client_contract_PO = \'' + req.body.client_contract_PO + '\', ';
         query += 'outside_markup = ' + req.body.outside_markup + ', ';
-        // query += 'prevailing_wage = ' + req.body.prevailing_wage + ', ';
+        query += 'prevailing_wage = ' + req.body.prevailing_wage + ', ';
         // query += 'agency_name = ' + (req.body.agency_name == 'NULL' || req.body.agency_name == null ? 'NULL':('\'' + req.body.agency_name.replace(/'/gi, "''")) + '\'') + ', ';
         query += 'special_billing_instructions = ' + (req.body.special_billing_instructions == 'NULL' || req.body.special_billing_instructions == null ? 'NULL':'\'' + req.body.special_billing_instructions.replace(/'/gi, "''") + '\'') + ', ';
         query += 'autoCAD = ' + (req.body.autoCAD == false || req.body.autoCAD == 'false'?0:1) + ', ';
@@ -635,7 +635,7 @@ app.post('/updater', jsonParser, (req, res) => {
                     ["Invoice Format", req.body.invoiceName.toString(),'-','-'],
                     ["Client Contract/PO #", req.body.client_contract_PO.toString(),'-','-'],
                     ["Outside Markup", req.body.outside_markup.toString(),'-','-'],
-                    // ["Prevailing Wage", (req.body.prevailing_wage == 1?req.body.agency_name.toString():"No"),'-','-'],
+                    ["Prevailing Wage", (req.body.prevailing_wage == 1?"Yes":"No"),'-','-'],
                     ["Billing Instructions", req.body.special_billing_instructions.toString(),'-','-'],
                     ["AutoCAD Project", (req.body.autoCAD == 1)?'Yes':'No','-','-'],
                     ["GIS Project", (req.body.GIS == 1)?'Yes':'No','-','-'],

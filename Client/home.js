@@ -43,7 +43,7 @@ let invoiceFormat = "B";
 let invoiceName = 'Emp. Name, Hrs, and Billing Rates (No Dates)';
 let contractPONum = '';
 let outsideMarkup = 15; // required
-let prevWage = "0";
+let prevWage = "0"; // required
 let agency_name = '';
 let specBillInstr = '';
 let autoCad = false;
@@ -198,6 +198,7 @@ function billForm() {
                 totalContract = (jsonMap[0].total_contract == null || jsonMap[0].total_contract == undefined)?'0':jsonMap[0].total_contract;
                 invoiceFormat = (jsonMap[0].invoice_format == null || jsonMap[0].invoice_format == undefined)?'B':jsonMap[0].invoice_format;
                 outsideMarkup = jsonMap[0].outside_markup;
+                prevWage = jsonMap[0].prevailing_wage;
                 specBillInstr = (jsonMap[0].special_billing_instructions == null || jsonMap[0].special_billing_instructions == undefined)?'':jsonMap[0].special_billing_instructions;
                 binderSize = (jsonMap[0].binder_size == null || jsonMap[0].binder_size == undefined || jsonMap[0].binder_size == '')?'NULL':jsonMap[0].binder_size;
                 descOfServ = jsonMap[0].description_service;
@@ -319,11 +320,11 @@ function fillMe(page) {
         document.getElementById('invoiceFormat').value = invoiceFormat;
         document.getElementById('PO').value = contractPONum;
         document.getElementById('OutMark').value = outsideMarkup;
-        // document.getElementById('wage').value = prevWage;
-        if(prevWage == 1) {
-            agency();
-            document.getElementById('agency').value = agency_name;
-        }
+        document.getElementById('wage').value = prevWage;
+        // if(prevWage == 1) {
+        //     agency();
+        //     document.getElementById('agency').value = agency_name;
+        // }
         document.getElementById('billInst').value = specBillInstr;
         document.getElementById('binder').value = binderSize;
         document.getElementById('describe').value = descOfServ;
@@ -398,6 +399,7 @@ function nextPage(num) {
         '<div class="col-lg-8"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
         // '<div class="col-lg-4"><label for="wage">Prevailing Wage</label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
         '<div class="col-lg-4"><label for="billInst">Special Billing Instructions</label></div><div class="col-lg-8"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
+        '<div class="col-lg-4"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" required><option value="1">Yes</option><option value="0" selected>No</option></select></div>'+
         '<div class="col-lg-4"><label for="binder">Binder Size</label></div><div class="col-lg-8"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
         '<div class="col-lg-4"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="col-lg-8"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>'+
         '</div><div id="submitter"><button type="button" onclick="goBack(2)">Back</button><button type="button" onclick="reqField(3)">Review</button></div>';
@@ -490,6 +492,8 @@ function nextPage(num) {
         + '<div class="col-lg-6">' + autoCadName + '</div>'+
         '<div class="col-lg-6">GIS Job' + '</div>'
         + '<div class="col-lg-6">' + gisName + '</div>'+
+        '<div class="col-lg-6">Prevailing Wage' + '</div>'
+        + '<div class="col-lg-6">' + (prevWage == 1?'Yes':'No') + '</div>'+
         '<div class="col-lg-6">Binder Size' + '</div>'
         + '<div class="col-lg-6">' + (binderSize == "NULL"?"N/A":binderSize) + '</div>'+
         '<div class="col-lg-6">Description of Services' + '</div>'
@@ -699,7 +703,7 @@ function saveChoices(num) {
         totalContract = document.getElementById('contract').value;
         contractPONum = document.getElementById('PO').value.trim();
         outsideMarkup = document.getElementById('OutMark').value;
-        // prevWage = document.getElementById('wage').value;
+        prevWage = document.getElementById('wage').value;
         // if(prevWage == 1) {
         //     agency_name = document.getElementById('agency').value;
         // }
@@ -1199,7 +1203,7 @@ function submitBilling() {
         '"waiver":"'+ format(waiver) + '",' +
         '"ClientContractPONumber":"'+ format(contractPONum) + '",' +
         '"OutsideMarkup":"' + outsideMarkup + '",' +
-        // '"PREVAILING_WAGE":"'+ prevWage + '",' +
+        '"PREVAILING_WAGE":"'+ prevWage + '",' +
         '"agency":"'+ (agency_name == ''?"NULL":format(agency_name)) + '",' +
         '"SpecialBillingInstructins":'+ JSON.stringify(formatMultiline(specBillInstr)) + ',' +
         '"AutoCAD_Project":'+ cadNum + ',' +
