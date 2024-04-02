@@ -856,7 +856,7 @@ function page4() {
     getTextField('Client Contract/PO #', 'PO', contractPONum, true) +
     '<div class="col-lg-4"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
     '<div class="col-lg-8"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-    '<div class="col-lg-4"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
+    '<div class="col-lg-4"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="-1" selected>- Select -</option><option value="1">Yes</option><option value="0">No</option></select><div id="agent"></div></div>'+
     '<div class="col-lg-4"><label for="billInst">Special Billing Instructions</label></div><div class="col-lg-8"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
     '<div class="col-lg-4"><label for="seeAlso">See Also</label></div><div class="col-lg-8"><textarea id="seeAlso" name="seeAlso" rows="5" cols="50" maxlength="200"></textarea></div>'+
     '<div class="col-lg-4"><label for="autocad">AutoCAD Job</label></div><div class="col-lg-8"><input type="radio" name="autocad" id="yesAuto" value="Yes" title="autocad"> Yes<input type="radio" name="autocad" value="No" title="autocad" checked> No </div>'+
@@ -1340,7 +1340,7 @@ function reqField(currPage) { // Parameter currPage is the page the user is curr
 
         // Test against required user selections and fields to determine if values are valid.
 
-        if(contactType == 0 || contractPONum == '' || outsideMarkup == '' || outsideMarkup < 0 || outsideMarkup > 100) {
+        if(contactType == 0 || contractPONum == '' || outsideMarkup == '' || outsideMarkup < 0 || outsideMarkup > 100 || prevWage == -1) {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
