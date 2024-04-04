@@ -758,7 +758,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
     //     });
     // }
 
-    dir += '/' + '20' + req.body.PromoId[1] + req.body.PromoId[2];
+    dir += '/' + '20' + new Date().getFullYear().toString().slice(-2);
 
     let counter = 0;
 
@@ -792,7 +792,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
         counter = counter.toString();
     }
 
-    projnum += req.body.PromoId[1] + req.body.PromoId[2] + counter;
+    projnum += new Date().getFullYear().toString().slice(-2) + counter;
     if(req.body.PromoId.length > 10 && req.body.PromoId[10].localeCompare('A') == 0) {
         dir += '/' + projnum + '-' + removeSpace(removeEscapeQuote(req.body.ProjectTitle));
         projnum += 'A';
