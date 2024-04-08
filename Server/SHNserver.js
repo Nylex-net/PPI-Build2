@@ -423,17 +423,16 @@ app.post('/result', jsonParser, (req, res) => {
                     officeAdmins = getAdmin(projnum[0], 'Z');
                 }
                 // push results into admins array.
-                for(let admin of officeAdmins) {
-                    admins.push(admin);
-                }
+                admins.push(officeAdmins[0]);
+
                 // Get individual Project manager to notify.
-                request.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr +' AND email IS NOT NULL AND email <> \'\'', (awNo, emails) => {
+                request.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr +' AND email IS NOT NULL AND email <> \'\';', (awNo, emails) => {
                     if(awNo) {
                         console.log('Could not query emails.  The following error occurred instead:\n' + awNo);
                         createTicket(awNo, "Project initiation email could not be sent:");
                     }
                     else {
-                        // console.log(emails);
+                        console.log(emails.recordset);
                         emails.recordset.forEach(email => {
                             if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
                                 admins.push(email.email + '@shn-engr.com');
