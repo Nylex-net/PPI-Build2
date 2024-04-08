@@ -432,7 +432,7 @@ app.post('/result', jsonParser, (req, res) => {
                         createTicket(awNo, "Project initiation email could not be sent:");
                     }
                     else {
-                        console.log(emails.recordset);
+                        // console.log(emails.recordset);
                         emails.recordset.forEach(email => {
                             if(!admins.includes(email.email + '@shn-engr.com') && email.email != undefined && email.email != 'undefined' && email.email != null && email.email != 'NULL') {
                                 admins.push(email.email + '@shn-engr.com');
@@ -569,7 +569,7 @@ app.post('/promo', jsonParser, (req, res) => {
 
             // Update Team and Keywords tables to link to Promo.
             const result = data.recordset[0];
-            console.log(data.recordset);
+            // console.log(data.recordset);
             let teamArr = req.body.TeamMembers.split(',');
             let teamQuery = '';
             teamArr.forEach((memb) => {
