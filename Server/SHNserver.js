@@ -412,18 +412,9 @@ app.post('/result', jsonParser, (req, res) => {
                 doc.end();
             
                 // Start of array of who to notify of this creation.
-                const admins = jsonData.email.admins;
+                const admins = [jsonData.email.admins];
             
-                let officeAdmins = [];
-                // Get cooresponding admin office group to notify of this project creation.
-                if(projnum.length > 6) {
-                    officeAdmins = getAdmin(projnum[0], projnum[6]);
-                }
-                else {
-                    officeAdmins = getAdmin(projnum[0], 'Z');
-                }
-                // push results into admins array.
-                admins.push(officeAdmins[0]);
+                admins.push((projnum.length > 6?getAdmin(projnum[0], projnum[6]):getAdmin(projnum[0], 'Z')));
 
                 // Get individual Project manager to notify.
                 request.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr +' AND email IS NOT NULL AND email <> \'\';', (awNo, emails) => {
@@ -677,20 +668,10 @@ app.post('/promo', jsonParser, (req, res) => {
                 doc.end();
     
                 // Array to store contacts of who to notify of this creation.
-                const admins = jsonData.email.admins;
-    
-                // Get cooresponding admin office.
-                let officeAdmins = [];
-                if(projnum.length > 10) {
-                    officeAdmins = getAdmin(projnum[0], projnum[10]);
-                }
-                else {
-                    officeAdmins = getAdmin(projnum[0], 'Z');
-                }
-                // push admin office into admins array.
-                for(let admin of officeAdmins) {
-                    admins.push(admin);
-                }
+                // Start of array of who to notify of this creation.
+                const admins = [jsonData.email.admins];
+            
+                admins.push((projnum.length > 10?getAdmin(projnum[0], projnum[10]):getAdmin(projnum[0], 'Z')));
                 // Query the Project manager's email.
                 request.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr + ' AND email IS NOT NULL', (awNo, emails) => {
                     // console.log(emails);
@@ -957,20 +938,10 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
                     // createDirectories(dir, true, removeEscapeQuote(req.body.CreatedBy) + " - " + mydate.toString());
     
                     // Start of array of who to notify of this creation.
-                    const admins = jsonData.email.admins;
-    
-                    let officeAdmins = [];
-                    // Get cooresponding admin office group to notify of this project creation.
-                    if(projnum.length > 6) {
-                        officeAdmins = getAdmin(projnum[0], projnum[6]);
-                    }
-                    else {
-                        officeAdmins = getAdmin(projnum[0], 'Z');
-                    }
-                    // push results into admins array.
-                    for(let admin of officeAdmins) {
-                        admins.push(admin);
-                    }
+                    // Start of array of who to notify of this creation.
+                    const admins = [jsonData.email.admins];
+                
+                    admins.push((projnum.length > 6?getAdmin(projnum[0], projnum[6]):getAdmin(projnum[0], 'Z')));
                     // Get individual Project manager to notify.
                     request.query('SELECT email FROM Staff WHERE ID = '+ req.body.ProjectMgr +' AND email IS NOT NULL', (awNo, emails) => {
                         if(awNo) {
@@ -1287,21 +1258,10 @@ app.post('/submitBill', jsonParser, (req, res) => {
                     // done!
                     doc.end();
 
-                    // Array admin contacts for who to notify.
-                    const admins = jsonData.email.admins;
-
-                    // Get office of the associated project.
-                    let officeAdmins = [];
-                    if(req.body.ProjectId[0].length > 6) {
-                        officeAdmins = getAdmin(req.body.ProjectId[0], req.body.ProjectId[6]);
-                    }
-                    else {
-                        officeAdmins = getAdmin(req.body.ProjectId[0], 'Z');
-                    }
-                    // Push office email group into admins.
-                    for(let admin of officeAdmins) {
-                        admins.push(admin);
-                    }
+                    // Start of array of who to notify of this creation.
+                    const admins = [jsonData.email.admins];
+                
+                    admins.push((req.body.ProjectId[0].length > 6?getAdmin(req.body.ProjectId[0], req.body.ProjectId[6]):getAdmin(req.body.ProjectId[0], 'Z')));
                     // Query for the Project manager's contact email.
                     request.query('SELECT email FROM Staff WHERE ID = '+ req.body.NewMgr +' AND email IS NOT NULL', (awNo, emails) => {
                         if(awNo) {
