@@ -1689,6 +1689,11 @@ function createDirectories(root, gis, userLog) {
             let domain = 'SHN-ENGR';
             let name = 'Domain Users';
             permissions.addRight({domain, name, accessString});
+            name = 'Marketing';
+            permissions.addRight({domain, name, accessString});
+            name = 'Administrator';
+            accessString = 'GA';
+            permissions.addRight({domain, name, accessString});
             permissions.applyRights({disableInheritance:true});
         }
     });

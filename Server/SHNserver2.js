@@ -783,9 +783,11 @@ app.post('/updater', jsonParser, (req, res) => {
                                 let accessString = 'GA';
                                 const domain = 'SHN-ENGR';
                                 let name = 'Administrator';
-                                accessString = 'GA';
                                 permissions.addRight({domain, name, accessString});
                                 name = 'Marketing';
+                                accessString = 'GR';
+                                permissions.addRight({domain, name, accessString});
+                                name = 'Domain Admins';
                                 accessString = 'GR';
                                 permissions.addRight({domain, name, accessString});
                                 permissions.applyRights({disableInheritance:true});
