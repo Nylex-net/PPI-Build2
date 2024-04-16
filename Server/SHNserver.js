@@ -193,7 +193,7 @@ app.post('/result', jsonParser, (req, res) => {
     }
     
     // Start directory with getting the office.
-    let dir = '.';
+    let dir = PATH;
     dir += getDir(projnum);
     if(!fs.existsSync(dir)) {
         fs.mkdir((dir), err => {
@@ -461,7 +461,7 @@ app.post('/promo', jsonParser, (req, res) => {
     // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 
     // Begin creating directory.
-    let dir = '.';
+    let dir = PATH;
     dir += getDir(projnum); // Get office.
 
     // Append year.
@@ -728,7 +728,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
         projnum = req.body.PromoId[0];
     }
     
-    let dir = '.';
+    let dir = PATH;
     dir += getDir(req.body.PromoId[0]); // Gets the cooresponding Office 
     // if(!fs.existsSync(dir)) {
     //     fs.mkdir((dir), err => {
@@ -1680,7 +1680,7 @@ function createDirectories(root, gis, userLog) {
     // Write the content to the file
     fs.writeFile(root + '/log.txt', userLog + '\n', (err) => {
         if (err) {
-        console.error('Error creating the log file in '+root+':', err);
+            console.error('Error creating the log file in '+root+':', err);
         }
         else {
             let folderPath = '.\\' + root.replace(/\//g,"\\") + '\\log.txt';
