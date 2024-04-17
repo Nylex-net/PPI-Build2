@@ -353,20 +353,7 @@ app.post('/searchDesc', jsonParser, (req, res) => {
     });
 });
 
-/**
- *  Gets the QAQC Manager via ID.
- */
-/*
-app.post('/qaqc', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query('SELECT First, Last FROM Contacts WHERE ID = '+ req.body.id)
-    .then(person => {
-        res.send(JSON.stringify(person));
-    }).catch(err => {
-        res.send(JSON.stringify(err));
-    });
-});
-*/
+
 /**
  * Gets Projects. promos, or billing groups based on IDs passed to API.
  */
@@ -389,25 +376,6 @@ app.post('/getMe', jsonParser, (req, res) => {
         }
     });
 });
-
-// Returns IDs from recognizable keywords, assuming the keywords are split using " || ".
-// This may not work for older project initiations, as the database entries don't always conform to the expected format.
-/*
-app.post('/keyName', jsonParser, (req, res) => {
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    let keyArray = req.body.keyText.split(/,| \|\| /g);
-    let keyQuery = '';
-    for(let word of keyArray) {
-        keyQuery += 'Keyword = \'' + word + '\' OR ';
-    }
-    keyQuery = keyQuery.substring(0, keyQuery.length - 4);
-    connection.query('SELECT ID FROM Keywords WHERE ' + keyQuery).then(keyIDs => {
-        res.send(JSON.parse(JSON.stringify(keyIDs)));
-    }).catch(err => {
-        console.log(err);
-        res.send(JSON.parse(JSON.stringify(err)));
-    });
-}); */
 
 // API used to update a project with sent information.
 
@@ -569,15 +537,7 @@ app.post('/updater', jsonParser, (req, res) => {
     query += 'profile_code_id = ' + req.body.profile_code_id + ', ';
     query += 'binder_size = ' + (req.body.binder_size == 'NULL' || req.body.binder_size == null?"NULL":req.body.binder_size) + ', ';
     query += 'description_service = \'' + req.body.description_service.replace(/'/gi, "''") + '\' OUTPUT inserted.* WHERE ID = ' + req.body.ID + ';';
-    // 'project_title = \''+ req.body.project_title.replace(/'/gi, "''") + '\', project_manager_ID = ' + req.body.project_manager_ID+ ', AlternateTitle = \''+ req.body.AlternateTitle +'\', QA_QCPerson = \'' + req.body.QA_QCPerson.replace(/'/gi, "''") + '\', TeamMembers = \''+ req.body.TeamMembers.replace(/'/gi, "''") +'\', StartDate = \'' + req.body.StartDate.replace(/'/gi, "''") + '\', CloseDate = \''+ req.body.CloseDate.replace(/'/gi, "''") +'\', ProjectLoation = \''+ req.body.ProjectLoation.replace(/'/gi, "''") +'\', ' + ((!isNaN(req.body.Lattitude) && !isNaN(req.body.Longitude))?'Lattitude = '+ req.body.Lattitude + ', Longitude = '+ req.body.Longitude + ', ':'')+
-    // 'ProjectKeywords = \''+ req.body.ProjectKeywords.replace(/'/gi, "''") +'\', SHNOffice = \'' + req.body.SHNOffice.replace(/'/gi, "''") + '\', ToatlContract = \'' + req.body.ToatlContract.replace(/'/gi, "''") + '\', RetainerPaid = \'' + req.body.RetainerPaid.replace(/'/gi, "''") + '\', ProfileCode = \'' + req.body.ProfileCode.replace(/'/gi, "''") + '\', ServiceArea = \''+ req.body.ServiceArea.replace(/'/gi, "''") + '\', ContractType = \'' + req.body.ContractType.replace(/'/gi, "''") + '\', InvoiceFormat = \'' + req.body.InvoiceFormat.replace(/'/gi, "''") + '\', PREVAILING_WAGE = \''+ req.body.PREVAILING_WAGE.replace(/'/gi, "''") +'\', OutsideMarkup = \'' + req.body.OutsideMarkup + '\', SpecialBillingInstructins = \'' + req.body.SpecialBillingInstructins.replace(/'/gi, "''") + '\', SEEALSO = \'' + req.body.SEEALSO.replace(/'/gi, "''") + '\', Project_Specifications = ' + req.body.Project_Specifications +
-    // ', AutoCAD_Project = ' + req.body.AutoCAD_Project + ', GIS_Project = ' + req.body.GIS_Project + ', ClientCompany1 = \'' + req.body.ClientCompany1.replace(/'/gi, "''") + '\', OfficeMailingLists1 = \'' + req.body.OfficeMailingLists1.replace(/'/gi, "''") + '\','+
-    // 'ClientAbbrev1 = \'' + req.body.ClientAbbrev1.replace(/'/gi, "''") + '\', ClientContactFirstName1 = \'' + req.body.ClientContactFirstName1.replace(/'/gi, "''") + '\', ClientContactLastName1 = \'' + req.body.ClientContactLastName1.replace(/'/gi, "''") + '\', Title1 = \'' + req.body.Title1.replace(/'/gi, "''") + '\', Address1_1 = \'' + req.body.Address1_1.replace(/'/gi, "''") + '\', Address2_1 = \'' + req.body.Address2_1.replace(/'/gi, "''") + '\', City1 = \'' + req.body.City1.replace(/'/gi, "''") + '\', State1 = \'' + req.body.State1.replace(/'/gi, "''") + '\', Zip1 = \'' + req.body.Zip1.replace(/'/gi, "''") + '\', PhoneW1 = \''+ req.body.PhoneW1.replace(/'/gi, "''") + '\', PhoneH1 = \'' + req.body.PhoneH1.replace(/'/gi, "''") + '\', Cell1 = \'' + req.body.Cell1.replace(/'/gi, "''") + '\', Fax1 = \'' + req.body.Fax1.replace(/'/gi, "''") + '\', Email1 = \'' + req.body.Email1.replace(/'/gi, "''") + '\', '+
-    // 'BinderSize = \'' + req.body.BinderSize.replace(/'/gi, "''") + '\', BinderLocation = \'' + req.body.BinderLocation.replace(/'/gi, "''") + '\', DescriptionService = \''+  req.body.DescriptionService.replace(/'/gi, "''") + '\', DTStamp = \'' + req.body.CreatedOn + '\' WHERE ID = ' + req.body.ID + ');';
-    // If latitude and/or longitude aren't numbers, don't bother inserting them into the database.
 
-    // query += (req.body.Projectid != null && req.body.Projectid != undefined && req.body.Projectid.length >=6 && !isNaN(req.body.Projectid))?' WHERE Projectid = \'' + req.body.Projectid + '\'':' WHERE PromoId = \'' + req.body.PromoId + '\'';
-    //console.log(query);
     const mydate = new Date().toString();
     const request = pool.request();
     request.query(query, (err, data) => {
@@ -723,18 +683,6 @@ app.post('/updater', jsonParser, (req, res) => {
                 rows: rower
                 };
                 
-                // Description of service table.
-                // const descTable = {
-                //     title: "Description of Services",
-                //     headers: ["Description of Services", "Description"],
-                //     rows: [["Description of Services", req.body.DescriptionService]]
-                // };
-                // A4 595.28 x 841.89 (portrait) (about width sizes)
-                // width
-                // await doc.table(table, { 
-                //   width: 400
-                // });
-                // or columnsSize
                 await doc.table(table, {
                     columnsSize: [ 120, 130, 100, 130],
                     padding: 2,
@@ -748,24 +696,10 @@ app.post('/updater', jsonParser, (req, res) => {
                             .lineTo(x + width, y + height)
                             .stroke();
                         }
-                        // if((indexRow === 8 || indexRow === 17 || indexRow === 25) && indexColumn === 0) {
-                        //     doc
-                        //     .lineWidth(2)
-                        //     .moveTo(x, y)
-                        //     .lineTo(x + 250, y)
-                        //     .stroke();
-                        // }
                         doc.fontSize(10).fillColor('#000000');
                     }
                 });
 
-                // await doc.table(descTable, {
-                //     columnsSize: [ 100, 400],
-                //     prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => { // Additional formatting of table.
-                //         (indexColumn == 0)?doc.font("Helvetica-Bold").fontSize(10):doc.font("Helvetica").fontSize(10);
-                //     }
-                // });
-                // done!
                 doc.end();
                 
                 // Append the content to the file
@@ -960,7 +894,6 @@ app.post('/getPath', jsonParser, (req, res) => {
                         else {
                             dir += '/' + tempdir;
                             res.download(dir);
-                            // res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                         }
                     }
                     else {
@@ -971,7 +904,6 @@ app.post('/getPath', jsonParser, (req, res) => {
                 else {
                     dir += '/' + tempdir;
                     res.download(dir);
-                    //res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                 }
             }
         }
@@ -1111,50 +1043,7 @@ app.post('/deleteRolo', jsonParser, (req, res) => {
     });
 });
 
-/**
- * Upload API used to update PM tools.
- */
-/*
-app.post('/upload', (req, res) => {
-    if (!req.files || !req.files.file) {
-        return res.status(400).send('No files were uploaded.');
-    }
 
-    const uploadedFiles = req.files.file;
-    const filePath1 = `\\uploads\\${uploadedFiles[0].name}`;
-    const filePath5 = `\\uploads\\${uploadedFiles[1].name}`;
-    const filePath10 = `\\uploads\\${uploadedFiles[2].name}`;
-
-    // Save the uploaded file to the server
-    console.log(__dirname + filePath1);
-    uploadedFiles[0].mv(__dirname + filePath1, (err) => {
-        if (err) {
-            return res.status(500).send(err);
-        }
-        else {
-            // console.log(uploadedFiles);
-            uploadedFiles[1].mv(__dirname + filePath5, (err) => {
-                if(err) {
-                    return res.status(500).send(err);
-                }
-                else {
-                    uploadedFiles[2].mv(__dirname + filePath10, (err) => {
-                        if(err) {
-                            return res.status(500).send(err);
-                        }
-                        else {
-                            uploadToSharePoint(filePath1, filePath5, filePath10);
-                            res.status(200).send("Uploads success");
-                        }
-                    });
-                }
-            });
-        }
-    });
-
-    // Handle the file as needed (e.g., save to disk, process, etc.)
-});
-*/
 function uploadToSharePoint(file1, file5, file10) {
     getAccessToken().then((token) => {
         if(token.access_token != undefined) {
@@ -1213,37 +1102,6 @@ async function getAccessToken() {
         console.log("Could not upload " + filePath);
     }
   }
-/*
-app.post('/delete', jsonParser, (req, res) => {
-    let dir = PATH;
-    if(!req.body.hasOwnProperty('ID') || !req.body.hasOwnProperty('Project')){
-        res.status(401);
-        res.send(JSON.parse(JSON.stringify('{"message":"Bad Request"}')));
-    }
-    else if(req.body.Project && isNaN(req.body.ID.substring(0,6))) {
-        res.status(403);
-        res.send(JSON.parse(JSON.stringify('{"message":"Bad Project/Promo"}')));
-    }
-    else if(!req.body.Project && isNaN(req.body.ID.substring(0,9))) {
-        res.status(403);
-        res.send(JSON.parse(JSON.stringify('{"message":"Bad Promo"}')));
-    }
-    else {
-        const query = 'DELETE * FROM Projects WHERE ' + (req.body.Project?'Projectid':'PromoId') + ' = \''+ req.body.ID +'\'';
-        // Connect to database.
-        const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-        // Executes the query.
-        connection.execute(query).then(() => {
-            res.status(200);
-            res.send(JSON.parse(JSON.stringify('{"message":"ok"}')));
-        }).catch(err=>{
-            console.log(err);
-            res.status(500);
-            res.send(JSON.parse(JSON.stringify('{"message":"Server Error: '+err+'"}')));
-        });
-    }    
-});
-*/
 
 // Used by the close API to move contents into the cooresponding office's closed jobs folder.
 function moveProject(ID, closer) {
@@ -1552,33 +1410,6 @@ async function createTicket(error, msg) {
         console.error("Could not refresh\n"+err);
     });
 }
-
-
-/**
- * ) removes the two single quotes ('') for proper display in the PDF document.
- * The reason the form formats single quotes to print twice is because that's how MS SQL escapes from it, instead of using backslash (\).
- * Without an escape from ', MS SQL rejects the query.
- */
-
-// function SQLFormat) {
-
-//     let i = 0;
-
-//     SQLFormat = String(SQLFormat);
-
-//     while(i < SQLFormat.length) {
-//         if(SQLFormat[i] == '\'' && i + 1 < SQLFormat.length && SQLFormat[i + 1] == '\'') {
-//             SQLFormat = SQLFormat.substring(0, i) + SQLFormat.substring(i + 1);
-//         }
-//         i++;
-//     }
-
-//     return SQLFormat;
-// }
-
-// Run the APIs.
-// const port = Number(process.env.PORT) || 3001;
-// app.listen(port, () => console.log(`Listening to port ${port}...`));
 
 https.createServer(options, app, function (req, res) {
     res.statusCode = 200;

@@ -121,18 +121,6 @@ app.get('/', (req, res) => {
 
 // Gets all keywords.
 app.get('/1', (req, res) => {
-    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    // connection.query('SELECT ID, Keyword FROM Keywords ORDER BY Keyword')
-    // .then(data => {
-    //     // Display formatted JSON data
-    //     res.send(JSON.stringify(data,null,1));
-    // })
-    // .catch(error => {
-    //     console.error('Error occured while accessing database.');
-    //     createTicket(error, "Cannot GET keywords.");
-    //     res.send(JSON.stringify(error));
-    //     // return callback(new Error("An error has occurred"));
-    // })
     const query = 'SELECT * FROM Keywords ORDER BY Keyword;';
     const request = pool.request();
     request.query(query, (err, rows) => {
@@ -161,17 +149,6 @@ app.get('/2', (req, res) => {
             res.send(JSON.stringify(rows.recordset));
         }
     });
-    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    // connection.query('SELECT Code, CodeDescription FROM ProfileCodes ORDER BY Code')
-    // .then(data => {
-    //     // Display formatted JSON data
-    //     res.send(JSON.stringify(data,null,1));
-    // })
-    // .catch(error => {
-    //     console.error('Error occured while accessing database.');
-    //     createTicket(error, "Cannot GET profile codes.");
-    //     res.send(JSON.stringify(error));
-    // })
 });
 
 /**
@@ -259,14 +236,6 @@ app.post('/result', jsonParser, (req, res) => {
     const mydate = new Date();
     let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
-    // let team = "INSERT INTO ProjectTeam (project_id, member_id) VALUES ((SELECT ID FROM Projects WHERE project_id = '"+ +"'))"
-    // req.body.TeamMembers.forEach(member => {
-
-    // });
-
-    // Begin building SQL query.
-    // ADD project_type TO DATABASE QUERY.
-    // let latLongNaN = false;
     const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, closed, start_date, close_date, project_location, latitude, longitude, ' +
             'SHNOffice_ID, service_area, total_contract, exempt_agreement, retainer, retainer_paid, waived_by, profile_code_id, project_type, contract_ID, invoice_format, client_contract_PO, outside_markup,'+
             'prevailing_wage, agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, '+
@@ -729,14 +698,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
     }
     
     let dir = PATH;
-    dir += getDir(req.body.PromoId[0]); // Gets the cooresponding Office 
-    // if(!fs.existsSync(dir)) {
-    //     fs.mkdir((dir), err => {
-    //         if(err){
-    //             throw err;
-    //         }
-    //     });
-    // }
+    dir += getDir(req.body.PromoId[0]); // Gets the cooresponding Office
 
     dir += '/' + '20' + new Date().getFullYear().toString().slice(-2);
 
@@ -781,13 +743,6 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
         dir += '/' + projnum + '-' + removeSpace(removeEscapeQuote(req.body.ProjectTitle));
     }
 
-    // chosenJson.ProjectMgrName = mgrName;
-    // chosenJson.QA_QCPersonName = qaqcname;
-    // chosenJson.TeamMemberNames = teamString(memNames);
-    // chosenJson.retainer = retainer;
-    // chosenJson.contactTypeName = contactTypeName;
-    // chosenJson.ClientContractPONumber = format(contractPONum);
-    // chosenJson.OutsideMarkup = outsideMarkup;
     let retainMe = (req.body.Retainer == 'Enter Amount')?'$'+req.body.RetainerPaid:(req.body.Retainer.includes("Waived by X")?"Waived by "+req.body.WaivedBy:req.body.Retainer);
 
     // Project initiation date.
@@ -963,96 +918,6 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
     });
 });
 
-/**
- * '/info' API used by the advanced search function to return specific results.
- */
-/*
-app.post('/info', jsonParser, (req, res) => {
-    // Connect to database.
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    let keyQuery = '';
-    let keyArray = new Array();
-    // If keywrods were selected, split keywords into array.
-    if(req.body.Keywords != '%') {
-        keyArray = req.body.Keywords.split(" || ").filter(e => e !== '');
-        for(let word of keyArray) {
-            keyQuery += 'Projects.ProjectKeywords LIKE \'%' + word + '%\' AND ';
-        }
-        keyQuery = keyQuery.substring(0, keyQuery.length - 5);
-    }
-    else {
-        keyQuery = 'Projects.ProjectKeywords LIKE \'%\'';
-    }
-     // console.log('Project Number is ' + req.body.ProjectNumber + ', Description is ' + req.body.Description + ', Project title is ' + req.body.ProjectTitle);
-     // INNER JOIN Contacts ON Contacts.ID = Cint(Projects.ProjectMgr)
-
-     // Execute query.
-    connection.query('SELECT Projects.Projectid AS Project, Projects.PromoId AS Promo, Projects.ProjectTitle AS ProjectTitle, Projects.BillGrp AS Billing, Projects.ClientCompany1 AS ClientCompany, Projects.DescriptionService AS Description, Contacts.Last, Contacts.First FROM Projects INNER JOIN Contacts ON (Val(Projects.ProjectMgr) = Contacts.ID) WHERE (Projects.Projectid LIKE \''+ req.body.ProjectNumber +'\' OR Projects.PromoId LIKE \''+ req.body.ProjectNumber +'\') AND ' + keyQuery + ' AND Projects.DescriptionService LIKE \''+ req.body.Description +'\' AND Projects.ProjectTitle LIKE \'' + req.body.ProjectTitle + '\' ORDER BY Projects.Projectid')
-    .then(data => {
-        // console.log(req.ip);
-        res.send(JSON.stringify(data)); // Send back results.
-    })
-    .catch(error => {
-        res.send(JSON.stringify(error)); // send back error if an error occurs.
-    });
-});
-*/
-/**
- * General search API to search multiple fields from single input entry.
- * This is the most commonly used API by SHNers.
- */
-/*
-app.post('/search', jsonParser, (req, res) => {
-    // Connect to database.
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-     // console.log('Project Number is ' + req.body.ProjectNumber + ', Description is ' + req.body.Description + ', Project title is ' + req.body.ProjectTitle);
-     // INNER JOIN Contacts ON Contacts.ID = Cint(Projects.ProjectMgr)
-
-     // Query the results.
-     connection.query('SELECT Projects.*, Contacts.First, Contacts.Last FROM Projects INNER JOIN Contacts ON Val(Projects.ProjectMgr) = Contacts.ID WHERE Projects.Projectid LIKE \'%'+ req.body.entry +
-    '%\' OR Projects.PromoId LIKE \'%'+ req.body.entry +'%\' OR Projects.ProjectMgr = (SELECT TOP 1 Contacts.ID FROM Contacts WHERE Contacts.Last LIKE \'%'+ req.body.entry +'%\' OR Contacts.First LIKE \'%'+ req.body.entry +'%\') OR Projects.ProjectLoation LIKE \'%'+ req.body.entry +
-    '%\' OR Projects.ProjectKeywords LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientCompany1 LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientContact1 LIKE \'%'+ req.body.entry +
-    '%\' OR Projects.ClientContactFirstName1 LIKE \'%'+ req.body.entry +'%\' OR Projects.ClientContactLastName1 LIKE \'%'+ req.body.entry +
-    '%\' OR Projects.ProfileCode LIKE \'%'+ req.body.entry +'%\' OR Projects.DescriptionService LIKE \'%'+ req.body.entry +
-    '%\' ORDER BY ISNULL(Projects.Projectid), Projects.PromoId, Projects.BillGrp, Projects.ClientCompany1, Projects.DescriptionService')
-    .then(data => {
-        data = JSON.stringify(data); // send back results.
-        res.send(data);
-    })
-    .catch(error => {
-        // Query contacts first.
-        connection.query('SELECT ID, First, Last From Contacts').then(contacts => {
-            let contactMap = new Map();
-            // Map ID to employee names for ease of access.
-            for(let contact of contacts) {
-                contactMap.set(contact.ID.toString(), contact.First.trim() + ';' + contact.Last.trim());
-            }
-            // Query Project database.
-            connection.query('SELECT Projectid, PromoId, ProjectMgr, ProjectTitle, BillGrp, BillingTitle, ClientCompany1, DescriptionService FROM Projects WHERE Projectid LIKE \'%'+ req.body.entry +'%\' OR ProjectLoation LIKE \'%'+ req.body.entry +
-            '%\' OR PromoId LIKE \'%'+ req.body.entry +'%\' OR ProjectKeywords LIKE \'%'+ req.body.entry +
-            '%\' OR ClientCompany1 LIKE \'%'+ req.body.entry +'%\' OR ClientContact1 LIKE \'%'+ req.body.entry + '%\' OR ClientContactFirstName1 LIKE \'%'+ req.body.entry +
-            '%\' OR ClientContactLastName1 LIKE \'%'+ req.body.entry +'%\' OR ProfileCode LIKE \'%'+ req.body.entry +'%\' OR DescriptionService LIKE \'%'+ req.body.entry +
-            '%\' ORDER BY ISNULL(Projectid), PromoId, BillGrp, ClientCompany1, DescriptionService').then(projData => {
-                // Associate Project Manager name to cooresponding project.
-                for(let entry of projData) {
-                    let temp = (contactMap.get(entry.ProjectMgr) == undefined) ? undefined:contactMap.get(entry.ProjectMgr).split(';');
-                    if(temp != undefined && temp != null) {
-                        entry["First"] = temp[0];
-                        entry["Last"] = temp[1];
-                    }
-                    else {
-                        entry["First"] = "Unknown";
-                        entry["Last"] = "Unknown";
-                    }
-                }
-                // Send back results.
-                res.send(JSON.stringify(projData));
-            })
-            // if erro, send back error.
-        }).catch(err => res.send(JSON.stringify(err)));
-    });
-})
-*/
 // Searches for projects to add a billing group to.
 
 app.post('/billMe', jsonParser, (req, res) => {
@@ -1428,126 +1293,13 @@ app.post('/contacts', jsonParser, (req, res) => {
             res.send(JSON.parse(JSON.stringify(err)));
         }
         else {
-            // const isProject = Boolean(req.body.isProject);
-            // const num = (isProject?deez.recordset[0].project_id:deez.recordset[0].promo_id);
-            // let dir = DEMO_PATH + getDir(num[0]) + (deez.recordset[0].closed == 1?'/ClosedJobs':'');
-            // dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
-            // dir += (isProject)?'':'/Promos';
-            // if(!fs.existsSync(dir)) {
-            //     fs.mkdir((dir), err => {
-            //         if(err){
-            //             createTicket(err, "Promos folder not found:");
-            //             throw err;
-            //         }
-            //     });
-            // }
-            // let dirFiles = fs.readdirSync(dir);
-            // let found = false;
-            // for(let file of dirFiles) {
-            //     if(file.substring(0, 12).includes(num)) {
-            //         dir += '/' + file;
-            //         found = true;
-            //         break;
-            //     }
-            // }
-            // if(!found) {
-            //     dir += '/' + num;
-            //     fs.mkdir((dir), err => {
-            //         if(err) {
-            //             createTicket(err, 'Project/Promo folder for '+num+'not found: ' + dir);
-            //             console.error('Project/Promo folder for '+num+'not found: ' + dir);
-            //         }
-            //     });
-            // }
-            // const mydate = new Date().toString();
-            // fs.appendFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + ' (rolodex edit).\n', (err) => {
-            //     if (err) {
-            //         console.error('Error appending to the file to '+dir + '/log.txt'+':', err);
-            //         // Write the content to the file
-            //         fs.writeFile(dir + '/log.txt', req.body.CreatedBy + ' - ' + mydate.toString() + ' (rolodex edit).\n', (err) => {
-            //             if (err) {
-            //             console.error('Error creating the file to '+dir + '/log.txt'+':', err);
-            //             }
-            //             else {
-            //                 const folderPath = dir + '/log.txt';
-            //                 const permissions = new winPermissionsManager({folderPath});
-            //                 let accessString = 'GA';
-            //                 const domain = 'SHN-ENGR';
-            //                 let name = 'Administrator';
-            //                 accessString = 'GA';
-            //                 permissions.addRight({domain, name, accessString});
-            //                 name = 'Marketing';
-            //                 accessString = 'GR';
-            //                 permissions.addRight({domain, name, accessString});
-            //                 permissions.applyRights({disableInheritance:true});
-            //             }
-            //         });
-            //     }
-            // });
             res.statusCode = 200;
             res.send(JSON.parse('{"Status":"Success"}'));
         }
     });
-    // connection.execute(sql).then(() => {
-    //     res.send(JSON.parse(JSON.stringify('{"Status":"Success"}')));
-    // }).catch(err => {
-    //     console.log(err);
-    //     createTicket(err, "Cannot update contacts in Rolodex:");
-    //     res.send(JSON.parse(JSON.stringify(err)));
-    // });
 });
 
-/**
- * Previous requests from Justin Sousa at SHN to build a program to query coordinate data from the database.
- * To achieve these requests, I had to build an API for each version of the program.
- */
 
-// API for Justin's program.
-// app.post('/peowihfds', jsonParser, (req, res) => {
-//     // console.log(req.body);
-//     let query = 'SELECT Id, Projectid, BillGrp, Lattitude, Longitude FROM Projects WHERE Id > ' + req.body.ID;
-//     if(isNaN(req.body.ID) || req.body.ID == '') {
-//         query = 'SELECT Id, Projectid, BillGrp, Lattitude, Longitude FROM Projects WHERE Id > (SELECT MAX(Id) - 20 FROM Projects)';
-//     }
-//     const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-//     connection.query(query).then(data => {
-//         res.send(JSON.stringify(data));
-//     }).catch(error => {
-//         res.send(JSON.stringify(error));
-//     });
-// })
-
-/*
-// API for Justin's program.
-app.post('/mapMe', jsonParser, (req, res) => {
-    // console.log(req.body);
-    let query = 'SELECT Projects.Id AS dataID, Projects.Projectid AS ProjID, Projects.BillGrp AS BillingNum, Projects.Lattitude AS Latty, Projects.Longitude AS Longy, Projects.ProjectLoation AS Location, Projects.ClientCompany1 AS Company, Projects.ProjectTitle AS Title, Contacts.First AS FirstName, Contacts.Last AS LastName FROM Projects, Contacts WHERE StrComp(Projects.ProjectMgr, Contacts.ID) = 0 AND Projects.Id > ' + req.body.ID;
-    if(isNaN(req.body.ID) || req.body.ID == '') {
-        query = 'SELECT Projects.Id AS dataID, Projects.Projectid AS ProjID, Projects.BillGrp AS BillingNum, Projects.Lattitude AS Latty, Projects.Longitude AS Longy, Projects.ProjectLoation AS Location, Projects.ClientCompany1 AS Company, Projects.ProjectTitle AS Title, Contacts.First AS FirstName, Contacts.Last AS LastName FROM Projects, Contacts WHERE StrComp(Projects.ProjectMgr, Contacts.ID) = 0';
-    }
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.query(query).then(data => {
-        res.send(JSON.stringify(data));
-    }).catch(error => {
-        res.send(JSON.stringify(error));
-    })
-})
-
-// API for Justin's program.
-app.post('/coordyUpdatey', jsonParser, (req, res) => {
-    // console.log(req.body);
-    let query = 'UPDATE Projects SET Lattitude = '+ req.body.Lat +', Longitude = '+ req.body.Long +' WHERE Id = ' + req.body.ID;
-    if(isNaN(req.body.ID) || req.body.ID == '' || req.body.Lat > 90 || req.body.Lat < -90 || req.body.Long > 180 || req.body.Long < -180) {
-        query = 'UPDATE Projects SET Lattitude = '+ req.body.Lat +', Longitude = '+ req.body.Long +' WHERE Id = -1';
-    }
-    const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
-    connection.execute(query).then(data => {
-        res.send(JSON.stringify(data));
-    }).catch(error => {
-        res.send(JSON.stringify(error));
-    });
-})
-*/
 /**
  * Helper functions used by the APIs.
  */
