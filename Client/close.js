@@ -16,7 +16,7 @@ function findProjects() {
     const jsonString = JSON.parse(JSON.stringify('{"projID":"'+ projectNumber +'"}'));
     // Create HTTP request.
     var xhr = new XMLHttpRequest();
-    var url = "https://e-hv-ppi.shn-engr.com:3001/projects";
+    var url = "https://ppi.shn-engr.com:3001/projects";
     xhr.open("POST", url, false);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onerror = function(e) { // If the server returns an error, display an error message to the user.
@@ -100,7 +100,7 @@ function starter(res) {
     }
     console.log(postData);
     try {
-        const response = fetch('https://e-hv-ppi.shn-engr.com:3001/closeMe', {
+        const response = fetch('https://ppi.shn-engr.com:3001/closeMe', {
             method: 'post',
             headers: {
                 "Content-Type": "application/json"

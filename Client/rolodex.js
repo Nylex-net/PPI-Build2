@@ -24,7 +24,7 @@ function find() {
         searchby = document.getElementById('comp').value; // Comp
     }
     document.getElementById('results').innerHTML = 'Searching...';
-    fetch('https://e-hv-ppi.shn-engr.com:3000/rolodex', {
+    fetch('https://ppi.shn-engr.com:3000/rolodex', {
         method: 'POST',
         headers: {
             'Accept':'application/json',
@@ -338,7 +338,7 @@ function preparePost(Id, proj) {
     const JsonString = JSON.parse(JSON.stringify(sql));
     console.log(JsonString);
 
-    fetch('https://e-hv-ppi.shn-engr.com:3000/contacts', {
+    fetch('https://ppi.shn-engr.com:3000/contacts', {
         method: 'POST',
         headers: {
             'Accept':'application/json',

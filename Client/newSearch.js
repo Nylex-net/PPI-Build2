@@ -13,7 +13,7 @@ function search() {
 
 
     const xhr = new XMLHttpRequest();
-    const url = (document.getElementById('project').checked)?"https://e-hv-ppi.shn-engr.com:3001/searchProject":(document.getElementById('promo').checked)?"https://e-hv-ppi.shn-engr.com:3001/searchPromo":(document.getElementById('keywords').checked)?"https://e-hv-ppi.shn-engr.com:3001/searchKeyword":(document.getElementById('title').checked)?"https://e-hv-ppi.shn-engr.com:3001/searchTitle":(document.getElementById('desc').checked)?"https://e-hv-ppi.shn-engr.com:3001/searchDesc":"https://e-hv-ppi.shn-engr.com:3001/search";
+    const url = (document.getElementById('project').checked)?"https://ppi.shn-engr.com:3001/searchProject":(document.getElementById('promo').checked)?"https://ppi.shn-engr.com:3001/searchPromo":(document.getElementById('keywords').checked)?"https://ppi.shn-engr.com:3001/searchKeyword":(document.getElementById('title').checked)?"https://ppi.shn-engr.com:3001/searchTitle":(document.getElementById('desc').checked)?"https://ppi.shn-engr.com:3001/searchDesc":"https://ppi.shn-engr.com:3001/search";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onerror = function(e) {
@@ -205,7 +205,7 @@ async function openPDF(numSearch, closed, BillingGroup) {
     }
     numSearch = numSearch.trim();
     let dir = 'P:';
-    await fetch('https://e-hv-ppi.shn-engr.com:3001/getPath', {
+    await fetch('https://ppi.shn-engr.com:3001/getPath', {
         method: "POST",
         mode: "cors",
         headers: {
@@ -287,7 +287,7 @@ async function viewer(num) {
     '<div class="grid-item">Project Manager' + '</div>'
     + '<div class="grid-item">' + json.Last + ", " + json.First + '</div>'+
     '<div class="grid-item">QAQC Person' + '</div>'
-    + '<div class="grid-item">' + await fetch('https://e-hv-ppi.shn-engr.com:3001/qaqc', {
+    + '<div class="grid-item">' + await fetch('https://ppi.shn-engr.com:3001/qaqc', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -303,7 +303,7 @@ async function viewer(num) {
         return '[Unable to Display]';
     }) + '</div>'+
     '<div class="grid-item">Team Members' + '</div>'
-    + '<div class="grid-item">' + await fetch('https://e-hv-ppi.shn-engr.com:3000/mgrs', {
+    + '<div class="grid-item">' + await fetch('https://ppi.shn-engr.com:3000/mgrs', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

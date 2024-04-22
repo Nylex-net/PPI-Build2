@@ -49,7 +49,7 @@ function search() {
     document.getElementById('results').innerHTML = 'Getting Projects...<br>This may take a moment.';
 
     var xhr = new XMLHttpRequest();
-    var url = "http://e-hv-ppi.shn-engr.com:3000/info";
+    var url = "http://ppi.shn-engr.com:3000/info";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onerror = function(e) {
@@ -201,7 +201,7 @@ function getCheckbox(group, id, value, label) {
 
 function getKeys() {
     let accessErr = false;
-    fetch("http://e-hv-ppi.shn-engr.com:3000/1").then(response => { // Makes a call for keywords.
+    fetch("http://ppi.shn-engr.com:3000/1").then(response => { // Makes a call for keywords.
         let myKeys = response.json();
         return myKeys; // returns to the ".then" statement's data below for processing.
     }).then(data => {

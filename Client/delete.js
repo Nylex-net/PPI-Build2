@@ -28,7 +28,7 @@ function deleter(id, isProject) {
         ID: id,
         Project: isProject
     };
-    fetch('https://e-hv-ppi.shn-engr.com:3001/delete', {
+    fetch('https://ppi.shn-engr.com:3001/delete', {
         method: 'post',
         headers: {
             "Content-Type": "application/json"

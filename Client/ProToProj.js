@@ -93,7 +93,7 @@ let homePhoneInput;
 let cellPhoneInput;
 let faxInput;
 
-const HOST = 'e-hv-ppi';
+const HOST = 'ppi';
 
 function findPromos() {
     if(document.getElementById('PromoSucc').value.length < 10) {

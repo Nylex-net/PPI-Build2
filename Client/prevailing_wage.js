@@ -1,4 +1,4 @@
-const HOST = 'e-hv-ppi';
+const HOST = 'ppi';
 let activeUser = '';
 const existing = new Array();
 

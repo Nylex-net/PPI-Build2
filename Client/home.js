@@ -51,7 +51,7 @@ let GIS = false;
 let binderSize = 'NA';
 let descOfServ = ''; // required
 
-const HOST = 'e-hv-ppi';
+const HOST = 'ppi';
 
 function findProjects() {
     const projectNumber = document.getElementById('billGrp').value.trim();

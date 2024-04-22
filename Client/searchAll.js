@@ -11,7 +11,7 @@ function search() {
     const jsonString = JSON.parse(JSON.stringify(sql));
 
     var xhr = new XMLHttpRequest();
-    var url = "http://e-hv-ppi.shn-engr.com:3001/search";
+    var url = "http://ppi.shn-engr.com:3001/search";
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onerror = function(e) {
@@ -227,7 +227,7 @@ async function viewer(num) {
     '<div class="grid-item">Project Manager' + '</div>'
     + '<div class="grid-item">' + json.Last + ", " + json.First + '</div>'+
     '<div class="grid-item">QAQC Person' + '</div>'
-    + '<div class="grid-item">' + await fetch('http://e-hv-ppi.shn-engr.com:3001/qaqc', {
+    + '<div class="grid-item">' + await fetch('http://ppi.shn-engr.com:3001/qaqc', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -243,7 +243,7 @@ async function viewer(num) {
         return '[Unable to Display]';
     }) + '</div>'+
     '<div class="grid-item">Team Members' + '</div>'
-    + '<div class="grid-item">' + await fetch('http://e-hv-ppi.shn-engr.com:3000/mgrs', {
+    + '<div class="grid-item">' + await fetch('http://ppi.shn-engr.com:3000/mgrs', {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

@@ -1,4 +1,4 @@
-const HOST = 'e-hv-ppi';
+const HOST = 'ppi';
 var submitting = false;
 
 document.getElementById('projForm').addEventListener('submit', function (e) {

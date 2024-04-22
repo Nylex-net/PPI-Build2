@@ -29,7 +29,7 @@ let homePhoneInput;
 let cellPhoneInput;
 let faxInput;
 
-const HOST = 'e-hv-ppi';
+const HOST = 'ppi';
 /**
  * Loads the first page.
  */
