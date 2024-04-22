@@ -9,7 +9,6 @@ const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DA
 const jsonData = require('./config.json');
 const codeMap = new Map();
 const keyMap = new Map();
-let request;
 
 const pool = new sql.ConnectionPool({
     user: jsonData.mssqlPROD.user,
