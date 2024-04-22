@@ -1,5 +1,5 @@
 const sql = require('mssql');
-const ADODB = require('node-adodb')
+const ADODB = require('node-adodb');
 const fs = require('fs');
 // const Pool = require('generic-pool');
 // const config = require('./config.json');
