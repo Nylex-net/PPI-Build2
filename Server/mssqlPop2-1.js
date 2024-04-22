@@ -38,3 +38,11 @@ pool.connect(err => {
         });
     }
 });
+
+function populateData() {
+    connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
+        
+    }).catch((err) => {
+        console.error(err);
+    });
+}
