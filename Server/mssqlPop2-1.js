@@ -16,51 +16,72 @@ const pool = new sql.ConnectionPool({
     // }
 });
 
-// connect to your database
-pool.connect(err => {
-    if(err) {
-        console.error(err);
+// Function to establish a new connection
+function establishConnection() {
+    try {
+        pool.connect();
+        console.log('Connection established.');
+    } catch (err) {
+      console.error('Error establishing connection:', err);
+      process.exit();
     }
-    else {
-        console.log("Connected!");
-        // create Request object
-        // query to the database and get the records
-        pool.query('USE PPI;SET XACT_ABORT OFF;', function (err, recordset) {
+}
+
+// // connect to your database
+// pool.connect(err => {
+//     if(err) {
+//         console.error(err);
+//     }
+//     else {
+//         console.log("Connected!");
+//         // create Request object
+//         // query to the database and get the records
+//         const request = pool.request();
+//         request.query('USE PPI;SET XACT_ABORT OFF;', function (err, recordset) {
                 
-            if (err) {
-                console.log(err);
-                pool.close();
-                process.exit();
-            }
-            else {
-                populateData();
-            }
-        });
-    }
-});
+//             if (err) {
+//                 console.log(err);
+//                 pool.close();
+//                 process.exit();
+//             }
+//             else {
+//                 populateData();
+//             }
+//         });
+//     }
+// });
 
 function populateData() {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
-        let query = 'DECLARE @value_to_check VARCHAR(7);';
+        let query = 'USE PPI;';
         data.forEach((element) => {
             if(element.Projectid.length > 7) {
                 console.log(element.Projectid + ' is too long :(');
             }
             else {
-                query += "SET @value_to_check = '"+ element.Projectid +"';IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = @value_to_check) BEGIN PRINT @value_to_check;END ";
+                query += "SELECT '"+element.Projectid+"' AS value_to_check WHERE NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"');";
             }
         });
-        pool.query(query, (err, rows) => {
-            if(err) {
-                console.log(err);
-            }
-            else {
-                rows.recordsets.forEach((bruh)=>{
-                    console.log(bruh);
-                });
-            }
+        pool.connect().then(()=>{
+            const request = pool.request();
+            request.query(query, (err, rows) => {
+                if(err) {
+                    console.log(err);
+                }
+                else {
+                    // console.log(rows);
+                    rows.recordsets.forEach((bruh)=>{
+                        if(bruh.length > 0 && bruh[0].value_to_check.length >= 6) {
+                            console.log(bruh[0].value_to_check);
+                        }
+                    });
+                }
+            });
         });
+        
     }).catch((err) => {
-        console.error(err);
+        console.error(err.message);
     });
 }
+
+populateData();
