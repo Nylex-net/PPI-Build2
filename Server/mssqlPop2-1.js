@@ -1,6 +1,6 @@
 const sql = require('mssql');
 const ADODB = require('node-adodb');
-const DATABASE_PATH = "C:\\Users\\administrator\\Documents\\SHN_Project_Backup.mdb;";
+const DATABASE_PATH = "C:\\Users\\henry\\Documents\\SHN_Project_Backup.mdb;";
 const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 const jsonData = require('./config.json');
 
@@ -33,7 +33,7 @@ pool.connect(err => {
                 process.exit();
             }
             else {
-                // populateData();
+                populateData();
             }
         });
     }
@@ -41,7 +41,25 @@ pool.connect(err => {
 
 function populateData() {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
-        
+        let query = 'DECLARE @value_to_check VARCHAR(7);';
+        data.forEach((element) => {
+            if(element.Projectid.length > 7) {
+                console.log(element.Projectid + ' is too long :(');
+            }
+            else {
+                query += "SET @value_to_check = '"+ element.Projectid +"';IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = @value_to_check) BEGIN PRINT @value_to_check;END ";
+            }
+        });
+        pool.query(query, (err, rows) => {
+            if(err) {
+                console.log(err);
+            }
+            else {
+                rows.recordsets.forEach((bruh)=>{
+                    console.log(bruh);
+                });
+            }
+        });
     }).catch((err) => {
         console.error(err);
     });
