@@ -3,6 +3,7 @@ let userData; // JSON of original entry
 const isProject = (JSON.parse(fromSession).Identifier == 0 || JSON.parse(fromSession).Identifier == -1) ? true:false;
 const isBillingGroup = JSON.parse(fromSession).Identifier == -1 ? true:false;
 let mgrName = '';
+let oldTitle = '';
 let oldMgrName;
 let teamMem = new Array();
 let memNames = new Array();
@@ -55,6 +56,7 @@ async function starter(res) {
         }
         userData[0].start_date = userData[0].start_date.substring(0, userData[0].start_date.indexOf('T'));
         userData[0].close_date = userData[0].close_date.substring(0, userData[0].close_date.indexOf('T'));
+        oldTitle = userData[0].project_title
         manager(1);
     }
     else {
