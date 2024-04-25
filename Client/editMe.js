@@ -1036,7 +1036,7 @@ function getPage(num) {
         '<div class="col-lg-6">State' + '</div>'
         + '<div class="col-lg-6">' + userData[0].state + '</div>'+
         '<div class="col-lg-6">Zip' + '</div>'
-        + '<div class="col-lg-6">' + userData[0].zip + '</div>'+
+        + '<div class="col-lg-6">' + userData[0].zip_code + '</div>'+
         '<div class="col-lg-6">Work Phone' + '</div>'
         + '<div class="col-lg-6">' + userData[0].work_phone + (userData[0].ext != null && userData[0].ext != 'NULL' && userData[0].ext != undefined && userData[0].ext != '' ? ' Ext: ' + userData[0].ext : '')  + '</div>'+
         '<div class="col-lg-6">Home Phone' + '</div>'
@@ -1493,7 +1493,7 @@ function saveChoices(currPage) {
             userData[0].address2 = document.getElementById('addy2').value.trim();
             userData[0].city = document.getElementById('city').value.trim();
             userData[0].state = document.getElementById('state').value;
-            userData[0].zip = document.getElementById('zip').value.trim();
+            userData[0].zip_code = document.getElementById('zip').value.trim();
             userData[0].work_phone = document.getElementById('WP').value.trim();
             userData[0].ext = document.getElementById('ext').value.trim();
             userData[0].home_phone = document.getElementById('HP').value.trim();
@@ -1530,7 +1530,7 @@ function saveChoices(currPage) {
             userData[0].address2 = document.getElementById('addy2').value.trim();
             userData[0].city = document.getElementById('city').value.trim();
             userData[0].state = document.getElementById('state').value;
-            userData[0].zip = document.getElementById('zip').value.trim();
+            userData[0].zip_code = document.getElementById('zip').value.trim();
             userData[0].work_phone = document.getElementById('WP').value.trim();
             userData[0].ext = document.getElementById('ext').value.trim();
             userData[0].home_phone = document.getElementById('HP').value.trim();
@@ -1784,7 +1784,7 @@ function reqField(currPage) {
         else {
             // Test against required user selections and fields to determine if values are valid.
 
-            if(userData[0].client_company == '' || userData[0].first_name == '' || userData[0].last_name == '' || userData[0].address1 == '' || userData[0].city == '' || userData[0].work_phone == '' || userData[0].email == '' || userData[0].zip == '') {
+            if(userData[0].client_company == '' || userData[0].first_name == '' || userData[0].last_name == '' || userData[0].address1 == '' || userData[0].city == '' || userData[0].work_phone == '' || userData[0].email == '' || userData[0].zip_code == '') {
                 alert("Please fill all required fields, and/or fix invalid fields.");
                 return false;
             }
@@ -1792,9 +1792,9 @@ function reqField(currPage) {
             let i = 0;
             let isDash = false;
 
-            while(i < userData[0].zip.length) {
-                if(isNaN(userData[0].zip[i])) {
-                    if(userData[0].zip[i] == '-' && !isDash) {
+            while(i < userData[0].zip_code.length) {
+                if(isNaN(userData[0].zip_code[i])) {
+                    if(userData[0].zip_code[i] == '-' && !isDash) {
                         isDash = true;
                     }
                     else {
@@ -1821,7 +1821,7 @@ function reqField(currPage) {
 
         // Test against required user selections and fields to determine if values are valid.
 
-        if(userData[0].client_company == '' || userData[0].first_name == '' || userData[0].last_name == '' || userData[0].address1 == '' || userData[0].city == '' || userData[0].work_phone == '' || userData[0].email == '' || userData[0].zip == '') {
+        if(userData[0].client_company == '' || userData[0].first_name == '' || userData[0].last_name == '' || userData[0].address1 == '' || userData[0].city == '' || userData[0].work_phone == '' || userData[0].email == '' || userData[0].zip_code == '') {
             alert("Please fill all required fields, and/or fix invalid fields.");
             return false;
         }
@@ -1829,9 +1829,9 @@ function reqField(currPage) {
         let i = 0;
         let isDash = false;
 
-        while(i < userData[0].zip.length) {
-            if(isNaN(userData[0].zip[i])) {
-                if(userData[0].zip[i] == '-' && !isDash) {
+        while(i < userData[0].zip_code.length) {
+            if(isNaN(userData[0].zip_code[i])) {
+                if(userData[0].zip_code[i] == '-' && !isDash) {
                     isDash = true;
                 }
                 else {
