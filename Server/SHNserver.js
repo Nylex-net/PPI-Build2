@@ -979,7 +979,7 @@ app.post('/mgrs', jsonParser, (req, res) => {
 app.post('/submitBill', jsonParser, (req, res) => {
     // Billing group initiation date.
     const mydate = new Date();
-    let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
+    // let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
     let dir = PATH + getDir(req.body.ProjectId[0]) + '/20' + req.body.ProjectId[1] + req.body.ProjectId[2]; // + '/' + req.body.ProjectId + '-' + removeSpace(data[0].ProjectTitle) + '/';
     // let ArcataOffice = false;
@@ -1004,7 +1004,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
     const query = "INSERT INTO BillingGroups (project_ID, group_number, group_name, closed, autoCAD, GIS, manager_id, qaqc_person_ID, created, start_date, close_date, group_location, "+
     "latitude, longitude, service_area, total_contract, retainer, retainer_paid, waived_by, profile_code_id, contract_ID, invoice_format, client_contract_PO, outside_markup, "+
     "special_billing_instructions, prevailing_wage, binder_size, description_service)"+
-    " OUTPUT inserted.* VALUES ("+req.body.ProjectID+", '"+req.body.BillingNum+"', '"+req.body.BillingName+"', "+ 0 + ", " +req.body.AutoCAD_Project+", "+ req.body.GIS_Project+", "+req.body.NewMgr+", "+req.body.QAQC+", '"+myDate+
+    " OUTPUT inserted.* VALUES ("+req.body.ProjectID+", '"+req.body.BillingNum+"', '"+req.body.BillingName+"', "+ 0 + ", " +req.body.AutoCAD_Project+", "+ req.body.GIS_Project+", "+req.body.NewMgr+", "+req.body.QAQC+", GETDATE()" +
     "', '"+ req.body.StartDate +"', '"+ req.body.CloseDate +"', '"+ req.body.ProjectLocation +"', "+ req.body.Latitude +", "+ req.body.Longitude +", "+ (req.body.ServiceArea == "NULL"?"NULL":"'"+req.body.ServiceArea+"'") +", "+ req.body.TotalContract +", '"+
     req.body.Retainer +"', "+(req.body.RetainerPaid == "NULL" || isNaN(req.body.RetainerPaid) ?"NULL":req.body.RetainerPaid)+", "+(req.body.waiver == "NULL"?req.body.waiver:"'"+req.body.waiver+"'")+", "+req.body.ProfileCode+", "+req.body.ContractType+", '"+
     req.body.InvoiceFormat+"', '"+req.body.ClientContractPONumber+"', "+ req.body.OutsideMarkup +", "+

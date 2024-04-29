@@ -184,8 +184,8 @@ function billForm() {
                 // manager = jsonMap[0].staff_last + ", " + jsonMap[0].staff_first;
                 qaqcNew = Number(jsonMap[0].qaqc_person_ID);
                 // qaqc = json[0].last + ", " + json[0].first;
-                startDate = jsonMap[0].start_date;
-                endDate = jsonMap[0].close_date;
+                startDate = jsonMap[0].start_date.substring(0, startDate.indexOf('T'));
+                endDate = jsonMap[0].close_date.substring(0, startDate.indexOf('T'));
                 // teamMem = jsonMap[0].TeamMembers.split(',');
                 autoCad = (jsonMap[0].autoCAD == 1)?true:false;
                 GIS = (jsonMap[0].GIS == 1)?true:false;
@@ -288,8 +288,8 @@ function fillMe(page) {
         document.getElementById('newBillName').value = projTitle;
         document.getElementById('yesAuto').checked = autoCad;
         document.getElementById('gis').checked = GIS;
-        document.getElementById('start').value = startDate.substring(0, startDate.indexOf('T'));
-        document.getElementById('end').value = endDate.substring(0, endDate.indexOf('T'));
+        document.getElementById('start').value = startDate;
+        document.getElementById('end').value = endDate;
     }
     else if(page == 2) {
          // Set previous or default values to fields.
