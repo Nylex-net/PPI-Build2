@@ -51,7 +51,7 @@ function establishConnection() {
 //     }
 // });
 
-function populateData() {
+function getMissing() {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
         let query = 'USE PPI;';
         data.forEach((element) => {
@@ -66,22 +66,39 @@ function populateData() {
             const request = pool.request();
             request.query(query, (err, rows) => {
                 if(err) {
-                    console.log(err);
+                    throw err;
                 }
                 else {
                     // console.log(rows);
+                    const missedProjects = new Array();
                     rows.recordsets.forEach((bruh)=>{
-                        if(bruh.length > 0 && bruh[0].value_to_check.length >= 6) {
-                            console.log(bruh[0].value_to_check);
+                        if(bruh.length > 0 && bruh[0].value_to_check.length >= 6 && !missedProjects.includes(bruh[0].value_to_check.trim())) {
+                            missedProjects.push(bruh[0].value_to_check.trim());
                         }
                     });
+                    return missedProjects;
                 }
             });
         });
         
     }).catch((err) => {
         console.error(err.message);
+        return new Array();
     });
 }
 
-populateData();
+function addMissing(missed) {
+    let query = "SELECT * FROM Projects WHERE ";
+    missed.forEach(project => {
+        query += "Projectid = '" + project + "' OR ";
+    });
+    query = query.substring(0,query.length - 4) + ';';
+    connection.query(query).then(data => {
+
+    }).catch((err) => {
+        console.error(err)
+    });
+}
+
+const missing = getMissing();
+addMissing(missing);
