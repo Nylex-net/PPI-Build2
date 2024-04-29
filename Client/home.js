@@ -184,8 +184,8 @@ function billForm() {
                 // manager = jsonMap[0].staff_last + ", " + jsonMap[0].staff_first;
                 qaqcNew = Number(jsonMap[0].qaqc_person_ID);
                 // qaqc = json[0].last + ", " + json[0].first;
-                startDate = jsonMap[0].start_date.substring(0, startDate.indexOf('T'));
-                endDate = jsonMap[0].close_date.substring(0, startDate.indexOf('T'));
+                startDate = jsonMap[0].start_date.substring(0, jsonMap[0].start_date.indexOf('T'));
+                endDate = jsonMap[0].close_date.substring(0, jsonMap[0].close_date.indexOf('T'));
                 // teamMem = jsonMap[0].TeamMembers.split(',');
                 autoCad = (jsonMap[0].autoCAD == 1)?true:false;
                 GIS = (jsonMap[0].GIS == 1)?true:false;
