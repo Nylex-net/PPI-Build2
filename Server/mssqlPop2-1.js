@@ -54,12 +54,19 @@ function establishConnection() {
 function getMissing() {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
         let query = 'USE PPI;';
+        const skibidi = new Map();
         data.forEach((element) => {
             if(element.Projectid.length > 7) {
                 console.log(element.Projectid + ' is too long :(');
             }
             else {
                 query += "SELECT '"+element.Projectid+"' AS value_to_check WHERE NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"');";
+                if(skibidi.has(element.Projectid)) {
+                    skibidi.get(element.Projectid).push(element);
+                }
+                else {
+                    skibidi.set(element.Projectid, [element]);
+                }
             }
         });
         const request = pool.request();
@@ -75,7 +82,12 @@ function getMissing() {
                         missedProjects.push(bruh[0].value_to_check.trim());
                     }
                 });
-                addMissing(missedProjects);
+                const filteredMap = new Map();
+                missedProjects.forEach(project => {
+                    if(skibidi.has(project)) {
+                        
+                    }
+                });
             }
         });
         
@@ -85,17 +97,17 @@ function getMissing() {
 }
 
 function addMissing(missed) {
-    let query = "SELECT * FROM Projects WHERE ";
+    let query = "";
     missed.forEach(project => {
-        query += "Projectid = '" + project + "' OR ";
+        query += "SELECT * FROM Projects WHERE Projectid = '" + project + "'; ";
     });
-    query = query.substring(0,query.length - 4) + ' ORDER BY Projectid;';
-    console.log(query);
-    // connection.query(query).then(data => {
-
-    // }).catch((err) => {
-    //     console.error(err)
-    // });
+    // query = query.substring(0,query.length - 4) + ' ORDER BY Projectid;';
+    // console.log(query);
+    connection.query(query).then(data => {
+        console.log(data);
+    }).catch((err) => {
+        console.error(err)
+    });
 }
 
 pool.connect().then(()=>{
