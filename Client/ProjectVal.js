@@ -854,7 +854,7 @@ function page4() {
     '<div class="col-lg-4"><label for="invoiceFormat">Invoice Format</label></div>'+
     '<div class="col-lg-8"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
     '<div class="col-lg-4"><label for="PO">Client Contract/PO #<span class="astrick">*</span></label></div>'+
-    '<div class="col-lg-8"><input type="text" id="PO" name="PO" maxlength="240" value="" required></div>'+
+    '<div class="col-lg-8"><input type="text" id="PO" name="PO" maxlength="30" value="" required></div>'+
     '<div class="col-lg-4"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
     '<div class="col-lg-8"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
     '<div class="col-lg-4"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="-1" selected>- Select -</option><option value="1">Yes</option><option value="0">No</option></select><div id="agent"></div></div>'+
