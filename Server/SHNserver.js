@@ -1630,7 +1630,7 @@ async function createTicket(error, msg) {
             },
             redirect: "follow", // manual, *follow, error
             referrerPolicy: "no-referrer",// no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            body: JSON.stringify({"subject":"[TEST] PPI Error Report", "departmentId":jsonData.ZohoAPI.departmentId,"description":msg + "\n" + error, "contactId":jsonData.ZohoAPI.contactId, "assigneeId":jsonData.ZohoAPI.assigneeId})
+            body: JSON.stringify({"subject":"PPI Error Report", "departmentId":jsonData.ZohoAPI.departmentId,"description":msg + "\n" + error, "contactId":jsonData.ZohoAPI.contactId, "assigneeId":jsonData.ZohoAPI.assigneeId})
             });
         }
         else {

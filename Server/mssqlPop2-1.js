@@ -62,28 +62,25 @@ function getMissing() {
                 query += "SELECT '"+element.Projectid+"' AS value_to_check WHERE NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"');";
             }
         });
-        pool.connect().then(()=>{
-            const request = pool.request();
-            request.query(query, (err, rows) => {
-                if(err) {
-                    throw err;
-                }
-                else {
-                    // console.log(rows);
-                    const missedProjects = new Array();
-                    rows.recordsets.forEach((bruh)=>{
-                        if(bruh.length > 0 && bruh[0].value_to_check.length >= 6 && !missedProjects.includes(bruh[0].value_to_check.trim())) {
-                            missedProjects.push(bruh[0].value_to_check.trim());
-                        }
-                    });
-                    return missedProjects;
-                }
-            });
+        const request = pool.request();
+        request.query(query, (err, rows) => {
+            if(err) {
+                throw err;
+            }
+            else {
+                // console.log(rows);
+                const missedProjects = new Array();
+                rows.recordsets.forEach((bruh)=>{
+                    if(bruh.length > 0 && bruh[0].value_to_check.length >= 6 && !missedProjects.includes(bruh[0].value_to_check.trim())) {
+                        missedProjects.push(bruh[0].value_to_check.trim());
+                    }
+                });
+                addMissing(missedProjects);
+            }
         });
         
     }).catch((err) => {
         console.error(err.message);
-        return new Array();
     });
 }
 
@@ -92,13 +89,15 @@ function addMissing(missed) {
     missed.forEach(project => {
         query += "Projectid = '" + project + "' OR ";
     });
-    query = query.substring(0,query.length - 4) + ';';
-    connection.query(query).then(data => {
+    query = query.substring(0,query.length - 4) + ' ORDER BY Projectid;';
+    console.log(query);
+    // connection.query(query).then(data => {
 
-    }).catch((err) => {
-        console.error(err)
-    });
+    // }).catch((err) => {
+    //     console.error(err)
+    // });
 }
 
-const missing = getMissing();
-addMissing(missing);
+pool.connect().then(()=>{
+    getMissing();
+});
