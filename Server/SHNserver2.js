@@ -804,7 +804,7 @@ app.post('/getPath', jsonParser, (req, res) => {
                     }
                     if(!found && tempdir == '') {
                         dir += '/Setup';
-                        if(fs.existsSync( dir)) {
+                        if(fs.existsSync(dir)) {
                             dirFiles = fs.readdirSync(dir);
                             found = false;
                             tempdir = '';
