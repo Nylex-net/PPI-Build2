@@ -65,7 +65,8 @@ function getMissing() {
                     skibidi.get(element.Projectid).push(element);
                 }
                 else {
-                    skibidi.set(element.Projectid, [element]);
+                    skibidi.set(element.Projectid, new Array());
+                    skibidi.get(element.Projectid).push(element);
                 }
             }
         });
@@ -84,10 +85,11 @@ function getMissing() {
                 });
                 const filteredMap = new Map();
                 missedProjects.forEach(project => {
-                    if(skibidi.has(project)) {
-                        
+                    if(skibidi.has(project) && missedProjects.includes(project) && !filteredMap.has(project)) {
+                        filteredMap.set(project, skibidi.get(project));
                     }
                 });
+                console.log(filteredMap);
             }
         });
         
