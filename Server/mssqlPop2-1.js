@@ -55,18 +55,18 @@ function getMissing() {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
         let query = 'USE PPI;';
         const skibidi = new Map();
-        data.forEach((element) => {
-            if(element.Projectid.length > 7) {
-                console.log(element.Projectid + ' is too long :(');
+        data.forEach((value) => {
+            if(value[0].Projectid.length > 7) {
+                console.log(value[0].Projectid + ' is too long :(');
             }
             else {
-                query += "SELECT '"+element.Projectid+"' AS value_to_check WHERE NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+element.Projectid+"');";
-                if(skibidi.has(element.Projectid)) {
-                    skibidi.get(element.Projectid).push(element);
+                query += "SELECT '"+value[0].Projectid+"' AS value_to_check WHERE NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+value[0].Projectid+"');";
+                if(skibidi.has(value[0].Projectid)) {
+                    skibidi.get(value[0].Projectid).push(value);
                 }
                 else {
-                    skibidi.set(element.Projectid, new Array());
-                    skibidi.get(element.Projectid).push(element);
+                    skibidi.set(value[0].Projectid, new Array());
+                    skibidi.get(value[0].Projectid).push(value);
                 }
             }
         });
@@ -90,6 +90,7 @@ function getMissing() {
                     }
                 });
                 console.log(filteredMap);
+                // addMissing(filteredMap);
             }
         });
         
@@ -100,8 +101,82 @@ function getMissing() {
 
 function addMissing(missed) {
     let query = "";
-    missed.forEach(project => {
-        query += "SELECT * FROM Projects WHERE Projectid = '" + project + "'; ";
+    const members = new Map();
+    const keywordMap = new Map();
+    missed.forEach((value, key) => {
+        if(value.length > 0) {
+            // Use first element of each project as the project entry.
+            var dtstamp = (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
+            var starty = new Date((value[0].StartDate != null && value[0].StartDate != '' && !isNaN(Date.parse(value[0].StartDate)) && new Date(value[0].StartDate) instanceof Date)?value[0].StartDate:Date.now());
+            var start = (starty.getMonth() + 1).toString() + "/" + starty.getDate().toString() +"/"+ starty.getFullYear().toString();
+            var closey = new Date((value[0].CloseDate != null && value[0].CloseDate != '' && !isNaN(Date.parse(value[0].CloseDate)) && new Date(value[0].CloseDate) instanceof Date)?value[0].CloseDate:Date.now());
+            var close =(closey.getMonth() + 1).toString() + "/" + closey.getDate().toString() +"/"+ closey.getFullYear().toString();
+            query += "IF NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+value[0].Projectid+"') BEGIN TRY INSERT INTO Projects "+
+            "(project_id, project_title, project_manager_ID, qaqc_person_ID, closed, created, start_date, close_date, project_location, latitude, longitude, SHNOffice_ID, service_area, "+
+            "total_contract, exempt_agreement, why, retainer, retainer_paid, waived_by, profile_code_id, project_type, contract_ID, invoice_format, client_contract_PO, outside_markup, prevailing_wage, "+
+            "agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, first_name, last_name, relationship, "+
+            "job_title, address1, address2, city, state, zip_code, work_phone, ext, home_phone, cell, fax, email, binder_size, binder_location, description_service) OUTPUT inserted.* "+
+            "VALUES ('"+// value[0].Id +", '"+
+            value[0].Projectid+"', '" +
+            ((value[0].ProjectTitle == null && value[0].ProjectTitle == "NULL")?"None":value[0].ProjectTitle.replace(/'/gi, "''"))+"', "+
+            ((isNaN(value[0].ProjectMgr) || value[0].ProjectMgr == null || value[0].ProjectMgr == "NULL" || value[0].ProjectMgr == "")?53:value[0].ProjectMgr) +", "+
+            ((isNaN(value[0].QA_QCPerson) || value[0].QA_QCPerson == null || value[0].QA_QCPerson == "NULL" || value[0].QA_QCPerson == "")?53:value[0].QA_QCPerson)+", "+
+            (value[0].Closed_by_PM===-1?1:0)+", "+
+            ((dtstamp == NaN)?"GETDATE()":"'"+dtstamp+"'")+", "+
+            ((start == NaN)?"GETDATE()":"'"+ start + "'")+", "+
+            ((close == NaN)?"GETDATE()":"'" + close + "'")+", '"+
+            ((value[0].ProjectLoation == null || value[0].ProjectLoation == "NULL" || value[0].ProjectLoation == "")?"SHN":value[0].ProjectLoation.replace(/'/gi, "''"))+"', "+
+            (isNaN(value[0].Lattitude) || value[0].Lattitude == null || value[0].Lattitude == "NULL" ||(value[0].Lattitude > 90 || value[0].Lattitude < -90)?40.868928:value[0].Lattitude)+", "+
+            (isNaN(value[0].Longitude)|| value[0].Longitude == null || value[0].Longitude == "NULL" ||(value[0].Longitude > 180 || value[0].Longitude < -180)?-123.988061:value[0].Longitude)+", "+
+            ((value[0].SHNOffice == "Eureka" || value[0].SHNOffice == "Arcata")?0:(value[0].SHNOffice == "Klamath Falls" || value[0].SHNOffice == "KFalls")?2:(value[0].SHNOffice == "Willits")?4:(value[0].SHNOffice == "Redding")?5:6)+", '"+
+            ((value[0].ServiceArea == null || value[0].ServiceArea == "NULL" || value[0].ServiceArea == "")?"Civil":value[0].ServiceArea)+"', "+
+            ((value[0].ToatlContract == null || value[0].ToatlContract == "NULL" || value[0].ToatlContract == "")?0:((isNaN(value[0].ToatlContract[0]) && value[0].ToatlContract.length > 1))?(isNaN(value[0].ToatlContract.substring(1))?0:Number(value[0].ToatlContract.substring(1))):0) +", 0, NULL, '"+
+            ((value[0].RetainerPaid != null && value[0].RetainerPaid != "NULL" && value[0].RetainerPaid != "")?value[0].RetainerPaid.replace(/'/gi, "''"):"NA")+"', "+
+            ((value[0].RetainerPaid == null || value[0].RetainerPaid == "NULL" || value[0].RetainerPaid == "")?0:(isNaN(value[0].RetainerPaid.substring(1))?"NULL":Number(value[0].RetainerPaid.substring(1))))+", "+
+            ((value[0].RetainerPaid != null && value[0].RetainerPaid != "NULL" && value[0].RetainerPaid.includes("Waived by"))?"'"+value[0].RetainerPaid.substring(10).replace(/'/gi, "''")+"'":"NULL")+", "+
+            (codeMap.get(value[0].ProfileCode)==undefined?167:codeMap.get(value[0].ProfileCode))+", 0, "+
+            ((isNaN(value[0].ContractType) || value[0].ContractType == null || value[0].ContractType == "NULL")?1:(value[0].ContractType.includes("10")?10:(isNaN(value[0].ContractType[0])?1:value[0].ContractType[0]))) +", "+
+            (/n\\a|na|null|none/gi.test(value[0].InvoiceFormat)?"NULL":(value[0].InvoiceFormat.length <= 0?"NULL":"'"+value[0].InvoiceFormat[0]+"'"))+", 'NA', "+
+            ((isNaN(value[0].OutsideMarkup) || value[0].OutsideMarkup == null || value[0].OutsideMarkup == "NULL" || value[0].OutsideMarkup == "")?15:value[0].OutsideMarkup) +", "+
+            ((value[0].PREVAILING_WAGE == 1 || value[0].PREVAILING_WAGE == "Yes")?1:0)+", NULL, "+
+            ((value[0].SpecialBillingInstructins == null || value[0].SpecialBillingInstructins == "NULL" || value[0].SpecialBillingInstructins == "")?"NULL":"'"+value[0].SpecialBillingInstructins.replace(/'/gi, "''")+"'")+", "+
+            (value[0].SEEALSO==null||value[0].SEEALSO == "NULL"||value[0].SEEALSO == ""?"NULL":"'"+value[0].SEEALSO.replace(/'/gi, "''")+"'")+", "+
+            (value[0].AutoCAD_Project == -1?1:0)+", "+
+            (value[0].GIS_Project == -1?1:0)+", "+
+            (value[0].Project_Specifications==-1?1:0)+", '"+
+            ((value[0].ClientCompany1 == null || value[0].ClientCompany1 == "NULL" || value[0].ClientCompany1 == "")?"SHN":value[0].ClientCompany1.replace(/'/gi, "''"))+"', "+
+            ((value[0].ClientAbbrev1 == null || value[0].ClientAbbrev1 == 'NULL' || value[0].ClientAbbrev1 == '')?'NULL':"'"+value[0].ClientAbbrev1.replace(/'/gi, "''") + "'")+", "+
+            (/n\\a|na|null|none|/gi.test(value[0].OfficeMailingLists1)?"NULL":"'"+value[0].OfficeMailingLists1.replace(/'/gi, "''")+"'")+", '"+
+            ((value[0].ClientContactFirstName1 == null || value[0].ClientContactFirstName1 == "NULL")?"?":value[0].ClientContactFirstName1.replace(/'/gi, "''"))+"', '"+
+            ((value[0].ClientContactLastName1 == null || value[0].ClientContactLastName1 == "NULL" || value[0].ClientContactLastName1 == "")?"?":value[0].ClientContactLastName1.replace(/'/gi, "''"))+"', NULL, "+
+            ((value[0].Title1 == null || value[0].Title1 == "NULL" || value[0].Title1 == "")?"NULL":"'"+value[0].Title1.replace(/'/gi, "''")+"'")+", '"+
+            (value[0].Address1_1==null || value[0].Address1_1=="NULL" || value[0].Address1_1=="" ?"812 W. Wabash Ave.":value[0].Address1_1.replace(/'/gi, "''"))+"', "+
+            (value[0].Address2_1==null || value[0].Address2_1=="NULL" || value[0].Address2_1==""?"NULL":"'"+value[0].Address2_1.replace(/'/gi, "''")+"'")+", '"+
+            ((value[0].City1==null || value[0].City1=="NULL" || value[0].City1=="")?"Eureka":value[0].City1.replace(/'/gi, "''"))+"', '"+
+            ((value[0].State1==null||value[0].State1=="NULL"||value[0].State1=="")?"CA":value[0].State1.replace(/'/gi, "''"))+"', '"+
+            ((value[0].Zip1==null||value[0].Zip1=="NULL"||value[0].Zip1=="")?"95501":value[0].Zip1.replace(/'/gi, "''"))+"', '"+
+            ((value[0].PhoneW1==null || value[0].PhoneW1=="NULL" || value[0].PhoneW1=="")?"000-000-0000":value[0].PhoneW1.replace(/'/gi, "''"))+"', NULL, "+
+            (value[0].PhoneH1==null || value[0].PhoneH1=="NULL"|| value[0].PhoneH1==""?"NULL":"'"+value[0].PhoneH1.replace(/'/gi, "''")+"'")+", "+
+            (value[0].Cell1==null || value[0].Cell1=="NULL" || value[0].Cell1==""?"NULL":"'"+value[0].Cell1.replace(/'/gi, "''")+"'")+", "+
+            (value[0].Fax1==null || value[0].Fax1=="NULL"|| value[0].Fax1==""?"NULL":"'"+value[0].Fax1.replace(/'/gi, "''")+"'")+", '"+
+            (value[0].Email1==null || value[0].Email1=="NULL" || value[0].Email1==""?"none":value[0].Email1.replace(/'/gi, "''"))+"', "+
+            (value[0].BinderSize == "NA" || value[0].BinderSize == "NULL" || value[0].BinderSize == null || value[0].BinderSize == ""?"NULL":(value[0].BinderSize == "1/2"?0.5:(value[0].BinderSize==1?1:(value[0].BinderSize==1.5?1.5:(value[0].BinderSize==2?2:3)))))+", "+
+            (value[0].BinderLocation==null || value[0].BinderLocation=="NULL"||value[0].BinderLocation=="undefined"||value[0].BinderLocation==""?"NULL":"'"+value[0].BinderLocation.replace(/'/gi, "''")+"'")+", '"+
+            (value[0].DescriptionService==null || value[0].DescriptionService=="NULL"||value[0].DescriptionService=="undefined"||value[0].DescriptionService==""?"None":value[0].DescriptionService.replace(/'/gi, "''"))+"');END TRY BEGIN CATCH END CATCH;";
+
+            // Separate Team members and keywords.
+            if(!members.has(element.Projectid) && element.TeamMembers != null && element.TeamMembers != '') {
+                members.set(element.Projectid, element.TeamMembers);
+            }
+            if(!keywordMap.has(element.Projectid) && element.ProjectKeywords != null && element.ProjectKeywords != '') {
+                keywordMap.set(element.Projectid, element.ProjectKeywords.toLowerCase());
+            }
+
+            // Add cooresponding billing groups, if any.
+            if(value.length > 1) {
+
+            }
+        }
     });
     // query = query.substring(0,query.length - 4) + ' ORDER BY Projectid;';
     // console.log(query);
