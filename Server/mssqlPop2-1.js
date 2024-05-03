@@ -27,30 +27,6 @@ function establishConnection() {
     }
 }
 
-// // connect to your database
-// pool.connect(err => {
-//     if(err) {
-//         console.error(err);
-//     }
-//     else {
-//         console.log("Connected!");
-//         // create Request object
-//         // query to the database and get the records
-//         const request = pool.request();
-//         request.query('USE PPI;SET XACT_ABORT OFF;', function (err, recordset) {
-                
-//             if (err) {
-//                 console.log(err);
-//                 pool.close();
-//                 process.exit();
-//             }
-//             else {
-//                 populateData();
-//             }
-//         });
-//     }
-// });
-
 function getMissing() {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
         let query = 'USE PPI;';
@@ -181,38 +157,57 @@ function addMissing(missed) {
         }
         else {
             const idToId = new Map(); // Used to map billing groups to associated projects.
-                let linkQuery = '';
-                // console.log(rows);
-                for (const row of rows.recordsets) {
-                    if(row[0] != undefined) {
-                        idToId.set(row[0].project_id, row[0].ID);
-                        if(members.get(row[0].project_id) != null && members.get(row[0].project_id) != "NULL" && members.get(row[0].project_id) != "") {
-                            var memberArray = members.get(row[0].project_id).split(',').filter((id) => {
-                                return !isNaN(id);
+            let linkQuery = '';
+            // console.log(rows);
+            for (const row of rows.recordsets) {
+                if(row[0] != undefined) {
+                    idToId.set(row[0].project_id, row[0].ID);
+                    if(members.get(row[0].project_id) != null && members.get(row[0].project_id) != "NULL" && members.get(row[0].project_id) != "") {
+                        var memberArray = members.get(row[0].project_id).split(',').filter((id) => {
+                            return !isNaN(id);
+                        });
+                        if(memberArray.length > 0) {
+                            memberArray.forEach((member) => {
+                                linkQuery += "INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + member + ");";
                             });
-                            if(memberArray.length > 0) {
-                                memberArray.forEach((member) => {
-                                    linkQuery += "INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + member + ");";
-                                });
-                            }
                         }
-                        if(keywordMap.get(row[0].project_id) != null && keywordMap.get(row[0].project_id) != "NULL" && keywordMap.get(row[0].project_id) != "") {
-                            var keyArray = keywordMap.get(row[0].project_id).split(/,| \|\| /);
-                            if(keyArray.length > 0) {
-                                keyArray.forEach((key) => {
-                                    var trimmed = key.trim();
-                                    if(keyMap.has(trimmed)) {
-                                        linkQuery += "INSERT INTO ProjectKeywords VALUES ("+ row[0].ID + ", " + keyMap.get(trimmed) + ");";
-                                    }
-                                });
-                            }
+                    }
+                    if(keywordMap.get(row[0].project_id) != null && keywordMap.get(row[0].project_id) != "NULL" && keywordMap.get(row[0].project_id) != "") {
+                        var keyArray = keywordMap.get(row[0].project_id).split(/,| \|\| /);
+                        if(keyArray.length > 0) {
+                            keyArray.forEach((key) => {
+                                var trimmed = key.trim();
+                                if(keyMap.has(trimmed)) {
+                                    linkQuery += "INSERT INTO ProjectKeywords VALUES ("+ row[0].ID + ", " + keyMap.get(trimmed) + ");";
+                                }
+                            });
                         }
                     }
                 }
+            }
         }
     });
 }
 
+function getKeywords() {
+    const keyMap = new Map();
+    const request = pool.request();
+    let meme = true;
+    request.query('SELECT * FROM Keywords;', (err, rows) => {
+        if(err) {
+            throw err;
+        }
+        else {
+            rows.recordset.forEach(toilet => {
+                keyMap.set(toilet.ID, toilet.Keyword);
+            });
+            meme = false;
+            console.log(keyMap);
+        }
+    });
+    return keyMap;
+}
+
 pool.connect().then(()=>{
-    getMissing();
+    console.log(getKeywords());
 });
