@@ -209,5 +209,5 @@ function getKeywords() {
 }
 
 pool.connect().then(()=>{
-    console.log(getKeywords());
+    getKeywords();
 });
