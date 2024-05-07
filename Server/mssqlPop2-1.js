@@ -200,7 +200,7 @@ function getKeywords() {
             }
             else {
                 rows.recordset.forEach(toilet => {
-                    keyMap.set(toilet.ID, toilet.Keyword);
+                    keyMap.set(toilet.Keyword.toLowerCase().trim(), toilet.ID);
                 });
                 return resolve(keyMap);
             }
@@ -211,5 +211,6 @@ function getKeywords() {
 pool.connect().then(()=>{
     getKeywords().then(mappy => {
         console.log(mappy);
+        // getMissing(mappy);
     });
 });
