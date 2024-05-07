@@ -27,7 +27,7 @@ function establishConnection() {
     }
 }
 
-function getMissing() {
+function getMissing(keyMap) {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
         let query = 'USE PPI;';
         const skibidi = new Map();
@@ -66,7 +66,7 @@ function getMissing() {
                     }
                 });
                 console.log(filteredMap);
-                // addMissing(filteredMap);
+                // addMissing(filteredMap, keyMap);
             }
         });
         
@@ -75,7 +75,7 @@ function getMissing() {
     });
 }
 
-function addMissing(missed) {
+function addMissing(missed, keyMap) {
     let query = "";
     const members = new Map();
     const keywordMap = new Map();
@@ -190,24 +190,26 @@ function addMissing(missed) {
 }
 
 function getKeywords() {
-    const keyMap = new Map();
-    const request = pool.request();
-    let meme = true;
-    request.query('SELECT * FROM Keywords;', (err, rows) => {
-        if(err) {
-            throw err;
-        }
-        else {
-            rows.recordset.forEach(toilet => {
-                keyMap.set(toilet.ID, toilet.Keyword);
-            });
-            meme = false;
-            console.log(keyMap);
-        }
+    return new Promise((resolve, reject) => {
+        const keyMap = new Map();
+        const request = pool.request();
+
+        request.query('SELECT * FROM Keywords;', (err, rows) => {
+            if(err) {
+                reject(err);
+            }
+            else {
+                rows.recordset.forEach(toilet => {
+                    keyMap.set(toilet.ID, toilet.Keyword);
+                });
+                return resolve(keyMap);
+            }
+        }); 
     });
-    return keyMap;
 }
 
 pool.connect().then(()=>{
-    getKeywords();
+    getKeywords().then(mappy => {
+        console.log(mappy);
+    });
 });
