@@ -27,7 +27,7 @@ function establishConnection() {
     }
 }
 
-function getMissing(keyMap) {
+function getMissing() {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
         let query = 'USE PPI;';
         const skibidi = new Map();
@@ -65,8 +65,8 @@ function getMissing(keyMap) {
                         filteredMap.set(project, skibidi.get(project));
                     }
                 });
-                console.log(filteredMap);
-                // addMissing(filteredMap, keyMap);
+                // console.log(filteredMap);
+                addMissing(filteredMap);
             }
         });
         
@@ -214,8 +214,5 @@ function getKeywords() {
 }
 
 pool.connect().then(()=>{
-    getKeywords().then(mappy => {
-        console.log(mappy);
-        // getMissing(mappy);
-    });
+    getMissing();
 });
