@@ -32,17 +32,18 @@ function getMissing() {
         let query = 'USE PPI;';
         const skibidi = new Map();
         data.forEach((value) => {
-            if(value[0].Projectid.length > 7) {
-                console.log(value[0].Projectid + ' is too long :(');
+            // console.log(value);
+            if(value.Projectid.length > 7) {
+                console.log(value.Projectid + ' is too long :(');
             }
             else {
-                query += "SELECT '"+value[0].Projectid+"' AS value_to_check WHERE NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+value[0].Projectid+"');";
-                if(skibidi.has(value[0].Projectid)) {
-                    skibidi.get(value[0].Projectid).push(value);
+                query += "SELECT '"+value.Projectid+"' AS value_to_check WHERE NOT EXISTS (SELECT 1 FROM Projects WHERE project_id = '"+value.Projectid+"');";
+                if(skibidi.has(value.Projectid)) {
+                    skibidi.get(value.Projectid).push(value);
                 }
                 else {
-                    skibidi.set(value[0].Projectid, new Array());
-                    skibidi.get(value[0].Projectid).push(value);
+                    skibidi.set(value.Projectid, new Array());
+                    skibidi.get(value.Projectid).push(value);
                 }
             }
         });
@@ -65,7 +66,6 @@ function getMissing() {
                         filteredMap.set(project, skibidi.get(project));
                     }
                 });
-                // console.log(filteredMap);
                 addMissing(filteredMap);
             }
         });
@@ -82,6 +82,7 @@ function addMissing(missed) {
     missed.forEach((value, key) => {
         if(value.length > 0) {
             // Use first element of each project as the project entry.
+            var stamper = (value[0].DTStamp != null && value[0].DTStamp != '' && !isNaN(Date.parse(value[0].DTStamp)) && new Date(value[0].DTStamp) instanceof Date)?new Date(value[0].DTStamp):new Date((value[0].StartDate != null && value[0].StartDate != ''&& !isNaN(Date.parse(value[0].StartDate)) && new Date(value[0].StartDate) instanceof Date)?value[0].StartDate:Date.now());
             var dtstamp = (stamper.getMonth() + 1).toString() + "/" + stamper.getDate().toString() +"/"+ stamper.getFullYear().toString();
             var starty = new Date((value[0].StartDate != null && value[0].StartDate != '' && !isNaN(Date.parse(value[0].StartDate)) && new Date(value[0].StartDate) instanceof Date)?value[0].StartDate:Date.now());
             var start = (starty.getMonth() + 1).toString() + "/" + starty.getDate().toString() +"/"+ starty.getFullYear().toString();
@@ -141,11 +142,11 @@ function addMissing(missed) {
             (value[0].DescriptionService==null || value[0].DescriptionService=="NULL"||value[0].DescriptionService=="undefined"||value[0].DescriptionService==""?"None":value[0].DescriptionService.replace(/'/gi, "''"))+"');END TRY BEGIN CATCH END CATCH;";
 
             // Separate Team members and keywords.
-            if(!members.has(element.Projectid) && element.TeamMembers != null && element.TeamMembers != '') {
-                members.set(element.Projectid, element.TeamMembers);
+            if(!members.has(value[0].Projectid) && value[0].TeamMembers != null && value[0].TeamMembers != '') {
+                members.set(value[0].Projectid, value[0].TeamMembers);
             }
-            if(!keywordMap.has(element.Projectid) && element.ProjectKeywords != null && element.ProjectKeywords != '') {
-                keywordMap.set(element.Projectid, element.ProjectKeywords.toLowerCase());
+            if(!keywordMap.has(value[0].Projectid) && value[0].ProjectKeywords != null && value[0].ProjectKeywords != '') {
+                keywordMap.set(value[0].Projectid, value[0].ProjectKeywords.toLowerCase());
             }
 
         }
@@ -190,6 +191,11 @@ function addMissing(missed) {
                     }
                 }
             });
+            request.query(linkQuery, (err, rows) => {
+                if(err) {
+                    console.log(err);
+                }
+            });
         }
     });
 }
@@ -208,6 +214,25 @@ function getKeywords() {
                     keyMap.set(toilet.Keyword.toLowerCase().trim(), toilet.ID);
                 });
                 return resolve(keyMap);
+            }
+        }); 
+    });
+}
+
+function getProfileCodes() {
+    return new Promise((resolve, reject) => {
+        const codeMap = new Map();
+        const request = pool.request();
+
+        request.query('SELECT * FROM ProfileCodes;', (err, rows) => {
+            if(err) {
+                reject(err);
+            }
+            else {
+                rows.recordset.forEach(toilet => {
+                    codeMap.set(toilet.Code.toLowerCase().trim(), toilet.ID);
+                });
+                return resolve(codeMap);
             }
         }); 
     });
