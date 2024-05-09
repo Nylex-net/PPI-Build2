@@ -239,13 +239,8 @@ function getProfileCodes() {
 }
 
 pool.connect().then(()=>{
-    getProfileCodes().then((err, gyatt) => {
-        if(err) {
-            console.error(err);
-        }
-        else {
-            const codeMap = gyatt;
-            getMissing(codeMap);
-        }
+    getProfileCodes().then((gyatt) => {
+        const codeMap = gyatt;
+        getMissing(codeMap);
     });
 });
