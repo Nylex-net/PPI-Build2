@@ -27,7 +27,7 @@ function establishConnection() {
     }
 }
 
-function getMissing() {
+function getMissing(codeMap) {
     connection.query("SELECT * FROM Projects WHERE Projectid IS NOT NULL AND Projectid <> '' AND ProjectTitle IS NOT NULL AND ProjectTitle <> ''").then(data => {
         let query = 'USE PPI;';
         const skibidi = new Map();
@@ -66,7 +66,7 @@ function getMissing() {
                         filteredMap.set(project, skibidi.get(project));
                     }
                 });
-                addMissing(filteredMap);
+                addMissing(filteredMap, codeMap);
             }
         });
         
@@ -75,7 +75,7 @@ function getMissing() {
     });
 }
 
-function addMissing(missed) {
+function addMissing(missed, codeMap) {
     let query = "";
     const members = new Map();
     const keywordMap = new Map();
@@ -239,5 +239,13 @@ function getProfileCodes() {
 }
 
 pool.connect().then(()=>{
-    getMissing();
+    getProfileCodes().then((err, gyatt) => {
+        if(err) {
+            console.error(err);
+        }
+        else {
+            const codeMap = gyatt;
+            getMissing(codeMap);
+        }
+    });
 });
