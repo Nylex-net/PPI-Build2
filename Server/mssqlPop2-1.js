@@ -60,13 +60,14 @@ function getMissing(codeMap) {
                         missedProjects.push(bruh[0].value_to_check.trim());
                     }
                 });
+                console.log(missedProjects);
                 const filteredMap = new Map();
                 missedProjects.forEach(project => {
                     if(skibidi.has(project) && missedProjects.includes(project) && !filteredMap.has(project)) {
                         filteredMap.set(project, skibidi.get(project));
                     }
                 });
-                addMissing(filteredMap, codeMap);
+                // addMissing(filteredMap, codeMap);
             }
         });
         
