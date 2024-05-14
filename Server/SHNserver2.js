@@ -892,7 +892,9 @@ app.post('/getPath', jsonParser, (req, res) => {
                             res.send(JSON.parse(JSON.stringify('{"path":"NA"}')));
                         }
                         else {
-                            dir += '/' + tempdir;
+                            if(!dir.includes('PI.pdf')) {
+                                dir += '/' + tempdir;
+                            }
                             res.download(dir);
                         }
                     }
@@ -902,7 +904,9 @@ app.post('/getPath', jsonParser, (req, res) => {
                     }
                 }
                 else {
-                    dir += '/' + tempdir;
+                    if(!dir.includes('PI.pdf')) {
+                        dir += '/' + tempdir;
+                    }
                     res.download(dir);
                 }
             }
