@@ -53,7 +53,6 @@ function getMissing(codeMap) {
                 throw err;
             }
             else {
-                // console.log(rows);
                 const missedProjects = new Array();
                 rows.recordsets.forEach((bruh)=>{
                     if(bruh.length > 0 && bruh[0].value_to_check.length >= 6 && !missedProjects.includes(bruh[0].value_to_check.trim())) {
@@ -67,7 +66,7 @@ function getMissing(codeMap) {
                         filteredMap.set(project, skibidi.get(project));
                     }
                 });
-                // addMissing(filteredMap, codeMap);
+                addMissing(filteredMap, codeMap);
             }
         });
         
@@ -140,7 +139,7 @@ function addMissing(missed, codeMap) {
             (value[0].Email1==null || value[0].Email1=="NULL" || value[0].Email1==""?"none":value[0].Email1.replace(/'/gi, "''"))+"', "+
             (value[0].BinderSize == "NA" || value[0].BinderSize == "NULL" || value[0].BinderSize == null || value[0].BinderSize == ""?"NULL":(value[0].BinderSize == "1/2"?0.5:(value[0].BinderSize==1?1:(value[0].BinderSize==1.5?1.5:(value[0].BinderSize==2?2:3)))))+", "+
             (value[0].BinderLocation==null || value[0].BinderLocation=="NULL"||value[0].BinderLocation=="undefined"||value[0].BinderLocation==""?"NULL":"'"+value[0].BinderLocation.replace(/'/gi, "''")+"'")+", '"+
-            (value[0].DescriptionService==null || value[0].DescriptionService=="NULL"||value[0].DescriptionService=="undefined"||value[0].DescriptionService==""?"None":value[0].DescriptionService.replace(/'/gi, "''"))+"');END TRY BEGIN CATCH END CATCH;";
+            (value[0].DescriptionService==null || value[0].DescriptionService=="NULL"||value[0].DescriptionService=="undefined"||value[0].DescriptionService==""?"None":value[0].DescriptionService.replace(/'/gi, "''"))+"');END TRY BEGIN CATCH PRINT 'An error occurred:';PRINT 'Error Number: ' + CAST(ERROR_NUMBER() AS NVARCHAR(10));PRINT 'Error Severity: ' + CAST(ERROR_SEVERITY() AS NVARCHAR(10));PRINT 'Error State: ' + CAST(ERROR_STATE() AS NVARCHAR(10));PRINT 'Error Procedure: ' + ISNULL(ERROR_PROCEDURE(), 'N/A');PRINT 'Error Line: ' + CAST(ERROR_LINE() AS NVARCHAR(10));PRINT 'Error Message: ' + ERROR_MESSAGE(); END CATCH;";
 
             // Separate Team members and keywords.
             if(!members.has(value[0].Projectid) && value[0].TeamMembers != null && value[0].TeamMembers != '') {
@@ -158,45 +157,46 @@ function addMissing(missed, codeMap) {
             console.error(err);
         }
         else {
-            const idToId = new Map(); // Used to map billing groups to associated projects.
-            let linkQuery = '';
-            // console.log(rows);
-            getKeywords().then(mappy => {
-                // console.log(mappy);
-                const keyMap = mappy;
-                // getMissing(mappy);
-                for (const row of rows.recordsets) {
-                    if(row[0] != undefined) {
-                        idToId.set(row[0].project_id, row[0].ID);
-                        if(members.get(row[0].project_id) != null && members.get(row[0].project_id) != "NULL" && members.get(row[0].project_id) != "") {
-                            var memberArray = members.get(row[0].project_id).split(',').filter((id) => {
-                                return !isNaN(id);
-                            });
-                            if(memberArray.length > 0) {
-                                memberArray.forEach((member) => {
-                                    linkQuery += "INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + member + ");";
-                                });
-                            }
-                        }
-                        if(keywordMap.get(row[0].project_id) != null && keywordMap.get(row[0].project_id) != "NULL" && keywordMap.get(row[0].project_id) != "") {
-                            var keyArray = keywordMap.get(row[0].project_id).split(/,| \|\| /);
-                            if(keyArray.length > 0) {
-                                keyArray.forEach((key) => {
-                                    var trimmed = key.trim();
-                                    if(keyMap.has(trimmed)) {
-                                        linkQuery += "INSERT INTO ProjectKeywords VALUES ("+ row[0].ID + ", " + keyMap.get(trimmed) + ");";
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
-            });
-            request.query(linkQuery, (err, rows) => {
-                if(err) {
-                    console.log(err);
-                }
-            });
+            console.log(rows.recordsets);
+            // const idToId = new Map(); // Used to map billing groups to associated projects.
+            // let linkQuery = '';
+            // // console.log(rows);
+            // getKeywords().then(mappy => {
+            //     // console.log(mappy);
+            //     const keyMap = mappy;
+            //     // getMissing(mappy);
+            //     for (const row of rows.recordsets) {
+            //         if(row[0] != undefined) {
+            //             idToId.set(row[0].project_id, row[0].ID);
+            //             if(members.get(row[0].project_id) != null && members.get(row[0].project_id) != "NULL" && members.get(row[0].project_id) != "") {
+            //                 var memberArray = members.get(row[0].project_id).split(',').filter((id) => {
+            //                     return !isNaN(id);
+            //                 });
+            //                 if(memberArray.length > 0) {
+            //                     memberArray.forEach((member) => {
+            //                         linkQuery += "INSERT INTO ProjectTeam VALUES ("+ row[0].ID + ", " + member + ");";
+            //                     });
+            //                 }
+            //             }
+            //             if(keywordMap.get(row[0].project_id) != null && keywordMap.get(row[0].project_id) != "NULL" && keywordMap.get(row[0].project_id) != "") {
+            //                 var keyArray = keywordMap.get(row[0].project_id).split(/,| \|\| /);
+            //                 if(keyArray.length > 0) {
+            //                     keyArray.forEach((key) => {
+            //                         var trimmed = key.trim();
+            //                         if(keyMap.has(trimmed)) {
+            //                             linkQuery += "INSERT INTO ProjectKeywords VALUES ("+ row[0].ID + ", " + keyMap.get(trimmed) + ");";
+            //                         }
+            //                     });
+            //                 }
+            //             }
+            //         }
+            //     }
+            // });
+            // request.query(linkQuery, (err, rows) => {
+            //     if(err) {
+            //         console.log(err);
+            //     }
+            // });
         }
     });
 }
