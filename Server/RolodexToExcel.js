@@ -84,7 +84,7 @@ function getRolodex() {
             xlsx.utils.book_append_sheet(workbook, worksheet, "Rolodex_output");
 
             // Write the workbook to a file
-            xlsx.writeFile(workbook, "Rolodex_2023-2024.xlsx");
+            xlsx.writeFile(workbook, "Rolodex_Records.xlsx");
 
             console.log("Excel file created successfully!");
         }
