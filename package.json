@@ -1,0 +1,15 @@
+{
+  "name": "ppi-build2",
+  "version": "1.0.0",
+  "description": "Build 2 of the Project and Promo Initiation Project. This is a continuation of the SHN-Project-Initiation, which is currently a private repository under this organization. For context, here's a copy of its README.md description:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}
