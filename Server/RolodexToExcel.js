@@ -56,6 +56,8 @@ function getRolodex() {
                 'Fax', 'Email', 'Created On'
             ]];
 
+            console.log(rows.recordset.length + " records found.");
+
             // Iterate through data, clear null or undefined formatting, and add push to data array.
             rows.recordset.forEach((contact) => {
 
