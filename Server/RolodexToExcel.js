@@ -1,3 +1,15 @@
+/**
+ * HOW TO USE
+ * Run this script, along with passing 1 or 2 four-digit year numbers.
+ * EXAMPLES:
+ * 
+ * > node RolodexToExcel.js 2023
+ * The above command would output the records created between 2023 and now.
+ * 
+ * > node RolodexToExcel.js 2023 2024
+ * The above command would output the records created between 2023 and 2024 inclusive.
+ */
+
 const sql = require('mssql');
 const xlsx = require('xlsx');
 const jsonData = require('./config.json');
