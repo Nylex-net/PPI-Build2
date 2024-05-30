@@ -1,8 +1,5 @@
-// Get MS Access driver at https://www.microsoft.com/en-us/download/details.aspx?id=54920
-// Also make sure file extenstion is '.mdb'.
+// Libs
 'use strict';
-// const ADODB = require('node-adodb');
-// const msnodesqlv8 = require('msnodesqlv8');
 const sql = require('mssql');
 const express = require('express');
 const cors = require('cors');
@@ -50,7 +47,7 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
  * @returns {Promise<void>} 
  */
 
-// Directory for testing environment.
+// DEMO_PATH is directory for testing environment.
 const PATH = "P:";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
 process.chdir(PATH);
@@ -87,12 +84,14 @@ async function establishConnection() {
     }
 }
 
+// On error, connection is reistablished.
   pool.on('requestTimeout', (err) => {
     console.log('Connection timed out:', err);
     console.log('Reinitiating the connection...');
     establishConnection();
   });
 
+// Establishes connection when script is run.
 establishConnection();
 
 pool.on('connectTimeout', () => {
@@ -236,6 +235,7 @@ app.post('/result', jsonParser, (req, res) => {
     const mydate = new Date();
     let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
+    // Build the query.
     const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, closed, start_date, close_date, project_location, latitude, longitude, ' +
             'SHNOffice_ID, service_area, total_contract, exempt_agreement, retainer, retainer_paid, waived_by, profile_code_id, project_type, contract_ID, invoice_format, client_contract_PO, outside_markup,'+
             'prevailing_wage, agency_name, special_billing_instructions, see_also, autoCAD, GIS, project_specifications, client_company, client_abbreviation, mailing_list, '+
@@ -251,9 +251,11 @@ app.post('/result', jsonParser, (req, res) => {
             req.body.PhoneW1 + '\', ' +(req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
             req.body.DescriptionService + '\', \''+ myDate +'\'' +
             ')';
+    
+    // Make the request object and execute query.
     const request = pool.request();
     request.query(query, (err, data) => {
-        if(err) {
+        if(err) { // Hangle query error.
             console.log("Error for query:\n" + query);
             console.error(err);
             try{
@@ -268,26 +270,30 @@ app.post('/result', jsonParser, (req, res) => {
 
             // Update Team and Keywords tables to link to Project.
             const result = data.recordset[0];
-            // console.log(data.recordset);
-                let teamArr = req.body.TeamMembers.split(',');
-                let teamQuery = '';
-                teamArr.forEach((memb) => {
-                    teamQuery += "INSERT INTO ProjectTeam VALUES ("+result.ID+", "+memb+");";
-                });
-                let keyArr = req.body.KeyIDs.split(',');
-                keyArr.forEach((key) => {
-                    if(!isNaN(key) && key != null && key != '') { // If-statement in case the user uses custom keywords and no pre-defines ones.
-                        teamQuery += "INSERT INTO ProjectKeywords VALUES ("+result.ID+", "+key+");";
-                    }
-                });
-                request.query(teamQuery, (uwu) => {
-                    if(uwu) {
-                        console.log("Error with query:\n" + teamQuery);
-                        console.error(uwu);
-                    }
-                });
-            // });
 
+            // Build queries to link team members to newly created project.
+            let teamArr = req.body.TeamMembers.split(',');
+            let teamQuery = '';
+            teamArr.forEach((memb) => {
+                teamQuery += "INSERT INTO ProjectTeam VALUES ("+result.ID+", "+memb+");";
+            });
+            // Build queries to link keywords to newly created project.
+            let keyArr = req.body.KeyIDs.split(',');
+            keyArr.forEach((key) => {
+                if(!isNaN(key) && key != null && key != '') { // If-statement in case the user uses custom keywords and no pre-defines ones.
+                    teamQuery += "INSERT INTO ProjectKeywords VALUES ("+result.ID+", "+key+");";
+                }
+            });
+
+            // Execute those queries.
+            request.query(teamQuery, (uwu) => {
+                if(uwu) {
+                    console.log("Error with query:\n" + teamQuery);
+                    console.error(uwu);
+                }
+            });
+
+            // Cerate project directory.
             if(!fs.existsSync(dir)) {
                 fs.mkdir((dir), err => {
                     if(err){
@@ -308,7 +314,7 @@ app.post('/result', jsonParser, (req, res) => {
             const doc = new PDFDocument();
             doc.pipe(fs.createWriteStream(dir + '/Setup/'+ removeA +'.pdf'));
             (async function(){
-                // table 
+                // Null or undefined values will get set to "None".
                 for(let ifNull of Object.keys(req.body)) {
                     if(req.body[ifNull] == null || req.body[ifNull] == undefined || req.body[ifNull] == 'NULL' || req.body[ifNull] == '') {
                         req.body[ifNull] = "None";
@@ -374,9 +380,6 @@ app.post('/result', jsonParser, (req, res) => {
                         doc.fontSize(10).fillColor('#000000');
                     }
                 });
-                // await doc.table(descTable, {
-                //     columnsSize: [ 100, 390]
-                // });
                 // done!
                 doc.end();
             
