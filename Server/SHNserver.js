@@ -429,14 +429,12 @@ app.post('/promo', jsonParser, (req, res) => {
     else {
         projnum = req.body.Id;
     }
-    // // Connect to database.
-    // const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source='+DATABASE_PATH);
 
     // Begin creating directory.
     let dir = PATH;
     dir += getDir(projnum); // Get office.
 
-    // Append year.
+    // Append current year.
     dir += "/" + dateYear;
     // If directory doesn't exist, create it.
     if(!fs.existsSync(dir)) {
@@ -513,7 +511,10 @@ app.post('/promo', jsonParser, (req, res) => {
     req.body.PhoneW1 + '\', ' + (req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', \''+
     req.body.DescriptionService + '\', \''+ myDate +'\'' +
     ')';
+
+    // Create the request object.
     const request = pool.request();
+
     // Execute query.
     request.query(query, (error, data) => {
         // Start creating Promo directories.
@@ -521,10 +522,11 @@ app.post('/promo', jsonParser, (req, res) => {
             console.log(query);
             console.error("promo query error:\n" + error);
             try{
+                // createTicket was made to create a ticket in Nylex's Zoho Desk.
                 createTicket(error, "Promo Initiation failed:");
                 res.send(JSON.stringify(error));
             }
-            catch(AwMan) {
+            catch(AwMan) { // If the function fails, we'll just print the error to the console.
                 console.log("Could not send error response for Promo " + projnum);
             }
         }
