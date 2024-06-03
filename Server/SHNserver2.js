@@ -1,13 +1,9 @@
 // npm libraries.
 'use strict';
-// const msnodesqlv8 = require('msnodesqlv8');
 const sql = require('mssql');
 const express = require('express');
 const fileUpload = require('express-fileupload');
-// const fetch = require('node-fetch');
-// const cluster = require('cluster');
 const cors = require('cors');
-// const { useCallback } = require('react');
 const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs-extra');
@@ -88,6 +84,9 @@ pool.on('connectTimeout', () => {
     establishConnection();
   });
 
+/**
+ * Queries run by the closed projects page (close.html) to get projects, promos, and billing groups.
+ */
 app.post('/projects', jsonParser, (req, res) => {
     const request = pool.request();
     request.query('SELECT Projects.*, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id LIKE \'%'+req.body.projID+'%\' ORDER BY Projects.project_id, Staff.last, Staff.first, Projects.client_company, Projects.project_title, Projects.description_service;', (err, data) => {
@@ -159,6 +158,7 @@ app.post('/closeMe', jsonParser, (req, res) => {
 app.post('/search', jsonParser, (req, res) => {
     let result =[];
     const request = pool.request();
+    // Get matching projects.
     request.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.client_company, Projects.closed, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID INNER JOIN ProfileCodes ON Projects.profile_code_id = ProfileCodes.ID LEFT JOIN ProjectKeywords ON Projects.ID = ProjectKeywords.project_id WHERE Projects.project_id LIKE '%"+req.body.entry+"%' OR Projects.project_title LIKE '%"+req.body.entry+"%' OR Projects.first_name LIKE '%"+req.body.entry+"%' OR Projects.last_name LIKE '%"+req.body.entry+"%' OR Projects.client_company LIKE '%"+req.body.entry+"%' OR Projects.description_service LIKE '%"+req.body.entry+"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR ProjectKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%') OR Projects.project_location LIKE '%"+req.body.entry+"%' OR Staff.first LIKE '%"+req.body.entry+"%' OR Staff.last LIKE '%"+req.body.entry+"%';", (err, data) => {
         if(err) {
             console.error(err);
@@ -166,6 +166,7 @@ app.post('/search', jsonParser, (req, res) => {
         }
         else {
             result.push(data.recordset);
+            // Get matching promos.
             request.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.client_company, Promos.closed, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_ID = Staff.ID INNER JOIN ProfileCodes ON Promos.profile_code_id = ProfileCodes.ID LEFT JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id WHERE Promos.promo_id LIKE '%"+req.body.entry+"%' OR Promos.promo_title LIKE '%"+req.body.entry+"%' OR Promos.first_name LIKE '%"+req.body.entry+"%' OR Promos.last_name LIKE '%"+req.body.entry+"%' OR Promos.client_company LIKE '%"+req.body.entry+"%' OR Promos.description_service LIKE '%"+req.body.entry+"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR PromoKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%') OR Promos.promo_location LIKE '%"+req.body.entry+"%' OR Staff.first LIKE '%"+req.body.entry+"%' OR Staff.last LIKE '%"+req.body.entry+"%';", (err, promos) => {
                 if(err) {
                     console.error(err);
@@ -173,6 +174,7 @@ app.post('/search', jsonParser, (req, res) => {
                 }
                 else {
                     result.push(promos.recordset);
+                    // Get matching billing groups.
                     request.query("SELECT BillingGroups.ID, BillingGroups.project_ID, Projects.project_id, BillingGroups.group_number, BillingGroups.group_name, Projects.project_title, Projects.closed, Staff.first, Staff.last, Projects.client_company FROM BillingGroups INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID INNER JOIN Staff ON BillingGroups.manager_id = Staff.ID INNER JOIN ProfileCodes ON BillingGroups.profile_code_id = profileCodes.ID LEFT JOIN BillingGroupKeywords ON BillingGroups.ID = BillingGroupKeywords.group_id WHERE Projects.project_id LIKE '%"+ req.body.entry +"%' OR ProfileCodes.Code LIKE '%"+req.body.entry+"%' OR ProfileCodes.Description LIKE '%"+req.body.entry+"%' OR BillingGroupKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%') OR Staff.first LIKE '%"+req.body.entry+"%' OR Staff.last LIKE '%"+req.body.entry+"%' OR BillingGroups.group_location LIKE '%"+req.body.entry+"%' OR BillingGroups.description_service LIKE '%"+req.body.entry+"%';", (bruh, bill) => {
                         if(bruh) {
                             console.error(bruh);
@@ -180,6 +182,7 @@ app.post('/search', jsonParser, (req, res) => {
                         }
                         else {
                             result.push(bill.recordset);
+                            // Send back result.
                             res.send(JSON.stringify(result));
                         }
                     });
@@ -196,6 +199,7 @@ app.post('/search', jsonParser, (req, res) => {
 app.post('/searchProject', jsonParser, (req, res) => {
     let result =[];
     const request = pool.request();
+    // Search Projects.
     request.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.closed, Projects.client_company, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID WHERE Projects.project_id LIKE '%"+ req.body.entry +"%';", (err, data) => {
         if(err) {
             console.log("project fail");
@@ -205,6 +209,7 @@ app.post('/searchProject', jsonParser, (req, res) => {
         else {
             result.push(data.recordset);
             result.push([]); // No Promos to return.
+            // Search associated projects' billing groups.
             request.query("SELECT BillingGroups.ID, BillingGroups.group_number, BillingGroups.group_name, Projects.closed, Projects.project_id, Projects.project_title, Staff.first, Staff.last, Projects.client_company FROM BillingGroups INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID INNER JOIN Staff ON BillingGroups.manager_id = Staff.ID WHERE Projects.project_id LIKE '%"+ req.body.entry +"%';", (err, proup) => {
                 if(err) {
                     console.log("billing fail");
@@ -213,6 +218,7 @@ app.post('/searchProject', jsonParser, (req, res) => {
                 }
                 else {
                     result.push(proup.recordset);
+                    // Send back result.
                     res.send(JSON.stringify(result));
                 }
             }); 
@@ -227,6 +233,7 @@ app.post('/searchProject', jsonParser, (req, res) => {
 app.post('/searchPromo', jsonParser, (req, res) => {
     let result =[];
     const request = pool.request();
+    // Search for promos.
     request.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.closed, Promos.client_company, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_id = Staff.ID WHERE Promos.promo_id LIKE '%"+ req.body.entry +"%';", (err, data) => {
         if(err) {
             console.log("project fail");
@@ -249,6 +256,8 @@ app.post('/searchPromo', jsonParser, (req, res) => {
 app.post('/searchKeyword', jsonParser, (req, res) => {
     let result =[];
     const request = pool.request();
+
+    // Search Projects with matching keywords.
     request.query("SELECT Projects.ID, Projects.project_id, Projects.project_title, Projects.client_company, Projects.closed, Staff.first, Staff.last FROM Projects INNER JOIN Staff ON Projects.project_manager_ID = Staff.ID INNER JOIN ProfileCodes ON Projects.profile_code_id = ProfileCodes.ID INNER JOIN ProjectKeywords ON Projects.ID = ProjectKeywords.project_id WHERE ProjectKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%');", (err, data) => {
         if(err) {
             console.error(err);
@@ -256,6 +265,8 @@ app.post('/searchKeyword', jsonParser, (req, res) => {
         }
         else {
             result.push(data.recordset);
+
+            // Search Promos with matching keywords.
             request.query("SELECT Promos.ID, Promos.promo_id, Promos.promo_title, Promos.client_company, Promos.closed, Staff.first, Staff.last FROM Promos INNER JOIN Staff ON Promos.manager_ID = Staff.ID INNER JOIN ProfileCodes ON Promos.profile_code_id = ProfileCodes.ID INNER JOIN PromoKeywords ON Promos.ID = PromoKeywords.promo_id WHERE PromoKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%');", (err, promos) => {
                 if(err) {
                     console.error(err);
@@ -263,6 +274,8 @@ app.post('/searchKeyword', jsonParser, (req, res) => {
                 }
                 else {
                     result.push(promos.recordset);
+
+                    // Search Billing Groups with matching keywords.
                     request.query("SELECT BillingGroups.ID, BillingGroups.project_ID, Projects.project_id, BillingGroups.group_number, BillingGroups.group_name, Projects.closed, Projects.project_title, Staff.first, Staff.last, Projects.client_company FROM BillingGroups INNER JOIN Projects ON BillingGroups.project_ID = Projects.ID INNER JOIN Staff ON BillingGroups.manager_id = Staff.ID INNER JOIN ProfileCodes ON BillingGroups.profile_code_id = profileCodes.ID INNER JOIN BillingGroupKeywords ON BillingGroups.ID = BillingGroupKeywords.group_id WHERE BillingGroupKeywords.keyword_id IN (SELECT ID FROM Keywords WHERE Keyword LIKE '%"+req.body.entry+"%');", (bruh, bill) => {
                         if(bruh) {
                             console.error(bruh);
@@ -381,11 +394,9 @@ app.post('/getMe', jsonParser, (req, res) => {
 
 app.post('/updater', jsonParser, (req, res) => {
     // Build and find directory of the original project/promo.
-    // let dir = 'P:';
     let isProject = (req.body.isWhat != 1?true:false);
     let isBillingGroup = (req.body.isWhat == -1?true:false);
     const num = (isProject)?req.body.project_id:req.body.promo_id;
-    // let dir = PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
     let dir = PATH + ((isProject)?getDir(req.body.project_id[0]):getDir(req.body.promo_id[0]));
     dir += ((!isBillingGroup && (req.body.closed == true || req.body.closed == 1))?'/ClosedJobs':'');
     dir += (!isNaN(num[1] + num[2]) && Number(num[1] + num[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + num[1] + num[2]:'/20' + num[1] + num[2];
@@ -741,11 +752,8 @@ app.post('/updater', jsonParser, (req, res) => {
  */
 
 app.post('/getPath', jsonParser, (req, res) => {
-    let dir = PATH + (req.body.isClosed == "true"?closedJobDirDemo(req.body.ProjectID[0]):getDir(req.body.ProjectID[0]));
-    // if(req.body.isClosed == "true") {
-    //     dir += '/ClosedJobs';
-    // }
-    // dir += getDir(req.body.ProjectID[0]); // Get office directory.
+    // Get office directory.
+    let dir = PATH + (req.body.isClosed == "true"?closedJobs(req.body.ProjectID[0]):getDir(req.body.ProjectID[0]));
     dir += (!isNaN(req.body.ProjectID[1] + req.body.ProjectID[2]) && Number(req.body.ProjectID[1] + req.body.ProjectID[2]) > new Date().getFullYear().toString().slice(-2))?'/19' + req.body.ProjectID[1] + req.body.ProjectID[2]:'/20' + req.body.ProjectID[1] + req.body.ProjectID[2]; // Get project year.
     const projYear = (!isNaN(req.body.ProjectID[1] + req.body.ProjectID[2]) && Number(req.body.ProjectID[1] + req.body.ProjectID[2]) > new Date().getFullYear().toString().slice(-2))?Number('19' + req.body.ProjectID[1] + req.body.ProjectID[2]):Number("20" + req.body.ProjectID[1] + req.body.ProjectID[2]);
     if(req.body.ProjectID[6] == '.' && req.body.ProjectID.length > 6) { // If it's a promo, goto Promos folder.
@@ -831,7 +839,6 @@ app.post('/getPath', jsonParser, (req, res) => {
                             else {
                                 dir += '/' + tempdir;
                                 res.download(dir);
-                                // res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                             }
                         }
                         else {
@@ -842,7 +849,6 @@ app.post('/getPath', jsonParser, (req, res) => {
                     else {
                         dir += '/' + tempdir;
                         res.download(dir);
-                        //res.send(JSON.parse(JSON.stringify('{"path":"'+dir+'"}')));
                     }
                 }
             }
@@ -1109,7 +1115,6 @@ async function getAccessToken() {
 
 // Used by the close API to move contents into the cooresponding office's closed jobs folder.
 function moveProject(ID, closer) {
-    // let dir = 'P:';
     let billingBruh = false;
     let billingPoops = null;
     if(ID.includes(',')) {
@@ -1140,7 +1145,7 @@ function moveProject(ID, closer) {
         }
         // Move file only if a file was found.
         if(filer != null) {
-            let dest = PATH + closedJobDirDemo(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'') + filer;
+            let dest = PATH + closedJobs(Number(ID[0])) + '/'+ projYear + (isPromo?'/Promos':'') + filer;
             if(!fs.existsSync(dest)) {
                 fs.mkdir((dest), err => {
                     // if(err){
@@ -1207,7 +1212,7 @@ function moveProject(ID, closer) {
     return dir;
 }
 
-// used when demoing the functionality of moving the project/promo folder, so that nothing can go wrong.
+// Used when demoing the functionality of moving the project/promo folder, so that nothing can go wrong.
 function moveProjectDemo(ID) {
     let dir = 'U:/Eureka/Nylex/test/Mock_Drive';
     dir += (!isNaN(ID[0]))? getDir(Number(ID[0])):getDir(0);
@@ -1225,7 +1230,7 @@ function moveProjectDemo(ID) {
             }
         }
         if(filer != null) {
-            let dest = closedJobDirDemo(Number(ID[0]));
+            let dest = closedJobs(Number(ID[0]));
             if(!fs.existsSync(dest + projYear)) {
                 fs.mkdir((dest+ projYear), err => {
                     if(err){
@@ -1281,7 +1286,7 @@ function closedJobDir(officeNum) {
 }
 
 // Returns directories of each office's closed job folder by office number (DEMO VERSION).
-function closedJobDirDemo(officeNum) {
+function closedJobs(officeNum) {
     if(officeNum == 2) {
         return '/KFalls/ClosedJobs';
     }
@@ -1415,6 +1420,7 @@ async function createTicket(error, msg) {
     });
 }
 
+// Run HTTPS server.
 https.createServer(options, app, function (req, res) {
     res.statusCode = 200;
   }).listen(3001);
