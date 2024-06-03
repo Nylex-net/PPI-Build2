@@ -23,9 +23,6 @@ const { readdir, readdirSync } = require('fs');
 // Directory for production environment.
 process.chdir("P:\\");
 
-// Directory for testing environment.
-// process.chdir("P:\\");
-
 // Certificates
 const options = {
     key: fs.readFileSync('C:\\xampp\\apache\\conf\\ssl.key\\key.pem'),
