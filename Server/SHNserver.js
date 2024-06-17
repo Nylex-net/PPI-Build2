@@ -260,7 +260,7 @@ app.post('/result', jsonParser, (req, res) => {
             console.error(err);
             try{
                 res.send(JSON.stringify(err));
-                createTicket(err, "Error in initiating a project:");
+                createTicket(err + ". Initial query: " + query, "Error in initiating a project:");
             }
             catch(OhNo) {
                 console.log("Could not send back error response for project " + projnum);
@@ -523,7 +523,7 @@ app.post('/promo', jsonParser, (req, res) => {
             console.error("promo query error:\n" + error);
             try{
                 // createTicket was made to create a ticket in Nylex's Zoho Desk.
-                createTicket(error, "Promo Initiation failed:");
+                createTicket(error + " Initial Promo Query: " + query, "Promo Initiation failed:");
                 res.send(JSON.stringify(error));
             }
             catch(AwMan) { // If the function fails, we'll just print the error to the console.
@@ -775,7 +775,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             // console.log(query);
             console.error("promo query error:\n" + err);
             try{
-                createTicket(err, "Promo Initiation failed:");
+                createTicket(err + " Query: " + query, "Promo to Project Initiation failed:");
                 res.send(JSON.stringify(err));
             }
             catch(AwMan) {
