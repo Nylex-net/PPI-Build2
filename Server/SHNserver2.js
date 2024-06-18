@@ -640,7 +640,7 @@ app.post('/updater', jsonParser, (req, res) => {
                     ["Invoice Format", req.body.invoiceName.toString(),'-','-'],
                     ["Client Contract/PO#", req.body.client_contract_PO.toString(),'-','-'],
                     ["Outside Markup", req.body.outside_markup.toString(),'-','-'],
-                    ["Prevailing Wage", (req.body.prevailing_wage == 1?req.body.agency_name:'No'), '-','-'],
+                    ["Prevailing Wage", (req.body.prevailing_wage == 1?'Yes':'No'), '-','-'],
                     ["Billing Instructions", (req.body.special_billing_instructions.toString()),'-','-'],
                     ["See Also", (req.body.see_also == 'NULL' || req.body.see_also == null?'None':req.body.see_also).toString(),'-','-'],
                     ["AutoCAD", (req.body.autoCAD == 1)?'Yes':'No','-','-'],
