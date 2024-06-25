@@ -1285,18 +1285,18 @@ function closedJobDir(officeNum) {
 // Returns directories of each office's closed job folder by office number (DEMO VERSION).
 function closedJobs(officeNum) {
     if(officeNum == 2) {
-        return '/KFalls/ClosedJobs';
+        return 'S:/KFalls/ClosedJobs';
     }
     else if(officeNum == 4) {
-        return '/Willits/ClosedJobs';
+        return 'T:/Willits/ClosedJobs';
     }
     else if(officeNum == 5) {
-        return '/Redding/ClosedJobs';
+        return 'R:/Redding/ClosedJobs';
     }
     else if(officeNum == 6) {
-        return '/Coosbay/ClosedJobs';
+        return 'O:/Coosbay/ClosedJobs';
     }
-    return '/Eureka/ClosedJobs';
+    return 'P:/Eureka/ClosedJobs';
 }
 
 /**
@@ -1313,22 +1313,22 @@ function formatDate(datey) {
 // Returns the office directory by ID.
 function getDir(id) {
     if(id == 0) {
-        return '/Eureka';
+        return 'P:/Eureka';
     }
     else if(id == 1) {
-        return '/Arcata';
+        return 'P:/Eureka';
     }
     else if(id == 2) {
-        return '/KFalls';
+        return 'S:/KFalls';
     }
     else if(id == 4 || id == 7) {
-        return '/Willits';
+        return 'T:/Willits';
     }
     else if(id == 5) {
-        return '/Redding';
+        return 'R:/Redding';
     }
     else if(id == 6) {
-        return '/Coosbay';
+        return 'O:/Coosbay';
     }
 
     return '/Eureka';
