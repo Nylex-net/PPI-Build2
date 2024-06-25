@@ -48,7 +48,7 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
  */
 
 // DEMO_PATH is directory for testing environment.
-const PATH = "P:";
+// const PATH = "P:";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
 process.chdir(PATH);
 
@@ -169,8 +169,8 @@ app.post('/result', jsonParser, (req, res) => {
     }
     
     // Start directory with getting the office.
-    let dir = PATH;
-    dir += getDir(projnum);
+    // let dir = PATH;
+    let dir = getDir(projnum);
     if(!fs.existsSync(dir)) {
         fs.mkdir((dir), err => {
             if(err){
@@ -431,7 +431,7 @@ app.post('/promo', jsonParser, (req, res) => {
     }
 
     // Begin creating directory.
-    let dir = PATH;
+    let dir = '';
     dir += getDir(projnum); // Get office.
 
     // Append current year.
@@ -702,7 +702,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
         projnum = req.body.PromoId[0];
     }
     
-    let dir = PATH;
+    let dir = "";
     dir += getDir(req.body.PromoId[0]); // Gets the cooresponding Office
 
     dir += '/' + '20' + new Date().getFullYear().toString().slice(-2);
@@ -986,7 +986,7 @@ app.post('/submitBill', jsonParser, (req, res) => {
     const mydate = new Date();
     // let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
-    let dir = PATH + getDir(req.body.ProjectId[0]) + '/20' + req.body.ProjectId[1] + req.body.ProjectId[2]; // + '/' + req.body.ProjectId + '-' + removeSpace(data[0].ProjectTitle) + '/';
+    let dir = '' + getDir(req.body.ProjectId[0]) + '/20' + req.body.ProjectId[1] + req.body.ProjectId[2]; // + '/' + req.body.ProjectId + '-' + removeSpace(data[0].ProjectTitle) + '/';
     // let ArcataOffice = false;
     // let ArcDir = '';
     let projFolder = req.body.ProjectId;
@@ -1522,26 +1522,23 @@ function getAdmin(office, isArcata) {
  * @returns Office Directory of type String.
  */
 function getDir(id) {
-    if(id == 0) {
-        return '/Eureka';
-    }
-    else if(id == 1) {
-        return '/Arcata';
+    if(id == 0 || id == 1) {
+        return 'P:/Eureka';
     }
     else if(id == 2) {
-        return '/KFalls';
+        return 'S:/KFalls';
     }
     else if(id == 4 || id == 7) {
-        return '/Willits';
+        return 'T:/Willits';
     }
     else if(id == 5) {
-        return '/Redding';
+        return 'R:/Redding';
     }
     else if(id == 6) {
-        return '/Coosbay';
+        return 'O:/Coosbay';
     }
 
-    return '/Eureka';
+    return 'P:/Eureka';
 }
 
 function TextFile(file) {
