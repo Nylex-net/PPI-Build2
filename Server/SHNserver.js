@@ -50,7 +50,7 @@ oauthgrant(CODE, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, SCOPE).then((data)=> {
 // DEMO_PATH is directory for testing environment.
 // const PATH = "P:";
 const DEMO_PATH = 'U:/Eureka/Nylex/test/Mock_Drive';
-process.chdir(PATH);
+// process.chdir(PATH);
 
 // create application/json parser
 var jsonParser = bodyParser.json();

@@ -21,7 +21,7 @@ const jsonData = require('./config.json');
 const { readdir, readdirSync } = require('fs');
 
 // Directory for production environment.
-process.chdir("P:\\");
+// process.chdir("P:\\");
 
 // Certificates
 const options = {
