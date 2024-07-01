@@ -233,7 +233,6 @@ app.post('/result', jsonParser, (req, res) => {
 
     // Project initiation date.
     const mydate = new Date();
-    let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
     // Build the query.
     const query = 'INSERT INTO Projects (project_id, project_title, project_manager_ID, qaqc_person_ID, closed, start_date, close_date, project_location, latitude, longitude, ' +
@@ -249,8 +248,8 @@ app.post('/result', jsonParser, (req, res) => {
             req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL'?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', ' + (req.body.OfficeMailingLists1 != 'NULL'?'\''+req.body.OfficeMailingLists1 +'\'':req.body.OfficeMailingLists1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
             (req.body.ClientRelation != 'NULL'?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL'?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
             req.body.PhoneW1 + '\', ' +(req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
-            req.body.DescriptionService + '\', \''+ myDate +'\'' +
-            ')';
+            req.body.DescriptionService + '\', GETDATE()' +
+            ');';
     
     // Make the request object and execute query.
     const request = pool.request();
@@ -495,7 +494,6 @@ app.post('/promo', jsonParser, (req, res) => {
 
     // Project initiation date.
     const mydate = new Date();
-    let myDate = mydate.getFullYear() + '-' + (mydate.getMonth() + 1) + '-' + mydate.getDay();
 
     // let latLongNaN = false;
     // Begin making SQL query.
@@ -509,8 +507,8 @@ app.post('/promo', jsonParser, (req, res) => {
     req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL'?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
     (req.body.ClientRelation != 'NULL' && req.body.ClientRelation != null && req.body.ClientRelation != undefined ?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL'?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
     req.body.PhoneW1 + '\', ' + (req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', \''+
-    req.body.DescriptionService + '\', \''+ myDate +'\'' +
-    ')';
+    req.body.DescriptionService + '\', GETDATE()' +
+    ');';
 
     // Create the request object.
     const request = pool.request();
@@ -767,7 +765,7 @@ app.post('/ProjPromo', jsonParser, (req, res) => {
             req.body.ClientCompany1 + '\', ' + (req.body.ClientAbbrev1 != 'NULL' && req.body.ClientAbbrev1 != null?'\'' + req.body.ClientAbbrev1 + '\'':req.body.ClientAbbrev1) +', ' + (req.body.OfficeMailingLists1 != 'NULL'?'\''+req.body.OfficeMailingLists1 +'\'':req.body.OfficeMailingLists1) +', \'' + req.body.ClientContactFirstName1 + '\', \'' + req.body.ClientContactLastName1 + '\', ' +
             (req.body.ClientRelation != 'NULL'?'\''+req.body.ClientRelation + '\'':req.body.ClientRelation) +', '+ (req.body.Title1 != 'NULL'?'\''+req.body.Title1+'\'':req.body.Title1) + ', \'' + req.body.Address1_1 + '\', ' + (req.body.Address2_1!='NULL' && req.body.Address2_1!=null?'\''+req.body.Address2_1+'\'':req.body.Address2_1) + ', \'' + req.body.City1 + '\', \'' + req.body.State1 + '\', \'' + req.body.Zip1 + '\', \'' +
             req.body.PhoneW1 + '\', ' + (req.body.Ext != 'NULL' && req.body.Ext != null && !isNaN(req.body.Ext) ?'\''+req.body.Ext + '\'':'NULL') + ', ' + (req.body.PhoneH1 != 'NULL'?'\''+req.body.PhoneH1+'\'':req.body.PhoneH1) + ', ' + (req.body.Cell1!='NULL'?'\''+req.body.Cell1+'\'':req.body.Cell1) + ', ' + (req.body.Fax1 != 'NULL'?'\''+req.body.Fax1+'\'':req.body.Fax1) + ', \'' + req.body.Email1 + '\', ' + req.body.BinderSize + ', ' + (req.body.BinderLocation != 'NULL'?'\''+req.body.BinderLocation+'\'':req.body.BinderLocation) + ', \'' +
-            req.body.DescriptionService + '\', \''+ myDate +'\')';
+            req.body.DescriptionService + '\', GETDATE());';
     
     const request = pool.request();
     request.query(query, (err, memes) => { // MEMES >:)
