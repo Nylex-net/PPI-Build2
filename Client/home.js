@@ -394,7 +394,7 @@ function nextPage(num) {
         '<div class="col-lg-8"><select name="contactType" id="contactType" title="contactType" required><option value="0">-Select-</option><option value="1">1 – Cost Plus (Time and Expenses)</option><option value="2">2 – Cost Plus to a Maximum</option><option value="3">3 – Fixed Fee (Lump Sum)</option><option value="10">10 – Promo (Non-Billable)</option></select></div>'+
         getNumberField('Total Contract', 'contract', 'contract', 1, 0, -1, false) +
         '<div class="col-lg-4"><label for="invoiceFormat">Invoice Format</label></div><div class="col-lg-8"><select name="invoiceFormat" id="invoiceFormat" title="invoiceFormat"><option value="A">Emp. Name, Dates, Hrs, and Billing Rates</option><option value="B" selected>Emp. Name, Hrs, and Billing Rates (No Dates)</option><option value="C">Emp. Name, Dates, Hrs, Billing Rates, Phase, and Task</option></select></div>'+
-        getTextField('Client Contract/PO #', 'PO', contractPONum, false) +
+        '<div class="col-lg-4"><label for="PO">Client Contract/PO #</label></div><div class="col-lg-8"><input type="text" id="PO" name="PO" maxlength="30"></div>'+
         '<div class="col-lg-4"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
         '<div class="col-lg-8"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
         // '<div class="col-lg-4"><label for="wage">Prevailing Wage</label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onchange="agency()" required><option value="1">Yes</option><option value="0" selected>No</option></select><div id="agent"></div></div>'+
