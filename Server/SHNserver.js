@@ -1655,27 +1655,28 @@ function removeSpace(myString) {
  * @param {String} path path of folder to apply deny permission to.
  * 
  */
-function denyGroupDelete(folderPath) {
-    const group = 'Domain Users';
-    const permissions = 'DE';
-    const permissions2 = 'DC';
 
-    exec(`icacls "${folderPath}" /deny "${group}":(OI)(CI)(${permissions}) /t`, (error, stdout, stderr) => {
-    if (error) {
-        console.error(`Error applying permissions: ${error}`);
-        return;
-    }
-    console.log('Permissions applied successfully.');
-    });
+// function denyGroupDelete(folderPath) {
+//     const group = 'Domain Users';
+//     const permissions = 'DE';
+//     const permissions2 = 'DC';
 
-    exec(`icacls "${folderPath}" /deny "${group}":(${permissions}) /t`, (error, stdout, stderr) => {
-    if (error) {
-        console.error(`Error applying permissions: ${error}`);
-        return;
-    }
-    console.log('Permissions applied successfully.');
-    });
-}
+//     exec(`icacls "${folderPath}" /deny "${group}":(OI)(CI)(${permissions}) /t`, (error, stdout, stderr) => {
+//     if (error) {
+//         console.error(`Error applying permissions: ${error}`);
+//         return;
+//     }
+//     console.log('Permissions applied successfully.');
+//     });
+
+//     exec(`icacls "${folderPath}" /deny "${group}":(${permissions}) /t`, (error, stdout, stderr) => {
+//     if (error) {
+//         console.error(`Error applying permissions: ${error}`);
+//         return;
+//     }
+//     console.log('Permissions applied successfully.');
+//     });
+// }
 
 /**
  * Most inportant step to run all our APIs!  Set a port number and run the application.
