@@ -4,3 +4,4 @@ config.json
 *.sql
 .env
 sharepoint.js
+node_modules
