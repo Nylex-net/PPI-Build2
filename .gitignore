@@ -5,3 +5,4 @@ config.json
 .env
 sharepoint.js
 node_modules
+./Beta/node_modules

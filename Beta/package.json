@@ -12,7 +12,7 @@
   "dependencies": {
     "fs": "^0.0.1-security",
     "msnodesqlv8": "^4.1.0",
-    "mssql": "^9.1.1",
+    "mssql": "^11.0.1",
     "node-adodb": "^5.0.3",
     "path": "^0.12.7",
     "win-permissions-js": "^1.1.0"
