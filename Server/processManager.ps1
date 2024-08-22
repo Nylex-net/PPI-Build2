@@ -1,0 +1,1 @@
+pm2 start C:\Users\administrator\Documents\PPI-Build2\Server\SHNserver.js C:\Users\administrator\Documents\PPI-Build2\Server\SHNserver.js
