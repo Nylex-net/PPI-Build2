@@ -762,7 +762,7 @@ app.post('/getPath', jsonParser, (req, res) => {
         let arcata = (req.body.ProjectID[req.body.ProjectID.length-1] == 'A')?req.body.ProjectID.substring(0,req.body.ProjectID.trim().length-1):req.body.ProjectID;
         let found = false;
         for(let file of dirFiles) {
-            if(file.includes(arcata)) {
+            if(file.includes(arcata) && !file.includes("------")) {
                 dir += '/' + file;
                 found = true;
                 break;
@@ -777,7 +777,7 @@ app.post('/getPath', jsonParser, (req, res) => {
             if(req.body.BillingGroup != null && req.body.BillingGroup != 'null') {
                 found = false;
                 for(let file of dirFiles) {
-                    if(file.includes(req.body.BillingGroup)) {
+                    if(file.includes(req.body.BillingGroup) && !file.includes("------")) {
                         dir += '/' + file;
                         found = true;
                         break;
