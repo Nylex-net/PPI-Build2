@@ -679,6 +679,13 @@ app.post('/updater', jsonParser, (req, res) => {
                 subtitler = "Promo Updated";
             }
             const doc = new PDFDocument();
+            if(!fs.exists(dir + '/Setup')) {
+                fs.mkdir((dir + '/Setup'), err => {
+                    if(err){
+                        createTicket(err);
+                    }
+                });
+            }
             doc.pipe(fs.createWriteStream(dir + '/Setup/'+(isBillingGroup?req.body.group_number:num)+'.pdf'));
         
             // PDF table creation runs asynchronously.
