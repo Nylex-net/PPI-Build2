@@ -428,7 +428,7 @@ app.post('/updater', jsonParser, (req, res) => {
         dirFiles = fs.readdirSync(dir);
         found = false;
         for(let file of dirFiles) {
-            if(file.substring(0, 12).includes(req.body.group_number)) {
+            if(file.substring(0, 12).includes(req.body.group_number) && !file.includes("-------")) {
                 dir += '/' + file;
                 found = true;
                 break;
