@@ -241,3 +241,15 @@ function getKeys() {
 // Event listener to call getPage(1) when the window loads to start the Project Initiation Form on Page 1.
 
 window.addEventListener("load", getKeys(), false);
+
+// Event listeners for "Enter" press.
+
+const searchInput = document.getElementById('search');
+const searchButton = document.getElementById('searchButton');
+
+searchInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter' || event.code === 13) {
+        event.preventDefault();
+        searchButton.click();
+    }
+});
