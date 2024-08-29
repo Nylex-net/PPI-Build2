@@ -425,3 +425,15 @@ window.addEventListener("scroll", (event) => {
     scrollObj.scrollY = this.scrollY;
     scrollObj.scrollX = this.scrollX;
 });
+
+// Event listeners for "Enter" press.
+
+const searchInput = document.getElementById('search');
+const searchButton = document.getElementById('searchButton');
+
+searchInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter' || event.code === 13) {
+        event.preventDefault();
+        searchButton.click();
+    }
+});
