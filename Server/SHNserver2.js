@@ -1273,37 +1273,8 @@ function moveProjectDemo(ID) {
 }
 
 // Returns directories of each office's closed job folder by office number.
-function closedJobDir(officeNum) {
-    if(officeNum == 2) {
-        return 'P:/KFalls/ClosedJobs';
-    }
-    else if(officeNum == 4) {
-        return 'P:/Willits/ClosedJobs';
-    }
-    else if(officeNum == 5) {
-        return 'P:/Redding/ClosedJobs';
-    }
-    else if(officeNum == 6) {
-        return 'P:/Redding/ClosedJobs';
-    }
-    return 'P:/Eureka/ClosedJobs';
-}
-
-// Returns directories of each office's closed job folder by office number (DEMO VERSION).
 function closedJobs(officeNum) {
-    if(officeNum == 2) {
-        return 'S:/KFalls/ClosedJobs';
-    }
-    else if(officeNum == 4) {
-        return 'T:/Willits/ClosedJobs';
-    }
-    else if(officeNum == 5) {
-        return 'R:/Redding/ClosedJobs';
-    }
-    else if(officeNum == 6) {
-        return 'O:/Coosbay/ClosedJobs';
-    }
-    return 'P:/Eureka/ClosedJobs';
+    return getDir(officeNum) + '/ClosedJobs';
 }
 
 /**
@@ -1319,26 +1290,23 @@ function formatDate(datey) {
 
 // Returns the office directory by ID.
 function getDir(id) {
-    if(id == 0) {
-        return 'P:/Eureka';
-    }
-    else if(id == 1) {
-        return 'P:/Eureka';
+    if(id == 0 || id == 1) {
+        return '//e-bm1/p-projects/Eureka';
     }
     else if(id == 2) {
-        return 'S:/KFalls';
+        return '//kfalls-fs/p-projects/KFalls';
     }
     else if(id == 4 || id == 7) {
-        return 'T:/Willits';
+        return '//willits-fs/p-projects/Willits';
     }
     else if(id == 5) {
-        return 'R:/Redding';
+        return '//Redding-fs/p-projects/Redding';
     }
     else if(id == 6) {
-        return 'O:/Coosbay';
+        return '//coosbay-fs/p-projects/Coosbay';
     }
 
-    return '/Eureka';
+    return '//e-bm1/p-projects/Eureka';
 }
 
 /**

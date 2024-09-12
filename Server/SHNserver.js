@@ -1521,22 +1521,22 @@ function getAdmin(office, isArcata) {
  */
 function getDir(id) {
     if(id == 0 || id == 1) {
-        return 'P:/Eureka';
+        return '//e-bm1/p-projects/Eureka';
     }
     else if(id == 2) {
-        return 'S:/KFalls';
+        return '//kfalls-fs/p-projectsKFalls';
     }
     else if(id == 4 || id == 7) {
-        return 'T:/Willits';
+        return '//willits-fs/p-projects/Willits';
     }
     else if(id == 5) {
-        return 'R:/Redding';
+        return '//Redding-fs/p-projects/Redding';
     }
     else if(id == 6) {
-        return 'O:/Coosbay';
+        return '//coosbay-fs/p-projects/Coosbay';
     }
 
-    return 'P:/Eureka';
+    return '//e-bm1/p-projects/Eureka';
 }
 
 function TextFile(file) {
