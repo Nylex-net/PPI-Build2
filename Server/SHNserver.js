@@ -1524,7 +1524,7 @@ function getDir(id) {
         return '//e-bm1/p-projects/Eureka';
     }
     else if(id == 2) {
-        return '//kfalls-fs/p-projectsKFalls';
+        return '//kfalls-fs/p-projects/KFalls';
     }
     else if(id == 4 || id == 7) {
         return '//willits-fs/p-projects/Willits';
