@@ -632,7 +632,7 @@ function getPage(num) {
             getTextField('Client Contract/PO #', 'PO', userData[0].client_contract_PO, false) +
             '<div class="col-lg-4"><label for="OutMark">Outside Markup<span class="astrick">*</span></label></div>'+
             '<div class="col-lg-8"><input type="number" id="OutMark" name="OutMark" step="1" min="0" max="100" value="15" onkeypress="limit(this);" required>%</input></div>'+
-            '<div class="col-lg-4"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" onclick="agentBruh();" required><option value="1">Yes</option><option value="0" selected>No</option></select></div>'+
+            '<div class="col-lg-4"><label for="wage">Prevailing Wage<span class="astrick">*</span></label></div><div class="col-lg-8"><select name="wage" id="wage" title="wage" required><option value="1">Yes</option><option value="0" selected>No</option></select></div>'+
             '<div class="col-lg-4"><label for="billInst">Special Billing Instructions</label></div><div class="col-lg-8"><textarea id="billInst" name="billInst" rows="5" cols="50" maxlength="200"></textarea></div>'+
             '<div class="col-lg-4"><label for="binder">Binder Size</label></div><div class="col-lg-8"><select name="binder" id="binder" title="Binder Size"><option value="NULL" selected>N/A</option><option value="0.5">1/2 Inch</option><option value="1">1 Inch</option><option value="1.5">1.5 inches</option><option value="2">2 inches</option><option value="3">3 inches</option></select></div>'+
             '<div class="col-lg-4"><label for="describe">Description of Services<span class="astrick">*</span><br>Search projects with similar descriptions <a href="search.html" target="_blank">here</a>.</label></div><div class="col-lg-8"><textarea id="describe" name="describe" rows="5" cols="50" maxlength="63999" required></textarea></div>' +
@@ -1442,7 +1442,7 @@ function saveChoices(currPage) {
                 userData[0].client_contract_PO = document.getElementById('PO').value.trim();
                 userData[0].outside_markup = document.getElementById('OutMark').value;
                 userData[0].prevailing_wage = document.getElementById('wage').value;
-                userData[0].agency_name = (document.getElementById('wage').value == '1')?document.getElementById('agency').value:"NULL";
+                // userData[0].agency_name = (document.getElementById('wage').value == '1')?document.getElementById('agency').value:"NULL";
                 userData[0].special_billing_instructions = (document.getElementById('billInst').value.trim() == ''?"NULL":document.getElementById('billInst').value.trim());
                 userData[0].prevailing_wage = document.getElementById('wage').value;
                 userData[0].binder_size = document.getElementById('binder').value;
